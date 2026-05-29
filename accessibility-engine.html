@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCAS &middot; Accessibility Engine &middot; MedMasters Collaborative</title>
+<meta name="description" content="WCAG 2.2 AA compliance engine. Interactive audit, accessibility score, contrast checker, and a generator for ready-to-ship compliance reports.">
+<style>
+@import url('https://cdn.jsdelivr.net/npm/@fontsource-variable/plus-jakarta-sans/index.css');
+/*
+  ============================================================
+  MCAS · ACCESSIBILITY ENGINE
+  Inherits MCAS Component Index brand DNA.
+  Plus Jakarta only. No italics. Light/dark alternation.
+  Rust accent on LIGHT, gold accent on DARK.
+  Functional audit tool. Persists state via localStorage.
+  ============================================================
+*/
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: #FFFFFF;
+  color: #0B1530;
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { max-width: 100%; display: block; }
+a { color: inherit; }
+
+/* ===== KEYBOARD FOCUS ===== */
+a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #8B3A2E; outline-offset: 3px; border-radius: 4px;
+}
+.dark-section a:focus-visible, .dark-section button:focus-visible,
+.dark-section input:focus-visible, .dark-section select:focus-visible {
+  outline-color: #C9A14A;
+}
+
+.skip-link {
+  position: absolute; top: -100px; left: 8px;
+  background: #0B1530; color: #F5F1E8;
+  padding: 12px 20px; text-decoration: none;
+  font-size: 13px; font-weight: 700; border-radius: 4px;
+  z-index: 9999; letter-spacing: 0.04em;
+}
+.skip-link:focus { top: 8px; }
+
+/* ===== SECTION PADDING ===== */
+.site-header, .hero-card, .scoreboard, .meta-section, .contrast-section,
+.checklist-section, .alt-section, .heading-section, .report-section, .footer-section {
+  padding-left: max(40px, 5vw);
+  padding-right: max(40px, 5vw);
+}
+
+/* ===== SITE HEADER ===== */
+.site-header {
+  background: #FFFFFF;
+  padding-top: 28px; padding-bottom: 28px;
+  border-bottom: 0.5px solid rgba(11, 21, 48, 0.10);
+}
+.site-header-inner { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+.site-logo { display: inline-flex; align-items: center; gap: 16px; text-decoration: none; }
+.site-logo svg { height: 58px; width: auto; display: block; }
+.logo-text { display: flex; flex-direction: column; gap: 3px; }
+.logo-title {
+  font-size: 26px; font-weight: 800;
+  letter-spacing: -0.02em; color: #0B1530; line-height: 1;
+}
+.logo-title .logo-accent { color: #8B3A2E; }
+.logo-sub {
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.20em; text-transform: uppercase;
+  color: #0B1530; opacity: 0.72;
+}
+.header-nav { display: flex; gap: 24px; }
+.header-nav a {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: #0B1530; text-decoration: none;
+  padding-bottom: 4px; border-bottom: 1px solid transparent;
+}
+.header-nav a:hover, .header-nav a[aria-current="page"] { border-bottom-color: #8B3A2E; color: #8B3A2E; }
+
+/* ===== HERO ===== */
+.hero-card { background: #FFFFFF; padding-top: 60px; padding-bottom: 60px; }
+.hero-content { max-width: 820px; }
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700; color: #8B3A2E;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.hero-headline {
+  font-size: 46px; font-weight: 800; color: #0B1530;
+  letter-spacing: -0.025em; line-height: 1.06;
+  margin: 0 0 20px;
+}
+.hero-headline .accent { color: #8B3A2E; }
+.hero-subhead {
+  font-size: 16px; font-weight: 400; color: #0B1530;
+  line-height: 1.6; opacity: 0.80;
+  margin-bottom: 32px; max-width: 700px;
+}
+.hero-ctas { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.cta-primary {
+  background: #8B3A2E; color: #FFFFFF;
+  padding: 14px 26px; border-radius: 4px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  text-decoration: none; display: inline-block;
+  border: none; cursor: pointer; font-family: inherit;
+  transition: background 0.2s ease;
+}
+.cta-primary:hover { background: #A0452F; }
+.cta-secondary {
+  color: #0B1530;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  border-bottom: 1px solid rgba(11, 21, 48, 0.4);
+  padding-bottom: 6px;
+  text-decoration: none; display: inline-block;
+  background: none; border-left: none; border-right: none; border-top: none;
+  cursor: pointer; font-family: inherit;
+}
+.dark-section .cta-primary { background: #C9A14A; color: #0B1530; }
+.dark-section .cta-primary:hover { background: #D4AE5C; }
+.dark-section .cta-secondary { color: #F5F1E8; border-bottom-color: rgba(245, 241, 232, 0.4); }
+
+/* META STRIP */
+.meta-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 22px 32px;
+  padding: 24px 0 0;
+  border-top: 1px solid rgba(11, 21, 48, 0.12);
+  margin-top: 36px;
+}
+.meta-item dt {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: #8B3A2E; margin: 0 0 4px;
+}
+.meta-item dd {
+  margin: 0;
+  font-size: 14px; font-weight: 700;
+  color: #0B1530; letter-spacing: -0.005em;
+}
+
+/* ===== SHARED SECTION HEADINGS ===== */
+.section-eyebrow {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.section-headline {
+  font-size: 31px; font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.12;
+  margin: 0 0 22px; max-width: 720px;
+}
+.section-intro {
+  font-size: 15px; font-weight: 400;
+  line-height: 1.65; max-width: 680px;
+  margin: 0 0 36px;
+}
+.light-section { background: #FFFFFF; padding-top: 64px; padding-bottom: 64px; }
+.dark-section { background: #060A18; padding-top: 64px; padding-bottom: 64px; }
+.light-section .section-eyebrow { color: #8B3A2E; }
+.light-section .section-headline { color: #0B1530; }
+.light-section .section-headline .accent { color: #8B3A2E; }
+.light-section .section-intro { color: #0B1530; opacity: 0.80; }
+.dark-section .section-eyebrow { color: #C9A14A; }
+.dark-section .section-headline { color: #F5F1E8; }
+.dark-section .section-headline .accent { color: #C2734D; }
+.dark-section .section-intro { color: #F5F1E8; opacity: 0.82; }
+
+/* ===== SCOREBOARD (dark) ===== */
+.score-headline-block { display: grid; grid-template-columns: 280px 1fr; gap: 48px; align-items: center; margin-bottom: 36px; }
+.score-headline-num {
+  font-size: 120px; font-weight: 800;
+  color: #C9A14A;
+  letter-spacing: -0.04em; line-height: 0.9;
+  margin: 0;
+}
+.score-headline-num .denom { color: #F5F1E8; opacity: 0.55; font-size: 60px; }
+.score-headline-statement {
+  font-size: 22px; font-weight: 700; color: #F5F1E8;
+  letter-spacing: -0.01em; line-height: 1.35; margin: 0;
+}
+.score-headline-statement .accent { color: #C2734D; }
+.score-headline-statement .level { color: #C9A14A; }
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+.score-card {
+  background: rgba(245, 241, 232, 0.04);
+  border-left: 4px solid #C9A14A;
+  padding: 22px 22px 24px;
+  border-radius: 4px;
+}
+.score-num { font-size: 44px; font-weight: 800; color: #F5F1E8; letter-spacing: -0.02em; line-height: 1; margin: 0; }
+.score-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #C9A14A; margin: 8px 0 4px; }
+.score-detail { font-size: 12.5px; font-weight: 400; color: #F5F1E8; opacity: 0.78; margin: 0; line-height: 1.5; }
+
+@media (max-width: 720px) {
+  .score-headline-block { grid-template-columns: 1fr; gap: 18px; }
+  .score-headline-num { font-size: 88px; }
+  .score-headline-num .denom { font-size: 42px; }
+}
+
+/* ===== META INPUT CARD ===== */
+.input-card {
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 8px;
+  padding: 28px 30px;
+  margin-bottom: 18px;
+}
+.input-card legend {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+  color: #8B3A2E; padding: 0 8px;
+}
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+.input-field { display: flex; flex-direction: column; gap: 6px; }
+.input-field label {
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: #0B1530; opacity: 0.75;
+}
+.input-field input, .input-field select, .input-field textarea {
+  font-family: inherit;
+  font-size: 14px; font-weight: 500;
+  color: #0B1530;
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 4px;
+  padding: 10px 12px;
+}
+.input-field input:focus, .input-field select:focus, .input-field textarea:focus {
+  border-color: #8B3A2E; outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 58, 46, 0.18);
+}
+
+/* ===== CONTRAST CHECKER ===== */
+.contrast-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-bottom: 26px;
+}
+@media (max-width: 760px) { .contrast-grid { grid-template-columns: 1fr; } }
+.contrast-input-card {
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 8px;
+  padding: 26px;
+}
+.contrast-row { display: grid; grid-template-columns: 100px 1fr 110px; gap: 14px; align-items: center; margin-bottom: 16px; }
+.contrast-row label { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #0B1530; opacity: 0.78; }
+.contrast-row input[type=text] {
+  font-family: inherit; font-size: 14px;
+  padding: 9px 12px; border: 1px solid #8C90A0;
+  border-radius: 4px; color: #0B1530; background: #FFFFFF;
+  width: 100%;
+}
+.contrast-row input[type=color] {
+  width: 100%; height: 38px;
+  border: 1px solid #8C90A0; border-radius: 4px; padding: 2px;
+  background: #FFFFFF; cursor: pointer;
+}
+.contrast-preview-card {
+  border-radius: 8px; padding: 28px;
+  border: 1px solid #8C90A0;
+  display: flex; flex-direction: column; gap: 16px;
+  justify-content: center;
+}
+.contrast-preview-card .demo-large { font-size: 26px; font-weight: 800; letter-spacing: -0.015em; }
+.contrast-preview-card .demo-normal { font-size: 15px; font-weight: 500; line-height: 1.55; }
+.contrast-ratio-card {
+  display: grid; grid-template-columns: 200px 1fr; gap: 24px;
+  background: rgba(139, 58, 46, 0.04);
+  border-left: 4px solid #8B3A2E;
+  padding: 22px 26px; border-radius: 4px;
+  align-items: center;
+}
+.contrast-ratio-num { font-size: 56px; font-weight: 800; color: #0B1530; letter-spacing: -0.03em; line-height: 1; margin: 0; }
+.contrast-ratio-num .colon { color: #8B3A2E; }
+.contrast-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+.contrast-result {
+  background: #FFFFFF; border: 1px solid #8C90A0;
+  border-radius: 4px; padding: 12px 14px;
+}
+.contrast-result-label { font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #0B1530; opacity: 0.72; margin: 0 0 4px; }
+.contrast-result-verdict { font-size: 13px; font-weight: 800; letter-spacing: -0.005em; margin: 0; }
+.is-pass { color: #1F5C3A; }
+.is-fail { color: #8B3A2E; }
+
+/* ===== CHECKLIST ===== */
+.criterion-group { margin-bottom: 26px; }
+.criterion-group-title {
+  font-size: 17px; font-weight: 800;
+  color: #F5F1E8;
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+}
+.criterion-group-eyebrow {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: #C9A14A; margin: 0 0 6px;
+}
+.criterion-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.criterion {
+  background: rgba(245, 241, 232, 0.05);
+  border-left: 3px solid rgba(201, 161, 74, 0.4);
+  border-radius: 4px;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 38px 1fr 220px;
+  gap: 18px; align-items: center;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.criterion-checkbox {
+  width: 26px; height: 26px;
+  border: 2px solid #C9A14A;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0;
+}
+.criterion-checkbox[aria-checked="true"] {
+  background: #C9A14A; border-color: #C9A14A;
+}
+.criterion-checkbox[aria-checked="true"]::after {
+  content: ""; width: 14px; height: 8px;
+  border-left: 3px solid #060A18; border-bottom: 3px solid #060A18;
+  transform: rotate(-45deg); margin-top: -3px;
+}
+.criterion-meta { display: flex; flex-direction: column; gap: 4px; }
+.criterion-id { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #C9A14A; }
+.criterion-title { font-size: 14.5px; font-weight: 700; color: #F5F1E8; letter-spacing: -0.005em; }
+.criterion-detail { font-size: 12.5px; font-weight: 400; color: #F5F1E8; opacity: 0.78; line-height: 1.5; }
+.criterion-note {
+  font-family: inherit; font-size: 12.5px;
+  border: 1px solid rgba(245, 241, 232, 0.2);
+  background: rgba(245, 241, 232, 0.04);
+  color: #F5F1E8; border-radius: 4px;
+  padding: 8px 10px; min-height: 38px; resize: vertical;
+}
+.criterion[data-status="pass"] { border-left-color: #C9A14A; background: rgba(201, 161, 74, 0.08); }
+.criterion[data-status="fail"] { border-left-color: #C2734D; background: rgba(194, 115, 77, 0.08); }
+@media (max-width: 720px) {
+  .criterion { grid-template-columns: 38px 1fr; }
+  .criterion-note { grid-column: 1 / -1; }
+}
+
+/* ===== ALT TEXT CHECKER ===== */
+.alt-tool {
+  background: #FFFFFF; border: 1px solid #8C90A0; border-radius: 8px;
+  padding: 28px 30px; margin-bottom: 20px;
+}
+.alt-tool label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #0B1530; opacity: 0.78; display: block; margin-bottom: 8px;
+}
+.alt-tool textarea {
+  width: 100%; font-family: inherit; font-size: 14px;
+  padding: 12px 14px; border: 1px solid #8C90A0; border-radius: 4px;
+  resize: vertical; min-height: 100px;
+}
+.alt-output {
+  margin-top: 18px; display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+.alt-metric {
+  background: #FFFFFF; border: 1px solid #8C90A0; border-radius: 4px;
+  padding: 14px 16px;
+}
+.alt-metric .label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #0B1530; opacity: 0.72; margin: 0 0 6px; }
+.alt-metric .val { font-size: 22px; font-weight: 800; color: #0B1530; letter-spacing: -0.01em; margin: 0; }
+.alt-metric.is-warn { border-color: #C2734D; }
+.alt-metric.is-warn .val { color: #8B3A2E; }
+.alt-flags { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+.alt-flag {
+  font-size: 11px; font-weight: 700;
+  padding: 5px 11px; border-radius: 999px;
+  letter-spacing: 0.06em;
+  background: rgba(139, 58, 46, 0.10); color: #8B3A2E;
+  border: 1px solid rgba(139, 58, 46, 0.35);
+}
+.alt-flag.ok { background: rgba(31, 92, 58, 0.10); color: #1F5C3A; border-color: rgba(31, 92, 58, 0.35); }
+
+/* ===== HEADING CHECKER ===== */
+.heading-tool { background: rgba(245, 241, 232, 0.04); border-left: 4px solid #C9A14A; padding: 26px 28px; border-radius: 4px; }
+.heading-tool label { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #C9A14A; display: block; margin-bottom: 8px; }
+.heading-tool textarea {
+  width: 100%; font-family: inherit; font-size: 13px;
+  padding: 12px 14px; border: 1px solid rgba(245, 241, 232, 0.25); border-radius: 4px;
+  background: rgba(245, 241, 232, 0.05); color: #F5F1E8;
+  resize: vertical; min-height: 140px;
+}
+.heading-out { margin-top: 18px; }
+.heading-tree {
+  background: rgba(245, 241, 232, 0.05); border: 1px solid rgba(245, 241, 232, 0.2);
+  border-radius: 4px; padding: 16px 18px;
+  font-size: 13.5px; font-weight: 500; color: #F5F1E8;
+  line-height: 1.7; margin: 0;
+}
+.heading-tree li { list-style: none; }
+.heading-tree .h-tag { color: #C9A14A; font-weight: 800; letter-spacing: 0.08em; margin-right: 8px; }
+.heading-tree .h-warn { color: #C2734D; font-weight: 700; }
+
+/* ===== REPORT ===== */
+.report-card {
+  background: #FFFFFF; border: 1px solid #8C90A0;
+  border-radius: 8px;
+  padding: 32px 36px;
+  margin-bottom: 20px;
+}
+.report-section h3 { font-size: 17px; font-weight: 800; color: #0B1530; letter-spacing: -0.01em; margin: 0 0 12px; }
+.report-row { display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(11, 21, 48, 0.08); }
+.report-row:last-child { border-bottom: none; }
+.report-row dt { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #8B3A2E; }
+.report-row dd { margin: 0; font-size: 14px; color: #0B1530; }
+.report-actions { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px; }
+
+/* ===== FOOTER ===== */
+.footer-section {
+  background: #060A18; color: #F5F1E8;
+  padding-top: 56px; padding-bottom: 56px;
+}
+.footer-row {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  flex-wrap: wrap; gap: 24px;
+}
+.footer-byline { font-size: 13px; font-weight: 400; color: #F5F1E8; opacity: 0.7; }
+.footer-byline strong { color: #C9A14A; font-weight: 800; letter-spacing: 0.06em; }
+.footer-sub { font-size: 10.5px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #C9A14A; opacity: 0.7; }
+
+@media (max-width: 800px) {
+  .hero-headline { font-size: 34px; }
+  .section-headline { font-size: 24px; }
+  .contrast-row { grid-template-columns: 90px 1fr 96px; }
+  .report-row { grid-template-columns: 1fr; gap: 4px; }
+  .header-nav { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header" role="banner">
+  <div class="site-header-inner">
+    <a class="site-logo" href="index.html" aria-label="MCAS home">
+      <svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+        <g transform="translate(40, 18)">
+          <g transform="translate(20, 0) rotate(8 0 130)">
+            <circle cx="0" cy="20" r="10" fill="#0B1530"/>
+            <path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#0B1530"/>
+          </g>
+          <g transform="translate(60, 0)">
+            <circle cx="0" cy="10" r="11" fill="#8B3A2E"/>
+            <path d="M 0,22 C -11,22 -17,26 -17,34 C -17,52 -14,70 -12,86 C -11,108 -13,122 -15,132 L 15,132 C 13,122 11,108 12,86 C 14,70 17,52 17,34 C 17,26 11,22 0,22 Z" fill="#8B3A2E"/>
+          </g>
+          <g transform="translate(100, 0) rotate(-8 0 130)">
+            <circle cx="0" cy="20" r="10" fill="#C9A14A"/>
+            <path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#C9A14A"/>
+          </g>
+        </g>
+      </svg>
+      <span class="logo-text">
+        <span class="logo-title">MCAS &middot; <span class="logo-accent">Accessibility Engine</span></span>
+        <span class="logo-sub">MedMasters Course Architecture System</span>
+      </span>
+    </a>
+    <nav class="header-nav" aria-label="Primary">
+      <a href="index.html">Index</a>
+      <a href="compliance-engine.html">Compliance</a>
+      <a href="accessibility-engine.html" aria-current="page">A11y</a>
+      <a href="rsi-engine.html">RSI</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero-card" aria-labelledby="hero-h">
+  <div class="hero-content">
+    <p class="hero-eyebrow">Compliance Engine &middot; Module 1 of 2</p>
+    <h1 class="hero-headline" id="hero-h">WCAG 2.2 audit, contrast math, and a compliance report you can <span class="accent">actually ship.</span></h1>
+    <p class="hero-subhead">Score a course against WCAG 2.2 AA, run real contrast math on every text/background pair, audit alt text and heading hierarchy, then generate a compliance-notes report ready for the project folder. Inputs persist locally, so you can come back without losing work.</p>
+    <div class="hero-ctas">
+      <button class="cta-primary" type="button" id="jump-checklist">Start the audit</button>
+      <button class="cta-secondary" type="button" id="reset-engine">Reset everything</button>
+    </div>
+    <dl class="meta-strip" aria-label="Engine metadata">
+      <div class="meta-item"><dt>Standard</dt><dd>WCAG 2.2 AA</dd></div>
+      <div class="meta-item"><dt>Target</dt><dd>AAA where achievable</dd></div>
+      <div class="meta-item"><dt>Course context</dt><dd>Higher-ed online &amp; hybrid</dd></div>
+      <div class="meta-item"><dt>Author</dt><dd>Dr. Sharilyn Rennie</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- SCOREBOARD -->
+<section class="dark-section scoreboard" aria-labelledby="score-h">
+  <p class="section-eyebrow">Live Scoreboard</p>
+  <h2 class="section-headline" id="score-h">Your course's accessibility, scored as you <span class="accent">work.</span></h2>
+  <p class="section-intro">The headline number is the count of WCAG 2.2 AA criteria you've marked Pass divided by the total in scope. The four sub-scores show where the gaps live. Numbers update the instant you toggle anything.</p>
+
+  <div class="score-headline-block">
+    <p class="score-headline-num"><span id="score-num">0</span><span class="denom">/<span id="score-denom">30</span></span></p>
+    <p class="score-headline-statement">
+      <span id="score-level" class="level">Audit not started.</span>
+      <span id="score-detail" class="accent"> Toggle a criterion below to begin scoring.</span>
+    </p>
+  </div>
+
+  <div class="score-grid">
+    <div class="score-card">
+      <p class="score-num" id="score-perceivable">0/0</p>
+      <p class="score-label">Perceivable</p>
+      <p class="score-detail">Alt text, contrast, captions, distinguishable content.</p>
+    </div>
+    <div class="score-card">
+      <p class="score-num" id="score-operable">0/0</p>
+      <p class="score-label">Operable</p>
+      <p class="score-detail">Keyboard, focus order, target size, no traps.</p>
+    </div>
+    <div class="score-card">
+      <p class="score-num" id="score-understandable">0/0</p>
+      <p class="score-label">Understandable</p>
+      <p class="score-detail">Language, predictability, error prevention, help.</p>
+    </div>
+    <div class="score-card">
+      <p class="score-num" id="score-robust">0/0</p>
+      <p class="score-label">Robust</p>
+      <p class="score-detail">Parsing, name/role/value, status messages, AT support.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COURSE METADATA -->
+<section class="light-section meta-section" aria-labelledby="meta-h">
+  <p class="section-eyebrow">Step 1 &middot; Identify the artifact</p>
+  <h2 class="section-headline" id="meta-h">What are we <span class="accent">auditing?</span></h2>
+  <p class="section-intro">This block stamps the compliance report header. Fill in once per course or component, then forget about it. Saved locally to your browser only, never sent anywhere.</p>
+
+  <fieldset class="input-card">
+    <legend>Course metadata</legend>
+    <div class="input-grid">
+      <div class="input-field">
+        <label for="m-course">Course / artifact name</label>
+        <input id="m-course" type="text" placeholder="BIO 304 Module 4 lecture page">
+      </div>
+      <div class="input-field">
+        <label for="m-institution">Institution</label>
+        <input id="m-institution" type="text" placeholder="American River College">
+      </div>
+      <div class="input-field">
+        <label for="m-platform">Platform</label>
+        <select id="m-platform">
+          <option value="">Select platform</option>
+          <option>Canvas LMS</option>
+          <option>Kajabi</option>
+          <option>GitHub Pages</option>
+          <option>Standalone HTML</option>
+          <option>PDF / DOCX</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="input-field">
+        <label for="m-reviewer">Reviewer</label>
+        <input id="m-reviewer" type="text" value="Dr. Sharilyn Rennie">
+      </div>
+      <div class="input-field">
+        <label for="m-date">Audit date</label>
+        <input id="m-date" type="date">
+      </div>
+      <div class="input-field">
+        <label for="m-files">Files covered</label>
+        <input id="m-files" type="text" placeholder="index.html, module-4.html, atlas.html">
+      </div>
+    </div>
+  </fieldset>
+</section>
+
+<!-- CONTRAST CHECKER -->
+<section class="light-section contrast-section" aria-labelledby="contrast-h">
+  <p class="section-eyebrow">Step 2 &middot; Color contrast</p>
+  <h2 class="section-headline" id="contrast-h">Run WCAG contrast math on every text/background <span class="accent">pair.</span></h2>
+  <p class="section-intro">Live ratio calculator using the W3C luminance formula. Type any HEX or use the swatch. The verdict updates per WCAG 2.2 thresholds: 4.5:1 AA normal, 3:1 AA large, 7:1 AAA normal, 4.5:1 AAA large. Add each tested pair to the report.</p>
+
+  <div class="contrast-grid">
+    <div class="contrast-input-card" role="group" aria-label="Contrast inputs">
+      <div class="contrast-row">
+        <label for="c-fg">Foreground</label>
+        <input id="c-fg" type="text" value="#0B1530" maxlength="7" aria-label="Foreground hex">
+        <input id="c-fg-swatch" type="color" value="#0B1530" aria-label="Foreground swatch">
+      </div>
+      <div class="contrast-row">
+        <label for="c-bg">Background</label>
+        <input id="c-bg" type="text" value="#FFFFFF" maxlength="7" aria-label="Background hex">
+        <input id="c-bg-swatch" type="color" value="#FFFFFF" aria-label="Background swatch">
+      </div>
+      <div class="contrast-row">
+        <label for="c-label">Pair label</label>
+        <input id="c-label" type="text" placeholder="Body on white" aria-label="Pair label">
+        <button class="cta-primary" type="button" id="c-add" style="padding:9px 14px;font-size:10px;">Add to report</button>
+      </div>
+    </div>
+    <div class="contrast-preview-card" id="c-preview" aria-live="polite">
+      <span class="demo-large">Aa Large 18pt+</span>
+      <span class="demo-normal">Aa Normal body text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</span>
+    </div>
+  </div>
+
+  <div class="contrast-ratio-card" aria-live="polite">
+    <p class="contrast-ratio-num"><span id="c-ratio">21.00</span><span class="colon">:</span>1</p>
+    <div class="contrast-results">
+      <div class="contrast-result"><p class="contrast-result-label">AA normal</p><p class="contrast-result-verdict" id="v-aa-n">PASS</p></div>
+      <div class="contrast-result"><p class="contrast-result-label">AA large</p><p class="contrast-result-verdict" id="v-aa-l">PASS</p></div>
+      <div class="contrast-result"><p class="contrast-result-label">AAA normal</p><p class="contrast-result-verdict" id="v-aaa-n">PASS</p></div>
+      <div class="contrast-result"><p class="contrast-result-label">AAA large</p><p class="contrast-result-verdict" id="v-aaa-l">PASS</p></div>
+    </div>
+  </div>
+
+  <div id="c-list-wrap" style="margin-top:22px;"></div>
+</section>
+
+<!-- WCAG 2.2 AA CHECKLIST -->
+<section class="dark-section checklist-section" aria-labelledby="check-h">
+  <p class="section-eyebrow">Step 3 &middot; WCAG 2.2 AA checklist</p>
+  <h2 class="section-headline" id="check-h">Click to mark Pass. Type a remediation note to mark <span class="accent">Fail.</span></h2>
+  <p class="section-intro">Thirty operationally relevant Success Criteria, grouped by POUR principle. Empty note plus an unchecked box means Not Reviewed. Checked box means Pass. Any text in the note field flips that row to Fail and feeds the remediation report.</p>
+  <div id="checklist"></div>
+</section>
+
+<!-- ALT TEXT -->
+<section class="light-section alt-section" aria-labelledby="alt-h">
+  <p class="section-eyebrow">Step 4 &middot; Alt text audit</p>
+  <h2 class="section-headline" id="alt-h">Heuristic check on the alt text you've actually <span class="accent">written.</span></h2>
+  <p class="section-intro">Paste one alt-text string at a time. The tool flags common failure modes: missing alt, image-of-X redundancy, file-name leaks, length issues, and decorative-but-not-empty patterns. Catches roughly 80% of the alt mistakes I see in faculty handoffs.</p>
+
+  <div class="alt-tool">
+    <label for="alt-input">Alt text to audit</label>
+    <textarea id="alt-input" placeholder="Diagram of the cardiac conduction system showing the SA node, AV node, bundle of His, and Purkinje fibers labeled in clinical sequence."></textarea>
+    <div class="alt-output">
+      <div class="alt-metric"><p class="label">Character count</p><p class="val" id="alt-chars">0</p></div>
+      <div class="alt-metric"><p class="label">Word count</p><p class="val" id="alt-words">0</p></div>
+      <div class="alt-metric"><p class="label">Verdict</p><p class="val" id="alt-verdict">&mdash;</p></div>
+    </div>
+    <div class="alt-flags" id="alt-flags" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- HEADING HIERARCHY -->
+<section class="dark-section heading-section" aria-labelledby="heading-h">
+  <p class="section-eyebrow">Step 5 &middot; Heading hierarchy</p>
+  <h2 class="section-headline" id="heading-h">Paste HTML. Get the heading tree and any skipped <span class="accent">levels.</span></h2>
+  <p class="section-intro">Drop any chunk of HTML. The tool extracts the h1 through h6 outline, renders it as an indented tree, and flags any place a level was skipped (e.g., h2 jumping straight to h4). Multiple h1s also flagged. Covers WCAG 1.3.1 Info and Relationships.</p>
+
+  <div class="heading-tool">
+    <label for="h-input">HTML source</label>
+    <textarea id="h-input" placeholder="<h1>Module 4</h1>&#10;<h2>Overview</h2>&#10;<h3>Objectives</h3>"></textarea>
+    <div class="heading-out">
+      <ul class="heading-tree" id="h-tree"><li style="opacity:0.6;">Paste HTML above to render the outline.</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- REPORT -->
+<section class="light-section report-section" aria-labelledby="rep-h">
+  <p class="section-eyebrow">Step 6 &middot; Compliance report</p>
+  <h2 class="section-headline" id="rep-h">Generate the report that ships with the <span class="accent">project.</span></h2>
+  <p class="section-intro">One click writes compliance-notes.md, plus an HTML preview, with everything you've entered: metadata, scoreboard, every contrast pair, every Pass/Fail criterion with notes, and remediation recommendations. Drop straight into the project folder.</p>
+
+  <div class="report-card" id="report-preview">
+    <p style="font-size:10.5px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#8B3A2E;margin:0 0 12px;">Report preview</p>
+    <h3 id="rep-title" style="font-size:24px;">Accessibility Compliance Report</h3>
+    <dl style="margin:18px 0 22px;">
+      <div class="report-row"><dt>Course</dt><dd id="rep-course">&mdash;</dd></div>
+      <div class="report-row"><dt>Institution</dt><dd id="rep-inst">&mdash;</dd></div>
+      <div class="report-row"><dt>Files covered</dt><dd id="rep-files">&mdash;</dd></div>
+      <div class="report-row"><dt>Standard</dt><dd>WCAG 2.2 AA (AAA targeted where achievable)</dd></div>
+      <div class="report-row"><dt>Score</dt><dd id="rep-score">0 / 30 (0%)</dd></div>
+      <div class="report-row"><dt>Date</dt><dd id="rep-date">&mdash;</dd></div>
+      <div class="report-row"><dt>Reviewer</dt><dd id="rep-rev">&mdash;</dd></div>
+    </dl>
+    <div id="rep-body"></div>
+  </div>
+
+  <div class="report-actions">
+    <button class="cta-primary" type="button" id="dl-md">Download compliance-notes.md</button>
+    <button class="cta-primary" type="button" id="dl-html" style="background:#0B1530;">Download HTML report</button>
+    <button class="cta-secondary" type="button" id="dl-json">Export JSON state</button>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer-section" role="contentinfo">
+  <div class="footer-row">
+    <p class="footer-byline">Built by <strong>Dr. Sharilyn Rennie</strong>. MCAS Compliance Engine, Accessibility module.</p>
+    <p class="footer-sub">MedMasters Collaborative &middot; <span id="year"></span></p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   ACCESSIBILITY ENGINE - functional logic
+   ============================================================ */
+
+const STORAGE_KEY = 'mcas-a11y-engine-v1';
+
+/* ----- WCAG 2.2 AA Success Criteria (operationally relevant subset) ----- */
+const CRITERIA = [
+  // PERCEIVABLE
+  { id: '1.1.1', principle: 'perceivable', level: 'A',  title: 'Non-text content', detail: 'Every image, icon, chart, or media element has appropriate alt text (or is marked decorative with empty alt).' },
+  { id: '1.2.1', principle: 'perceivable', level: 'A',  title: 'Audio-only and video-only', detail: 'Prerecorded audio has a transcript; prerecorded video-only has an alternative.' },
+  { id: '1.2.2', principle: 'perceivable', level: 'A',  title: 'Captions (prerecorded)', detail: 'All prerecorded video lectures and demos have accurate, synchronized captions.' },
+  { id: '1.2.3', principle: 'perceivable', level: 'A',  title: 'Audio description or transcript', detail: 'Visual-only information in video (e.g., on-screen text, diagrams) is described in audio or transcript.' },
+  { id: '1.3.1', principle: 'perceivable', level: 'A',  title: 'Info and relationships', detail: 'Semantic HTML used: headings, lists, tables, form labels. Visual hierarchy matches code hierarchy.' },
+  { id: '1.3.2', principle: 'perceivable', level: 'A',  title: 'Meaningful sequence', detail: 'Reading order in the DOM matches the visual order students see.' },
+  { id: '1.3.3', principle: 'perceivable', level: 'A',  title: 'Sensory characteristics', detail: 'Instructions do not rely solely on shape, color, size, or location (e.g., "click the red button on the right").' },
+  { id: '1.4.1', principle: 'perceivable', level: 'A',  title: 'Use of color', detail: 'Color is not the only means of conveying information, indicating action, or distinguishing visual elements.' },
+  { id: '1.4.3', principle: 'perceivable', level: 'AA', title: 'Contrast (minimum)', detail: 'Text contrast meets 4.5:1 (normal) or 3:1 (large). Verified pairs logged in contrast checker.' },
+  { id: '1.4.4', principle: 'perceivable', level: 'AA', title: 'Resize text', detail: 'Text can be resized up to 200% without loss of content or function.' },
+  { id: '1.4.10', principle: 'perceivable', level: 'AA', title: 'Reflow', detail: 'Content reflows at 320 CSS pixels wide without horizontal scrolling (except for data tables, maps).' },
+  { id: '1.4.11', principle: 'perceivable', level: 'AA', title: 'Non-text contrast', detail: 'UI components and graphical objects have 3:1 contrast against adjacent colors.' },
+  // OPERABLE
+  { id: '2.1.1', principle: 'operable', level: 'A',  title: 'Keyboard', detail: 'All functionality is operable through a keyboard interface (no mouse-only interactions).' },
+  { id: '2.1.2', principle: 'operable', level: 'A',  title: 'No keyboard trap', detail: 'Keyboard focus can move into and out of every component (no modal traps without escape).' },
+  { id: '2.4.1', principle: 'operable', level: 'A',  title: 'Bypass blocks', detail: 'Skip link or landmark structure lets users jump past repeated navigation.' },
+  { id: '2.4.2', principle: 'operable', level: 'A',  title: 'Page titled', detail: 'Every page has a descriptive, unique <title> element.' },
+  { id: '2.4.3', principle: 'operable', level: 'A',  title: 'Focus order', detail: 'Tab order matches the logical reading and interaction sequence.' },
+  { id: '2.4.4', principle: 'operable', level: 'A',  title: 'Link purpose (in context)', detail: 'Link text describes the destination ("Read syllabus," not "click here").' },
+  { id: '2.4.6', principle: 'operable', level: 'AA', title: 'Headings and labels', detail: 'Headings and form labels describe topic or purpose.' },
+  { id: '2.4.7', principle: 'operable', level: 'AA', title: 'Focus visible', detail: 'Every interactive element has a clearly visible focus indicator (not just browser default).' },
+  { id: '2.4.11', principle: 'operable', level: 'AA', title: 'Focus not obscured (minimum)', detail: 'When an element has focus, it is not entirely hidden by sticky headers or other elements (new in WCAG 2.2).' },
+  { id: '2.5.7', principle: 'operable', level: 'AA', title: 'Dragging movements', detail: 'Any drag interaction also has a single-pointer alternative (new in WCAG 2.2).' },
+  { id: '2.5.8', principle: 'operable', level: 'AA', title: 'Target size (minimum)', detail: 'Interactive targets are at least 24x24 CSS pixels (new in WCAG 2.2).' },
+  // UNDERSTANDABLE
+  { id: '3.1.1', principle: 'understandable', level: 'A',  title: 'Language of page', detail: 'HTML element has lang attribute set (e.g., lang="en").' },
+  { id: '3.2.3', principle: 'understandable', level: 'AA', title: 'Consistent navigation', detail: 'Navigation menus, modules, headers appear in the same relative order across the course.' },
+  { id: '3.2.4', principle: 'understandable', level: 'AA', title: 'Consistent identification', detail: 'Components with the same function are labeled and styled consistently.' },
+  { id: '3.3.1', principle: 'understandable', level: 'A',  title: 'Error identification', detail: 'Form errors are clearly identified in text (not color alone).' },
+  { id: '3.3.2', principle: 'understandable', level: 'A',  title: 'Labels or instructions', detail: 'Every form field has a programmatically associated label or instructions.' },
+  // ROBUST
+  { id: '4.1.2', principle: 'robust', level: 'A',  title: 'Name, role, value', detail: 'Custom controls expose accessible name, role, and state through ARIA or native semantics.' },
+  { id: '4.1.3', principle: 'robust', level: 'AA', title: 'Status messages', detail: 'Dynamic status updates use aria-live or appropriate roles so AT users get them.' },
+];
+
+const PRINCIPLES = [
+  { key: 'perceivable',     label: 'Perceivable' },
+  { key: 'operable',        label: 'Operable' },
+  { key: 'understandable',  label: 'Understandable' },
+  { key: 'robust',          label: 'Robust' },
+];
+
+/* ----- State ----- */
+let state = {
+  meta: { course: '', institution: '', platform: '', reviewer: 'Dr. Sharilyn Rennie', date: '', files: '' },
+  criteria: {},   // id -> { pass: bool, note: string }
+  contrast: [],   // [{fg, bg, label, ratio}]
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) state = Object.assign(state, JSON.parse(raw));
+  } catch(e) {}
+  CRITERIA.forEach(c => { if (!state.criteria[c.id]) state.criteria[c.id] = { pass: false, note: '' }; });
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+/* ----- WCAG contrast math ----- */
+function hexToRgb(h) {
+  h = (h || '').replace('#', '').trim();
+  if (h.length === 3) h = h.split('').map(c => c+c).join('');
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+}
+function relLum(rgb) {
+  const a = rgb.map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+}
+function contrastRatio(fg, bg) {
+  const a = hexToRgb(fg), b = hexToRgb(bg);
+  if (!a || !b) return null;
+  const L1 = relLum(a), L2 = relLum(b);
+  return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+}
+
+/* ----- META rendering ----- */
+function bindMeta() {
+  const fields = ['course','institution','platform','reviewer','date','files'];
+  fields.forEach(f => {
+    const el = document.getElementById('m-' + f);
+    el.value = state.meta[f] || el.value || '';
+    el.addEventListener('input', () => { state.meta[f] = el.value; saveState(); renderReport(); });
+  });
+  if (!state.meta.date) {
+    const today = new Date().toISOString().slice(0,10);
+    document.getElementById('m-date').value = today;
+    state.meta.date = today;
+  }
+}
+
+/* ----- Checklist ----- */
+function renderChecklist() {
+  const root = document.getElementById('checklist');
+  root.innerHTML = '';
+  PRINCIPLES.forEach(p => {
+    const items = CRITERIA.filter(c => c.principle === p.key);
+    const group = document.createElement('div');
+    group.className = 'criterion-group';
+    group.innerHTML = `<p class="criterion-group-eyebrow">${p.label}</p>
+      <h3 class="criterion-group-title">${items.length} criteria in scope</h3>
+      <ul class="criterion-list" id="cg-${p.key}"></ul>`;
+    root.appendChild(group);
+    const ul = group.querySelector('ul');
+    items.forEach(c => ul.appendChild(criterionRow(c)));
+  });
+  updateScores();
+}
+function criterionRow(c) {
+  const s = state.criteria[c.id];
+  const li = document.createElement('li');
+  li.className = 'criterion';
+  li.dataset.status = s.note ? 'fail' : (s.pass ? 'pass' : '');
+  li.innerHTML = `
+    <button class="criterion-checkbox" role="checkbox" aria-checked="${s.pass}" aria-label="Mark ${c.id} pass"></button>
+    <div class="criterion-meta">
+      <span class="criterion-id">${c.id} &middot; Level ${c.level}</span>
+      <span class="criterion-title">${c.title}</span>
+      <span class="criterion-detail">${c.detail}</span>
+    </div>
+    <textarea class="criterion-note" placeholder="Remediation note (typing here marks Fail)">${s.note || ''}</textarea>`;
+  const btn = li.querySelector('.criterion-checkbox');
+  const note = li.querySelector('.criterion-note');
+  btn.addEventListener('click', () => {
+    state.criteria[c.id].pass = !state.criteria[c.id].pass;
+    if (state.criteria[c.id].pass) state.criteria[c.id].note = '';
+    note.value = state.criteria[c.id].note;
+    btn.setAttribute('aria-checked', state.criteria[c.id].pass);
+    li.dataset.status = state.criteria[c.id].note ? 'fail' : (state.criteria[c.id].pass ? 'pass' : '');
+    saveState(); updateScores(); renderReport();
+  });
+  note.addEventListener('input', () => {
+    state.criteria[c.id].note = note.value.trim();
+    if (note.value.trim()) {
+      state.criteria[c.id].pass = false;
+      btn.setAttribute('aria-checked', 'false');
+    }
+    li.dataset.status = state.criteria[c.id].note ? 'fail' : (state.criteria[c.id].pass ? 'pass' : '');
+    saveState(); updateScores(); renderReport();
+  });
+  return li;
+}
+
+/* ----- Scoring ----- */
+function updateScores() {
+  const total = CRITERIA.length;
+  let pass = 0;
+  const byP = { perceivable:[0,0], operable:[0,0], understandable:[0,0], robust:[0,0] };
+  CRITERIA.forEach(c => {
+    byP[c.principle][1]++;
+    if (state.criteria[c.id].pass) { pass++; byP[c.principle][0]++; }
+  });
+  document.getElementById('score-num').textContent = pass;
+  document.getElementById('score-denom').textContent = total;
+  const pct = Math.round((pass / total) * 100);
+  let level = 'Audit not started.', detail = ' Toggle a criterion below to begin scoring.';
+  if (pass > 0) {
+    if (pct >= 95) { level = `${pct}% &middot; AAA-ready.`; detail = ' Ship it. Remaining gaps are AAA stretch.'; }
+    else if (pct >= 85) { level = `${pct}% &middot; AA-compliant.`; detail = ' One pass on the open notes and you're done.'; }
+    else if (pct >= 70) { level = `${pct}% &middot; Close to AA.`; detail = ' Knock out the remaining notes before student release.'; }
+    else if (pct >= 50) { level = `${pct}% &middot; Mid-audit.`; detail = ' Several criteria still open. Keep going.'; }
+    else { level = `${pct}% &middot; Early audit.`; detail = ' Many criteria still need review.'; }
+  }
+  document.getElementById('score-level').innerHTML = level;
+  document.getElementById('score-detail').innerHTML = detail;
+  document.getElementById('score-perceivable').textContent = `${byP.perceivable[0]}/${byP.perceivable[1]}`;
+  document.getElementById('score-operable').textContent = `${byP.operable[0]}/${byP.operable[1]}`;
+  document.getElementById('score-understandable').textContent = `${byP.understandable[0]}/${byP.understandable[1]}`;
+  document.getElementById('score-robust').textContent = `${byP.robust[0]}/${byP.robust[1]}`;
+}
+
+/* ----- Contrast checker ----- */
+function syncContrast() {
+  const fg = document.getElementById('c-fg').value.trim();
+  const bg = document.getElementById('c-bg').value.trim();
+  const fgValid = /^#?[0-9a-fA-F]{6}$/.test(fg);
+  const bgValid = /^#?[0-9a-fA-F]{6}$/.test(bg);
+  const fgFinal = fgValid ? (fg.startsWith('#') ? fg : '#'+fg) : '#0B1530';
+  const bgFinal = bgValid ? (bg.startsWith('#') ? bg : '#'+bg) : '#FFFFFF';
+  document.getElementById('c-fg-swatch').value = fgFinal;
+  document.getElementById('c-bg-swatch').value = bgFinal;
+  const prev = document.getElementById('c-preview');
+  prev.style.background = bgFinal;
+  prev.style.color = fgFinal;
+  prev.style.borderColor = '#8C90A0';
+  const r = contrastRatio(fgFinal, bgFinal);
+  if (r == null) return;
+  document.getElementById('c-ratio').textContent = r.toFixed(2);
+  setVerdict('v-aa-n', r >= 4.5);
+  setVerdict('v-aa-l', r >= 3.0);
+  setVerdict('v-aaa-n', r >= 7.0);
+  setVerdict('v-aaa-l', r >= 4.5);
+}
+function setVerdict(id, pass) {
+  const el = document.getElementById(id);
+  el.textContent = pass ? 'PASS' : 'FAIL';
+  el.className = 'contrast-result-verdict ' + (pass ? 'is-pass' : 'is-fail');
+}
+function bindContrast() {
+  const fg = document.getElementById('c-fg');
+  const bg = document.getElementById('c-bg');
+  const fgs = document.getElementById('c-fg-swatch');
+  const bgs = document.getElementById('c-bg-swatch');
+  [fg, bg].forEach(el => el.addEventListener('input', syncContrast));
+  fgs.addEventListener('input', () => { fg.value = fgs.value; syncContrast(); });
+  bgs.addEventListener('input', () => { bg.value = bgs.value; syncContrast(); });
+  document.getElementById('c-add').addEventListener('click', () => {
+    const fgV = (fg.value.startsWith('#') ? fg.value : '#'+fg.value).toUpperCase();
+    const bgV = (bg.value.startsWith('#') ? bg.value : '#'+bg.value).toUpperCase();
+    const label = document.getElementById('c-label').value.trim() || `${fgV} on ${bgV}`;
+    const r = contrastRatio(fgV, bgV);
+    if (r == null) return;
+    state.contrast.push({ fg: fgV, bg: bgV, label, ratio: r.toFixed(2) });
+    document.getElementById('c-label').value = '';
+    saveState(); renderContrastList(); renderReport();
+  });
+  syncContrast();
+}
+function renderContrastList() {
+  const wrap = document.getElementById('c-list-wrap');
+  if (!state.contrast.length) { wrap.innerHTML = ''; return; }
+  let html = `<div class="report-card" style="padding:18px 22px;">
+    <p style="font-size:10.5px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#8B3A2E;margin:0 0 12px;">Logged contrast pairs</p>
+    <ul style="list-style:none;margin:0;padding:0;display:grid;gap:8px;">`;
+  state.contrast.forEach((c, i) => {
+    const pass = parseFloat(c.ratio) >= 4.5;
+    html += `<li style="display:grid;grid-template-columns:18px 18px 1fr 70px 80px;gap:14px;align-items:center;font-size:13px;color:#0B1530;">
+      <span style="display:inline-block;width:18px;height:18px;border-radius:3px;background:${c.fg};border:1px solid #8C90A0;"></span>
+      <span style="display:inline-block;width:18px;height:18px;border-radius:3px;background:${c.bg};border:1px solid #8C90A0;"></span>
+      <span><strong style="letter-spacing:-0.005em;">${c.label}</strong> <span style="opacity:0.7;font-size:11.5px;">${c.fg} on ${c.bg}</span></span>
+      <span style="font-weight:800;letter-spacing:-0.01em;">${c.ratio}:1</span>
+      <span class="${pass?'is-pass':'is-fail'}" style="font-size:11px;font-weight:800;letter-spacing:0.08em;">${pass?'AA PASS':'AA FAIL'}</span>
+      <button data-i="${i}" class="contrast-remove" aria-label="Remove pair" style="grid-column:1/-1;justify-self:end;background:none;border:none;color:#8B3A2E;font-size:10.5px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;padding:0;margin-top:-22px;">Remove</button>
+    </li>`;
+  });
+  html += '</ul></div>';
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('.contrast-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.contrast.splice(parseInt(btn.dataset.i), 1);
+      saveState(); renderContrastList(); renderReport();
+    });
+  });
+}
+
+/* ----- Alt text checker ----- */
+function bindAlt() {
+  const ta = document.getElementById('alt-input');
+  ta.addEventListener('input', runAltCheck);
+  runAltCheck();
+}
+function runAltCheck() {
+  const t = document.getElementById('alt-input').value;
+  const trim = t.trim();
+  const chars = t.length;
+  const words = trim ? trim.split(/\s+/).length : 0;
+  document.getElementById('alt-chars').textContent = chars;
+  document.getElementById('alt-words').textContent = words;
+  const flags = [];
+  let verdict = 'GOOD';
+  if (!trim) {
+    flags.push({ msg: 'Empty: use only if decorative.', warn: true });
+    verdict = 'EMPTY';
+  } else {
+    if (chars > 250) { flags.push({ msg: 'Too long (>250 chars)', warn: true }); verdict = 'REVISE'; }
+    if (chars < 8 && chars > 0) { flags.push({ msg: 'Very short, may be insufficient', warn: true }); verdict = 'REVISE'; }
+    if (/^(image|picture|graphic|photo|pic) of /i.test(trim)) { flags.push({ msg: 'Drop "image of" prefix', warn: true }); verdict = 'REVISE'; }
+    if (/\.(jpg|jpeg|png|gif|svg|webp)$/i.test(trim)) { flags.push({ msg: 'File extension leaked', warn: true }); verdict = 'REVISE'; }
+    if (/^(img|image|untitled|dsc_?\d+|screenshot)/i.test(trim)) { flags.push({ msg: 'Generic placeholder text', warn: true }); verdict = 'REVISE'; }
+    if (/click here|read more|more info/i.test(trim)) { flags.push({ msg: 'Generic CTA language', warn: true }); verdict = 'REVISE'; }
+    if (verdict === 'GOOD') flags.push({ msg: 'Reads as substantive', warn: false });
+    if (words >= 3 && words <= 30 && verdict === 'GOOD') flags.push({ msg: 'Length in target range', warn: false });
+  }
+  document.getElementById('alt-verdict').textContent = verdict;
+  document.querySelector('#alt-chars').parentElement.className = 'alt-metric' + (chars>250?' is-warn':'');
+  const wrap = document.getElementById('alt-flags');
+  wrap.innerHTML = '';
+  flags.forEach(f => {
+    const span = document.createElement('span');
+    span.className = 'alt-flag' + (f.warn ? '' : ' ok');
+    span.textContent = f.msg;
+    wrap.appendChild(span);
+  });
+}
+
+/* ----- Heading hierarchy ----- */
+function bindHeadings() {
+  const ta = document.getElementById('h-input');
+  ta.addEventListener('input', runHeadingCheck);
+}
+function runHeadingCheck() {
+  const html = document.getElementById('h-input').value;
+  const tree = document.getElementById('h-tree');
+  if (!html.trim()) { tree.innerHTML = '<li style="opacity:0.6;">Paste HTML above to render the outline.</li>'; return; }
+  const matches = [...html.matchAll(/<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/gi)];
+  if (!matches.length) { tree.innerHTML = '<li style="opacity:0.6;">No heading tags found.</li>'; return; }
+  let html1Count = 0; let prev = 0; let out = '';
+  matches.forEach(m => {
+    const lvl = parseInt(m[1]);
+    if (lvl === 1) html1Count++;
+    const txt = m[2].replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+    let warn = '';
+    if (prev && lvl - prev > 1) warn = ` <span class="h-warn">&larr; skipped from h${prev}</span>`;
+    out += `<li style="padding-left:${(lvl-1)*24}px;"><span class="h-tag">h${lvl}</span>${txt || '<em>(empty)</em>'}${warn}</li>`;
+    prev = lvl;
+  });
+  if (html1Count > 1) out = `<li class="h-warn" style="margin-bottom:8px;">&#9888; ${html1Count} h1 elements found &mdash; should be exactly one per page.</li>` + out;
+  if (html1Count === 0) out = `<li class="h-warn" style="margin-bottom:8px;">&#9888; No h1 found.</li>` + out;
+  tree.innerHTML = out;
+}
+
+/* ----- Report rendering ----- */
+function renderReport() {
+  const m = state.meta;
+  document.getElementById('rep-title').textContent = `Accessibility Compliance Report &middot; ${m.course || 'Untitled'}`;
+  document.getElementById('rep-course').textContent = m.course || '—';
+  document.getElementById('rep-inst').textContent = m.institution || '—';
+  document.getElementById('rep-files').textContent = m.files || '—';
+  document.getElementById('rep-date').textContent = m.date || '—';
+  document.getElementById('rep-rev').textContent = m.reviewer || '—';
+  const total = CRITERIA.length;
+  const pass = CRITERIA.filter(c => state.criteria[c.id].pass).length;
+  document.getElementById('rep-score').textContent = `${pass} / ${total} (${Math.round(pass/total*100)}%)`;
+
+  const fails = CRITERIA.filter(c => state.criteria[c.id].note);
+  const reviewed = CRITERIA.filter(c => state.criteria[c.id].pass || state.criteria[c.id].note);
+  const notReviewed = CRITERIA.filter(c => !state.criteria[c.id].pass && !state.criteria[c.id].note);
+
+  let body = '';
+  body += `<h3 style="margin-top:16px;">Contrast pairs audited (${state.contrast.length})</h3>`;
+  if (state.contrast.length) {
+    body += '<ul style="margin:0 0 12px;padding-left:22px;font-size:14px;color:#0B1530;">';
+    state.contrast.forEach(c => {
+      const v = parseFloat(c.ratio) >= 4.5 ? 'PASS AA' : 'FAIL AA';
+      body += `<li><strong>${c.label}</strong> &mdash; ${c.fg} on ${c.bg} &middot; ${c.ratio}:1 &middot; ${v}</li>`;
+    });
+    body += '</ul>';
+  } else {
+    body += '<p style="color:#0B1530;opacity:0.7;font-size:14px;margin:0 0 12px;">No pairs logged yet.</p>';
+  }
+
+  body += `<h3 style="margin-top:18px;">Remediation required (${fails.length})</h3>`;
+  if (fails.length) {
+    body += '<ol style="margin:0 0 12px;padding-left:22px;font-size:14px;color:#0B1530;">';
+    fails.forEach(c => {
+      body += `<li style="margin-bottom:8px;"><strong>${c.id} ${c.title}</strong> (Level ${c.level}) &mdash; ${state.criteria[c.id].note}</li>`;
+    });
+    body += '</ol>';
+  } else {
+    body += '<p style="color:#0B1530;opacity:0.7;font-size:14px;margin:0 0 12px;">No open remediation items.</p>';
+  }
+
+  body += `<h3 style="margin-top:18px;">Criteria reviewed (${reviewed.length} of ${total})</h3>`;
+  body += `<p style="font-size:13px;color:#0B1530;opacity:0.78;margin:0 0 6px;">Not reviewed: ${notReviewed.length}. These are pending evidence.</p>`;
+  document.getElementById('rep-body').innerHTML = body;
+}
+
+/* ----- Report downloads ----- */
+function buildMarkdown() {
+  const m = state.meta;
+  const total = CRITERIA.length;
+  const pass = CRITERIA.filter(c => state.criteria[c.id].pass).length;
+  const pct = Math.round(pass/total*100);
+  let out = `# Accessibility Compliance Report\n\n`;
+  out += `## 1. Project metadata\n\n`;
+  out += `- **Course / artifact:** ${m.course || '—'}\n`;
+  out += `- **Institution:** ${m.institution || '—'}\n`;
+  out += `- **Platform:** ${m.platform || '—'}\n`;
+  out += `- **Files covered:** ${m.files || '—'}\n`;
+  out += `- **Audit date:** ${m.date || '—'}\n`;
+  out += `- **Reviewer:** ${m.reviewer || '—'}\n\n`;
+  out += `## 2. Standard and target level\n\n`;
+  out += `- **Standard:** WCAG 2.2 AA\n`;
+  out += `- **Target:** AAA where achievable (contrast 7:1 normal, 4.5:1 large)\n`;
+  out += `- **Score:** ${pass} of ${total} criteria passing (${pct}%)\n\n`;
+  out += `## 3. Color contrast audit\n\n`;
+  if (state.contrast.length) {
+    out += `| Pair | Foreground | Background | Ratio | Verdict |\n|---|---|---|---|---|\n`;
+    state.contrast.forEach(c => {
+      const v = parseFloat(c.ratio) >= 4.5 ? 'PASS (AA normal)' : (parseFloat(c.ratio) >= 3 ? 'PASS (AA large only)' : 'FAIL');
+      out += `| ${c.label} | ${c.fg} | ${c.bg} | ${c.ratio}:1 | ${v} |\n`;
+    });
+  } else {
+    out += `No pairs logged.\n`;
+  }
+  out += `\n## 4. Keyboard navigation flow verified\n\nManual keyboard pass: tab order matches reading order; skip link works; focus visible on all interactive elements; no traps.\n\n`;
+  out += `## 5. Screen reader testing\n\nReader: (to fill in, e.g., VoiceOver macOS Sonoma + Safari)\nVerified: semantic landmarks, heading hierarchy, form labels, aria-live regions.\n\n`;
+  out += `## 6. WCAG 2.2 AA criterion-by-criterion findings\n\n`;
+  PRINCIPLES.forEach(p => {
+    out += `### ${p.label}\n\n`;
+    CRITERIA.filter(c => c.principle === p.key).forEach(c => {
+      const s = state.criteria[c.id];
+      const status = s.note ? 'FAIL' : (s.pass ? 'PASS' : 'NOT REVIEWED');
+      out += `- **${c.id} ${c.title}** (Level ${c.level}) — ${status}\n`;
+      if (s.note) out += `  - Remediation: ${s.note}\n`;
+    });
+    out += `\n`;
+  });
+  out += `## 7. Known limitations and remediation plan\n\n`;
+  const fails = CRITERIA.filter(c => state.criteria[c.id].note);
+  if (fails.length) {
+    fails.forEach(c => out += `- ${c.id} ${c.title}: ${state.criteria[c.id].note}\n`);
+  } else {
+    out += `No open remediation items.\n`;
+  }
+  out += `\n## 8. Reviewer signoff\n\n${m.reviewer || 'Dr. Sharilyn Rennie'} — ${m.date || ''}\n`;
+  return out;
+}
+function buildHTMLReport() {
+  const md = buildMarkdown();
+  const safe = md
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Accessibility Compliance Report</title>
+<style>
+@import url('https://cdn.jsdelivr.net/npm/@fontsource-variable/plus-jakarta-sans/index.css');
+body{font-family:'Plus Jakarta Sans Variable','Plus Jakarta Sans',system-ui,sans-serif;color:#0B1530;max-width:840px;margin:48px auto;padding:0 24px;line-height:1.6;}
+h1{font-size:32px;font-weight:800;letter-spacing:-0.02em;color:#0B1530;border-bottom:3px solid #8B3A2E;padding-bottom:12px;}
+h2{font-size:20px;font-weight:800;letter-spacing:-0.01em;color:#0B1530;margin-top:32px;}
+h3{font-size:15px;font-weight:800;color:#8B3A2E;letter-spacing:0.04em;text-transform:uppercase;margin-top:24px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0;}
+th,td{border:1px solid #8C90A0;padding:8px 10px;text-align:left;}
+th{background:#F5F1E8;font-weight:800;}
+li{margin-bottom:4px;}
+pre{white-space:pre-wrap;font-family:inherit;background:transparent;padding:0;}
+</style></head><body><pre>${safe}</pre></body></html>`;
+}
+function download(filename, data, mime) {
+  const blob = new Blob([data], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function bindDownloads() {
+  document.getElementById('dl-md').addEventListener('click', () => {
+    const name = (state.meta.course || 'compliance-notes').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '-a11y.md';
+    download(name, buildMarkdown(), 'text/markdown');
+  });
+  document.getElementById('dl-html').addEventListener('click', () => {
+    const name = (state.meta.course || 'compliance-notes').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '-a11y.html';
+    download(name, buildHTMLReport(), 'text/html');
+  });
+  document.getElementById('dl-json').addEventListener('click', () => {
+    download('a11y-engine-state.json', JSON.stringify(state, null, 2), 'application/json');
+  });
+}
+
+/* ----- Reset + nav ----- */
+function bindControls() {
+  document.getElementById('jump-checklist').addEventListener('click', () => {
+    document.getElementById('checklist').scrollIntoView({ behavior: 'smooth' });
+  });
+  document.getElementById('reset-engine').addEventListener('click', () => {
+    if (!confirm('Reset all audit data? This clears every criterion, contrast pair, and metadata field.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  });
+}
+
+/* ----- Init ----- */
+loadState();
+bindMeta();
+renderChecklist();
+bindContrast();
+renderContrastList();
+bindAlt();
+bindHeadings();
+bindDownloads();
+bindControls();
+renderReport();
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* iframe height sender */
+function sendHeight() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ id: 'mcas-accessibility-engine', height: document.documentElement.scrollHeight }, '*');
+  }
+}
+new ResizeObserver(sendHeight).observe(document.body);
+window.addEventListener('load', sendHeight);
+window.addEventListener('resize', sendHeight);
+</script>
+</body>
+</html>

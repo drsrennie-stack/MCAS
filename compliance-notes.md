@@ -1,7 +1,7 @@
 # MCAS Compliance Notes
 
 **Project:** MCAS (MedMasters Course Architecture System)
-**Files covered:** `index.html`, `cvc-oei-rubric-audit.html` (v1.0 foundational framework)
+**Files covered:** `index.html`, `cvc-oei-rubric-audit.html`, `faculty-branding-app.html`, `master-course-builder.html` (v1.0 foundational framework)
 **Date:** 2026-05-29
 **Reviewer:** Dr. Sharilyn Rennie
 **WCAG version / target:** 2.2, AA floor across the board, AAA on body text where achievable.
@@ -104,5 +104,81 @@ All internal links use `target="_top"`. External links (when added) must use `ta
 ## 10. Sign-off
 
 Both v1 files meet the global WCAG 2.2 AA floor. Body-text contrast clears AAA. Brand rules (Plus Jakarta only, no italics, no em dashes, byline rule, no student PII) are observed. Ready for use as the inheritance source for MCAS generators. Re-audit required before any v2 commercial release.
+
+Reviewer: Dr. Sharilyn Rennie
+
+---
+
+# Faculty Brand Sheet Builder
+
+**Files covered:** `faculty-branding-app.html` (v1.0). Exports (`*.brand.html`, `*.brand.json`, PDF via print).
+**Date:** 2026-05-29
+**Reviewer:** Dr. Sharilyn Rennie
+**WCAG version / target:** 2.2 AA floor on the builder UI and on the exported brand-document scaffold. AAA on body text where achievable.
+
+## 1. Scope
+
+The builder is an MCAS-internal tool. Its chrome (header lockup, MedMasters logo, layout, colors) inherits the PRIMARY palette and the MCAS index.html component vocabulary verbatim. The brand sheet content the faculty member enters is their own (palette, fonts, voice, rules). The PRIMARY palette is preloaded as a recommended starting baseline that any faculty can overwrite. Reset returns the form to that baseline.
+
+## 2. Color contrast audit (builder UI)
+
+The builder UI uses the same color tokens already audited in section 2 above. The single high-risk pair (white on gold, 2.90:1) is not used; accent buttons use navy-deep text on gold (5.13:1).
+
+For exported brand documents: the contrast of the faculty's chosen palette is the faculty's responsibility. The builder does not currently warn on contrast failures. This is a known limitation logged below.
+
+## 3. Keyboard navigation flow
+
+Verified in source. Tab order:
+
+1. Skip link (visible on focus, jumps to `#main-content`).
+2. Toolbar actions: Import JSON, Export JSON, Export HTML doc, Export PDF, Send to MCAS generator, Reset.
+3. Side nav links in document order (sections 01 to 10, then Live Preview).
+4. Form fields in document order: section 01 inputs, then 02 textareas, 03 checkboxes, and so on through 10.
+5. Chip inputs accept Enter to add, Backspace on empty to remove the last chip, comma as a separator.
+6. Reset modal: Cancel and Reset buttons reachable; Escape closes the modal.
+
+Focus indicator is a 3px brushed-gold outline with 2px offset on every focusable element via `:focus-visible`. No `outline: none` anywhere.
+
+## 4. Screen reader expectations
+
+Verified at the markup level (live SR test recommended before external distribution):
+
+- Single `<h1>` per page. Heading hierarchy descends through `<h2>` section titles and `<h3>` subsection titles.
+- Semantic landmarks: `<header role="banner">`, `<nav aria-label="Section navigation">`, `<main id="main-content">`, `<footer>`, and a `<div role="dialog" aria-modal="true">` reset confirmation.
+- Every form input has a real `<label for="...">` matched to `id`.
+- The status pill is `aria-live="polite"` so save state changes are announced.
+- The toast region is `role="status" aria-live="polite"`.
+- Chip remove buttons carry `aria-label="Remove <chip text>"`.
+- Sidenav links carry `aria-current="true"` on the currently visible section via IntersectionObserver.
+
+## 5. Motion and sensory
+
+- `@media (prefers-reduced-motion: reduce)` collapses animation and transition durations to 0.01ms.
+- No autoplay, no parallax, no flashing content.
+- State is never conveyed by color alone. The status pill includes a textual label ("Saved 12:34", "Saving...", "Save failed"). The dot color is supplementary.
+
+## 6. iframe-ready and link behavior
+
+The builder bakes the height-sender script before `</body>` (id `mcas-faculty-branding`). The exported brand-document HTML bakes its own height-sender (id `mcas-brand-sheet`). Both use ResizeObserver plus load and resize listeners.
+
+The builder has no external links. Where future versions add external links, they must use `target="_blank" rel="noopener"`. Internal links use `target="_top"` per global instructions.
+
+## 7. Known limitations
+
+- The builder does not yet warn when a faculty member's chosen palette fails AA contrast. Add a live contrast audit in v2.
+- PDF export uses the browser's native print dialog. Headless or automated PDF generation is not yet wired.
+- "Send to MCAS generator" supports three transports: window.opener postMessage, BroadcastChannel ("mcas-brand"), and clipboard fallback. The generator's import side must listen for `{type: 'mcas:brand', data}` postMessage or read the embedded `<script id="mcas-brand-data">` JSON block from an uploaded brand HTML document.
+- Live SR testing should be repeated with NVDA + Firefox and VoiceOver + Safari before external faculty distribution.
+- The builder uses `localStorage` under the key `mcas.facultyBrand.v1`. Schema migrations for v2+ defensively merge against current DEFAULTS (already implemented for v1).
+
+## 8. Privacy
+
+- All input stays in `localStorage` on the faculty member's device. Nothing is transmitted off-machine by the app.
+- Faculty credentials are stored, but the byline rule strips them from student-facing artifacts by default.
+- The builder does not handle student data. The student privacy rule in CLAUDE.md does not apply directly here, and the builder is consistent with it: no student PII is requested.
+
+## 9. Sign-off (Faculty Brand Sheet Builder)
+
+Builder UI and default exported brand-document scaffold meet the global WCAG 2.2 AA floor. Faculty-customized palettes are out of scope for AA enforcement until the contrast-audit feature lands in v2.
 
 Reviewer: Dr. Sharilyn Rennie

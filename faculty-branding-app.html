@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faculty Brand Sheet Builder | MCAS</title>
+<meta name="description" content="MCAS Faculty Brand Sheet Builder. Capture identity, pedagogy, voice, palette, typography, components, accessibility, and AI rules. Live preview. Exports HTML, PDF, JSON. Feeds the MCAS generator.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   MCAS DESIGN TOKENS (inherited verbatim from index.html)
+   ============================================================ */
+:root {
+  --navy: #1E3D4C;
+  --navy-deep: #142a36;
+  --navy-tint: #EDF1F3;
+  --gold: #B8924A;
+  --gold-deep: #9a7a3e;
+  --terra: #C2734D;
+  --terra-dark: #A0522D;
+  --white: #FFFFFF;
+  --off-white: #FAFAF9;
+  --gray-300: #D1D5DB;
+  --gray-500: #6B7280;
+  --gray-700: #374151;
+
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-eyebrow: 'DM Sans', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-italic: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --shadow-rest: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-hover: 0 8px 16px rgba(0,0,0,0.10);
+  --shadow-focus: 0 0 0 3px rgba(184, 146, 74, 0.45);
+
+  --t-fast: 150ms ease;
+  --t-base: 200ms ease;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --max-w: 1240px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--off-white);
+  color: var(--navy);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Skip link */
+.skip-link { position: absolute; left: -9999px; top: 0; background: var(--navy); color: var(--white); padding: 12px 18px; z-index: 1000; text-decoration: none; font-weight: 600; }
+.skip-link:focus { left: 16px; top: 16px; outline: 3px solid var(--gold); outline-offset: 2px; }
+
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+
+/* ============================================================
+   HEADER LOCKUP
+   ============================================================ */
+.mcas-header { background: var(--white); border-bottom: 1px solid var(--navy-tint); padding: 28px 24px 24px; }
+.mcas-header__inner { max-width: var(--max-w); margin: 0 auto; display: flex; gap: 28px; align-items: flex-start; flex-wrap: wrap; }
+.mcas-logo { flex: 0 0 auto; width: 260px; height: auto; }
+.mcas-logo svg { display: block; width: 100%; height: auto; }
+.mcas-header__text { flex: 1 1 320px; min-width: 0; }
+@media (max-width: 720px) { .mcas-header__inner { flex-direction: column; gap: 16px; } .mcas-logo { width: 200px; } }
+.mcas-eyebrow { font-family: var(--font-eyebrow); font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--terra-dark); margin: 0 0 10px; }
+.mcas-h1 { font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: clamp(26px, 3.6vw, 38px); line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.01em; }
+.mcas-subhead { font-family: var(--font-display); font-weight: 600; color: var(--terra-dark); font-size: clamp(16px, 1.8vw, 20px); margin: 0 0 12px; }
+.mcas-usage { font-family: var(--font-italic); color: var(--gray-700); font-size: 14px; margin: 0; max-width: 78ch; }
+
+/* ============================================================
+   TOOLBAR (sticky)
+   ============================================================ */
+.toolbar { position: sticky; top: 0; z-index: 50; background: var(--white); border-bottom: 1px solid var(--navy-tint); box-shadow: var(--shadow-rest); }
+.toolbar__inner { max-width: var(--max-w); margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.toolbar__status { display: flex; align-items: center; gap: 10px; font-family: var(--font-eyebrow); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-700); }
+.status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--navy-tint); color: var(--navy); border-radius: 999px; font-weight: 600; }
+.status-pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--navy); }
+.status-pill[data-state="saving"]::before { background: var(--gold); }
+.status-pill[data-state="error"]::before { background: var(--terra-dark); }
+.toolbar__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+main { max-width: var(--max-w); margin: 0 auto; padding: 28px 24px 64px; display: grid; grid-template-columns: 240px 1fr; gap: 32px; align-items: start; }
+@media (max-width: 960px) { main { grid-template-columns: 1fr; } .sidenav { position: static !important; max-height: none !important; } }
+
+.sidenav { position: sticky; top: 72px; background: var(--white); border: 1px solid var(--navy-tint); border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-rest); max-height: calc(100vh - 96px); overflow-y: auto; }
+.sidenav h2 { font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--terra-dark); margin: 0 0 10px; font-weight: 600; }
+.sidenav ol { list-style: none; margin: 0; padding: 0; counter-reset: nav; }
+.sidenav li { counter-increment: nav; margin: 0; }
+.sidenav a { display: block; padding: 7px 10px 7px 32px; color: var(--navy); text-decoration: none; font-size: 13px; border-radius: var(--radius-sm); position: relative; transition: background var(--t-fast); }
+.sidenav a::before { content: counter(nav, decimal-leading-zero); position: absolute; left: 8px; top: 7px; font-family: var(--font-mono); font-size: 11px; color: var(--gray-500); }
+.sidenav a:hover { background: var(--navy-tint); }
+.sidenav a[aria-current="true"] { background: var(--navy-tint); color: var(--navy); font-weight: 600; }
+.sidenav a[aria-current="true"]::before { color: var(--navy); }
+
+/* Form sections */
+.builder { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.section-card { background: var(--white); border: 1px solid var(--navy-tint); border-radius: var(--radius-md); padding: 22px 24px; box-shadow: var(--shadow-rest); scroll-margin-top: 80px; }
+.section-card__eyebrow { font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--terra-dark); margin: 0 0 4px; font-weight: 500; }
+.section-card__title { font-family: var(--font-display); font-weight: 700; color: var(--navy); font-size: 22px; margin: 0 0 4px; letter-spacing: -0.005em; }
+.section-card__note { font-family: var(--font-italic); color: var(--gray-700); font-size: 13px; margin: 0 0 18px; }
+
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.form-grid--wide { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field--span2 { grid-column: span 2; }
+@media (max-width: 640px) { .field--span2 { grid-column: 1; } }
+.field label { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--navy); }
+.field__hint { font-family: var(--font-italic); font-size: 12px; color: var(--gray-500); margin: 0; }
+.input, .select, .textarea {
+  font-family: var(--font-body); font-size: 14px; color: var(--navy); background: var(--white);
+  border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 9px 12px; width: 100%;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.input:hover, .select:hover, .textarea:hover { border-color: var(--navy); }
+.input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--gold); box-shadow: var(--shadow-focus); }
+.textarea { min-height: 84px; resize: vertical; }
+.select { appearance: none; -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--navy) 50%), linear-gradient(135deg, var(--navy) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; padding-right: 32px;
+}
+.input--color { padding: 4px; height: 38px; cursor: pointer; }
+
+.check-group { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.check-row { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--navy); padding: 6px 10px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); cursor: pointer; transition: border-color var(--t-fast), background var(--t-fast); }
+.check-row:hover { border-color: var(--navy); }
+.check-row input { width: 16px; height: 16px; accent-color: var(--navy); cursor: pointer; }
+.check-row input:checked + span { font-weight: 600; }
+.check-row:has(input:checked) { border-color: var(--gold); background: rgba(184,146,74,0.06); }
+
+.color-row { display: grid; grid-template-columns: 56px 1fr 1fr; gap: 8px; align-items: center; }
+.color-row .swatch-mini { width: 56px; height: 36px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); }
+.token-name { font-family: var(--font-mono); font-size: 12px; color: var(--gray-700); }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font-family: var(--font-display); font-weight: 600; font-size: 13px;
+  padding: 8px 14px; border-radius: var(--radius-sm); border: 1px solid transparent;
+  cursor: pointer; text-decoration: none; line-height: 1.2;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast), transform var(--t-fast);
+}
+.btn:active { transform: translateY(1px); }
+.btn--primary { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.btn--primary:hover { background: var(--navy-deep); border-color: var(--navy-deep); }
+.btn--secondary { background: var(--white); color: var(--navy); border-color: var(--navy); }
+.btn--secondary:hover { background: var(--navy-tint); }
+.btn--accent { background: var(--gold); color: var(--navy-deep); border-color: var(--gold); }
+.btn--accent:hover { background: var(--gold); color: var(--navy-deep); border-color: var(--navy-deep); box-shadow: var(--shadow-hover); }
+/* Terra primary CTA. White on terra-dark = 5.52:1 (AA normal). */
+.btn--terra { background: var(--terra-dark); color: var(--white); border-color: var(--terra-dark); }
+.btn--terra:hover { background: #8a4525; border-color: #8a4525; box-shadow: var(--shadow-hover); }
+.btn--ghost { background: transparent; color: var(--navy); border-color: transparent; }
+.btn--ghost:hover { background: var(--navy-tint); }
+.btn--danger { background: var(--white); color: var(--terra-dark); border-color: var(--terra-dark); }
+.btn--danger:hover { background: rgba(160,82,45,0.08); }
+.btn--sm { font-size: 12px; padding: 6px 10px; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+/* Tag input chip list */
+.chip-input { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); background: var(--white); }
+.chip-input:focus-within { border-color: var(--gold); box-shadow: var(--shadow-focus); }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; background: var(--navy-tint); color: var(--navy); border-radius: 999px; font-size: 12px; font-weight: 600; }
+.chip__remove { background: none; border: none; color: var(--navy); cursor: pointer; padding: 0; font-size: 14px; line-height: 1; }
+.chip__remove:hover { color: var(--terra-dark); }
+.chip-input input { flex: 1 1 120px; min-width: 100px; border: none; outline: none; font-family: var(--font-body); font-size: 13px; padding: 4px 6px; background: transparent; }
+
+/* ============================================================
+   PREVIEW PANEL
+   ============================================================ */
+.preview { position: relative; background: var(--white); border: 1px solid var(--navy-tint); border-radius: var(--radius-md); padding: 0; box-shadow: var(--shadow-rest); overflow: hidden; }
+.preview__bar { background: var(--navy-tint); padding: 8px 14px; display: flex; gap: 8px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--navy-tint); }
+.preview__label { font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--navy); font-weight: 600; }
+.preview__frame { padding: 20px; }
+
+/* The preview re-scopes brand variables to whatever the user typed.
+   These selectors override on the preview frame only, so the host UI stays MCAS-default. */
+.brand-preview { font-family: var(--bp-font-body, var(--font-body)); color: var(--bp-navy, var(--navy)); }
+.bp-card { background: var(--bp-white, var(--white)); border: 1px solid var(--bp-tint, var(--navy-tint)); border-radius: 8px; padding: 18px 20px; box-shadow: var(--shadow-rest); margin-bottom: 14px; }
+.bp-eyebrow { font-family: var(--bp-font-eyebrow, var(--font-eyebrow)); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--bp-terra, var(--terra-dark)); margin: 0 0 6px; font-weight: 500; }
+.bp-h1 { font-family: var(--bp-font-display, var(--font-display)); font-weight: 800; color: var(--bp-navy, var(--navy)); font-size: 26px; line-height: 1.15; margin: 0 0 4px; }
+.bp-subhead { font-family: var(--bp-font-display, var(--font-display)); font-weight: 600; color: var(--bp-terra, var(--terra-dark)); font-size: 16px; margin: 0 0 8px; }
+.bp-usage { font-family: var(--bp-font-italic, var(--font-italic)); color: var(--gray-700); font-size: 13px; margin: 0; }
+.bp-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.bp-btn { display: inline-flex; align-items: center; gap: 6px; font-family: var(--bp-font-display, var(--font-display)); font-weight: 600; font-size: 13px; padding: 8px 14px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; }
+.bp-btn--primary { background: var(--bp-navy, var(--navy)); color: var(--bp-white, var(--white)); border-color: var(--bp-navy, var(--navy)); }
+.bp-btn--secondary { background: var(--bp-white, var(--white)); color: var(--bp-navy, var(--navy)); border-color: var(--bp-navy, var(--navy)); }
+.bp-btn--accent { background: var(--bp-gold, var(--gold)); color: var(--bp-navy-deep, var(--navy-deep)); border-color: var(--bp-gold, var(--gold)); }
+.bp-swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+.bp-swatch { border: 1px solid var(--bp-tint, var(--navy-tint)); border-radius: 6px; overflow: hidden; background: var(--bp-white, var(--white)); }
+.bp-swatch__color { height: 44px; }
+.bp-swatch__body { padding: 6px 8px; font-size: 11px; }
+.bp-swatch__name { font-weight: 600; color: var(--bp-navy, var(--navy)); margin: 0; font-size: 11px; }
+.bp-swatch__hex { font-family: var(--font-mono); color: var(--gray-700); margin: 1px 0 0; font-size: 10px; }
+
+.bp-avatar-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.bp-avatar { width: 56px; height: 56px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--bp-font-display, var(--font-display)); font-weight: 700; font-size: 20px; background: var(--bp-tint, var(--navy-tint)); color: var(--bp-navy, var(--navy)); border: 2px solid var(--bp-gold, var(--gold)); overflow: hidden; flex-shrink: 0; }
+.bp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.bp-byline { font-family: var(--bp-font-display, var(--font-display)); font-weight: 700; color: var(--bp-navy, var(--navy)); font-size: 16px; margin: 0; }
+.bp-role { font-family: var(--bp-font-italic, var(--font-italic)); color: var(--gray-700); font-size: 13px; margin: 2px 0 0; }
+
+.bp-callout { border-left: 4px solid var(--bp-gold, var(--gold)); background: var(--bp-white, var(--white)); border-radius: 4px; padding: 12px 16px; box-shadow: var(--shadow-rest); }
+.bp-callout__title { font-family: var(--bp-font-display, var(--font-display)); font-weight: 700; color: var(--bp-navy, var(--navy)); font-size: 13px; margin: 0 0 4px; }
+.bp-callout__body { font-size: 13px; color: var(--gray-700); margin: 0; }
+
+/* ============================================================
+   FOOTER + TOAST
+   ============================================================ */
+footer { border-top: 1px solid var(--navy-tint); background: var(--white); padding: 22px 24px; margin-top: 32px; }
+.footer-inner { max-width: var(--max-w); margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: var(--gray-700); }
+.footer-byline { font-weight: 600; color: var(--navy); }
+.footer-meta { font-family: var(--font-italic); }
+
+#toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--navy); color: var(--white); padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; box-shadow: var(--shadow-hover); opacity: 0; pointer-events: none; transition: opacity var(--t-base), transform var(--t-base); z-index: 200; max-width: 90vw; }
+#toast[data-show="true"] { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+
+/* Modal (Reset confirm) */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(20,42,54,0.55); display: none; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
+.modal-backdrop[data-open="true"] { display: flex; }
+.modal { background: var(--white); border-radius: var(--radius-md); padding: 24px; max-width: 460px; width: 100%; box-shadow: var(--shadow-hover); }
+.modal h2 { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--navy); margin: 0 0 8px; }
+.modal p { font-size: 14px; color: var(--gray-700); margin: 0 0 18px; }
+.modal__row { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ============================================================
+   PRINT (PDF export via window.print)
+   ============================================================ */
+@media print {
+  @page { margin: 18mm 14mm; }
+  body { background: var(--white); }
+  .toolbar, .sidenav, footer, #toast, .modal-backdrop, .no-print { display: none !important; }
+  main { display: block; padding: 0; max-width: none; }
+  .mcas-header { padding: 0 0 16px; border-bottom: 2px solid var(--navy); page-break-after: avoid; }
+  .section-card { box-shadow: none; border: 1px solid var(--navy-tint); page-break-inside: avoid; break-inside: avoid; margin-bottom: 14px; }
+  .preview { box-shadow: none; }
+  a { color: var(--navy); text-decoration: none; }
+}
+
+/* Visually hidden */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to content</a>
+
+<!-- HEADER LOCKUP -->
+<header class="mcas-header" role="banner">
+  <div class="mcas-header__inner">
+    <div class="mcas-logo" aria-hidden="false">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" role="img" aria-label="MedMasters Collaborative">
+        <title>MedMasters Collaborative</title>
+        <g transform="translate(0, 18)">
+          <g transform="translate(60, 0) rotate(8 0 130)"><circle cx="0" cy="20" r="10" fill="#0B1530"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#0B1530"/></g>
+          <g transform="translate(100, 0)"><circle cx="0" cy="10" r="11" fill="#8B3A2E"/><path d="M 0,22 C -11,22 -17,26 -17,34 C -17,52 -14,70 -12,86 C -11,108 -13,122 -15,132 L 15,132 C 13,122 11,108 12,86 C 14,70 17,52 17,34 C 17,26 11,22 0,22 Z" fill="#8B3A2E"/></g>
+          <g transform="translate(140, 0) rotate(-8 0 130)"><circle cx="0" cy="20" r="10" fill="#C9A14A"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#C9A14A"/></g>
+        </g>
+        <g transform="translate(240, 0)">
+          <text x="0" y="118" font-family="'Plus Jakarta Sans',sans-serif" font-size="80" font-weight="800" letter-spacing="-2"><tspan fill="#0B1530">Med</tspan><tspan fill="#8B3A2E">Masters</tspan></text>
+          <text x="0" y="158" font-family="'Plus Jakarta Sans',sans-serif" font-size="15" font-weight="700" letter-spacing="5" fill="#0B1530" opacity="0.75">COLLABORATIVE</text>
+        </g>
+      </svg>
+    </div>
+    <div class="mcas-header__text">
+      <p class="mcas-eyebrow">MCAS &middot; Input 1 of 3 &middot; Faculty Brand Sheet</p>
+      <h1 class="mcas-h1">Faculty Brand Sheet Builder</h1>
+      <p class="mcas-subhead">How your course should feel. One brand sheet per faculty member, reusable across every course you teach.</p>
+      <p class="mcas-usage">Fill in the ten sections below. Inputs autosave; export as a ready-to-share HTML brand document, a printable PDF, or portable JSON. The JSON file is one of three inputs to the MCAS Engine. Pair it with your Master Course Workbook (.xlsx, one per course) and your Prototype Selection. Reset returns the visual layer to the PRIMARY teaching palette.</p>
+    </div>
+  </div>
+</header>
+
+<!-- TOOLBAR -->
+<div class="toolbar no-print" role="region" aria-label="Brand sheet actions">
+  <div class="toolbar__inner">
+    <div class="toolbar__status">
+      <span class="status-pill" id="statusPill" data-state="idle" aria-live="polite">Ready</span>
+      <span id="statusMeta" class="sr-only" aria-live="polite"></span>
+    </div>
+    <div class="toolbar__actions">
+      <button class="btn btn--ghost btn--sm" type="button" id="btnImport">Import JSON</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <button class="btn btn--secondary btn--sm" type="button" id="btnExportJson">Export JSON</button>
+      <button class="btn btn--secondary btn--sm" type="button" id="btnExportHtml">Export HTML doc</button>
+      <button class="btn btn--secondary btn--sm" type="button" id="btnExportPdf">Export PDF</button>
+      <button class="btn btn--terra btn--sm" type="button" id="btnSendGenerator">Send to MCAS generator</button>
+      <button class="btn btn--danger btn--sm" type="button" id="btnReset">Reset</button>
+    </div>
+  </div>
+</div>
+
+<main id="main-content">
+  <!-- SIDE NAV -->
+  <nav class="sidenav no-print" aria-label="Section navigation">
+    <h2>Sections</h2>
+    <ol>
+      <li><a href="#s1" data-nav="s1">Faculty Identity</a></li>
+      <li><a href="#s2" data-nav="s2">Teaching Philosophy</a></li>
+      <li><a href="#s3" data-nav="s3">Student Population</a></li>
+      <li><a href="#s4" data-nav="s4">Course Design</a></li>
+      <li><a href="#s5" data-nav="s5">Content Preferences</a></li>
+      <li><a href="#s6" data-nav="s6">Assessment Philosophy</a></li>
+      <li><a href="#s7" data-nav="s7">Communication &amp; Voice</a></li>
+      <li><a href="#s8" data-nav="s8">Visual Style</a></li>
+      <li><a href="#s9" data-nav="s9">Accessibility</a></li>
+      <li><a href="#s10" data-nav="s10">AI Collaboration Rules</a></li>
+      <li><a href="#preview" data-nav="preview">Live Preview</a></li>
+    </ol>
+  </nav>
+
+  <form class="builder" id="brandForm" autocomplete="off" novalidate>
+    <!-- ============================================================
+         SECTION 1 - FACULTY IDENTITY (MEDMASTERS FACULTY BRAND SHEET)
+         ============================================================ -->
+    <section class="section-card" id="s1" aria-labelledby="s1h">
+      <p class="section-card__eyebrow">Section 01</p>
+      <h2 class="section-card__title" id="s1h">Faculty Identity</h2>
+      <p class="section-card__note">Who you are as the instructor. Credentials are private metadata. Student-facing exports honor your byline rule.</p>
+      <div class="form-grid">
+        <div class="field"><label for="facultyName">Name</label><input class="input" type="text" id="facultyName" name="facultyName" placeholder="Dr. Jane Doe"></div>
+        <div class="field"><label for="credentials">Credentials</label><input class="input" type="text" id="credentials" name="credentials" placeholder="ND, MD, PhD, RN"><p class="field__hint">Stored only. Stripped from student-facing exports per byline rule.</p></div>
+        <div class="field"><label for="discipline">Discipline</label><input class="input" type="text" id="discipline" name="discipline" placeholder="Anatomy and Physiology"></div>
+        <div class="field"><label for="yearsTeaching">Years teaching</label><input class="input" type="number" min="0" id="yearsTeaching" name="yearsTeaching" placeholder="12"></div>
+        <div class="field field--span2"><label for="clinicalBackground">Clinical background</label><textarea class="textarea" id="clinicalBackground" name="clinicalBackground" placeholder="ICU nursing, naturopathic primary care, surgical first assist, etc."></textarea></div>
+        <div class="field field--span2"><label for="researchBackground">Research background</label><textarea class="textarea" id="researchBackground" name="researchBackground" placeholder="Funded studies, dissertation focus, lab affiliations, publications."></textarea></div>
+        <div class="field field--span2"><label for="expertise">Professional expertise</label>
+          <div class="chip-input" data-chip-input="expertise"><input type="text" placeholder="Type and press Enter" aria-label="Professional expertise"></div>
+          <p class="field__hint">Press Enter or comma to add. Click x to remove.</p>
+        </div>
+        <div class="field"><label for="bylineRule">Byline rule (student-facing)</label>
+          <select class="select" id="bylineRule" name="bylineRule">
+            <option value="name-only">Name only, no credentials</option>
+            <option value="name-plus-creds">Name plus credentials</option>
+            <option value="custom">Custom byline</option>
+          </select></div>
+        <div class="field"><label for="customByline">Custom byline (if selected)</label><input class="input" type="text" id="customByline" name="customByline" placeholder="Dr. Sharilyn Rennie"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 2 - TEACHING PHILOSOPHY
+         ============================================================ -->
+    <section class="section-card" id="s2" aria-labelledby="s2h">
+      <p class="section-card__eyebrow">Section 02</p>
+      <h2 class="section-card__title" id="s2h">Teaching Philosophy</h2>
+      <p class="section-card__note">What you believe about learning. This shapes the tone and structure of every generated lesson.</p>
+      <div class="form-grid form-grid--wide">
+        <div class="field"><label for="philBeliefs">What do you believe about learning?</label><textarea class="textarea" id="philBeliefs" placeholder="Learning is given, not Googled. Drawing-based synthesis as integrity mechanism."></textarea></div>
+        <div class="field"><label for="philExperience">What should students experience in your course?</label><textarea class="textarea" id="philExperience" placeholder="Clinical context threaded through every concept. Frequent low-stakes retrieval."></textarea></div>
+        <div class="field"><label for="philFrustrations">What frustrates you about traditional teaching?</label><textarea class="textarea" id="philFrustrations" placeholder="Memorization without application. Assessment that rewards cramming."></textarea></div>
+        <div class="field"><label for="philSuccess">What does student success look like?</label><textarea class="textarea" id="philSuccess" placeholder="Students transfer knowledge to novel clinical scenarios without prompts."></textarea></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 3 - STUDENT POPULATION
+         ============================================================ -->
+    <section class="section-card" id="s3" aria-labelledby="s3h">
+      <p class="section-card__eyebrow">Section 03</p>
+      <h2 class="section-card__title" id="s3h">Student Population</h2>
+      <p class="section-card__note">Who the work is for. Drives reading level, examples, and scaffolding.</p>
+      <div class="form-grid form-grid--wide">
+        <div class="field"><label>Student categories</label>
+          <div class="check-group" data-checkgroup="studentCategories">
+            <label class="check-row"><input type="checkbox" value="Majors"><span>Majors</span></label>
+            <label class="check-row"><input type="checkbox" value="Allied Health"><span>Allied Health</span></label>
+            <label class="check-row"><input type="checkbox" value="Graduate"><span>Graduate</span></label>
+            <label class="check-row"><input type="checkbox" value="Community College"><span>Community College</span></label>
+            <label class="check-row"><input type="checkbox" value="Traditional University"><span>Traditional University</span></label>
+            <label class="check-row"><input type="checkbox" value="Online"><span>Online</span></label>
+            <label class="check-row"><input type="checkbox" value="Hybrid"><span>Hybrid</span></label>
+            <label class="check-row"><input type="checkbox" value="Face-to-Face"><span>Face-to-Face</span></label>
+          </div>
+          <p class="field__hint">Select every category your students fall into.</p>
+        </div>
+        <div class="field"><label for="commonChallenges">Common challenges</label><textarea class="textarea" id="commonChallenges" placeholder="First-gen workload management. Math anxiety. Limited clinical exposure."></textarea></div>
+        <div class="field"><label for="careerGoals">Career goals</label><textarea class="textarea" id="careerGoals" placeholder="RN, PA, MD, PT, OT, dental hygiene, radiology tech"></textarea></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 4 - COURSE DESIGN
+         ============================================================ -->
+    <section class="section-card" id="s4" aria-labelledby="s4h">
+      <p class="section-card__eyebrow">Section 04</p>
+      <h2 class="section-card__title" id="s4h">Course Design Preferences</h2>
+      <p class="section-card__note">How the course is structured. The generator uses this to choose templates.</p>
+      <div class="form-grid form-grid--wide">
+        <div class="field"><label>Preferred pedagogies</label>
+          <div class="check-group" data-checkgroup="pedagogies">
+            <label class="check-row"><input type="checkbox" value="Backward Design"><span>Backward Design</span></label>
+            <label class="check-row"><input type="checkbox" value="TBL"><span>TBL (Team-Based Learning)</span></label>
+            <label class="check-row"><input type="checkbox" value="Case-Based"><span>Case-Based</span></label>
+            <label class="check-row"><input type="checkbox" value="Flipped Classroom"><span>Flipped Classroom</span></label>
+            <label class="check-row"><input type="checkbox" value="Mastery Learning"><span>Mastery Learning</span></label>
+            <label class="check-row"><input type="checkbox" value="Lecture-Based"><span>Lecture-Based</span></label>
+            <label class="check-row"><input type="checkbox" value="Problem-Based"><span>Problem-Based</span></label>
+            <label class="check-row"><input type="checkbox" value="Studio / Lab"><span>Studio / Lab</span></label>
+          </div>
+        </div>
+        <div class="field"><label for="weeklyRhythm">Preferred weekly rhythm</label><textarea class="textarea" id="weeklyRhythm" placeholder="M/T/W: lecture + lab. Th: application. F: synthesis quiz."></textarea></div>
+        <div class="field"><label for="learningActivities">Preferred learning activities</label><textarea class="textarea" id="learningActivities" placeholder="iRAT/tRAT, drawing prompts, clinical simulations, peer teaching"></textarea></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 5 - CONTENT PREFERENCES
+         ============================================================ -->
+    <section class="section-card" id="s5" aria-labelledby="s5h">
+      <p class="section-card__eyebrow">Section 05</p>
+      <h2 class="section-card__title" id="s5h">Content Preferences</h2>
+      <p class="section-card__note">How content should be presented. The generator dials these for each output.</p>
+      <div class="form-grid form-grid--wide">
+        <div class="field"><label>How should content be presented?</label>
+          <div class="check-group" data-checkgroup="contentStyles">
+            <label class="check-row"><input type="checkbox" value="Concise"><span>Concise</span></label>
+            <label class="check-row"><input type="checkbox" value="Comprehensive"><span>Comprehensive</span></label>
+            <label class="check-row"><input type="checkbox" value="Visual"><span>Visual</span></label>
+            <label class="check-row"><input type="checkbox" value="Clinical"><span>Clinical</span></label>
+            <label class="check-row"><input type="checkbox" value="Narrative"><span>Narrative</span></label>
+            <label class="check-row"><input type="checkbox" value="Highly Structured"><span>Highly Structured</span></label>
+          </div>
+        </div>
+        <div class="field"><label for="useExamples">Examples and analogies</label><textarea class="textarea" id="useExamples" placeholder="Plumbing analogies for fluid dynamics. Traffic for action potentials."></textarea></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 6 - ASSESSMENT PHILOSOPHY
+         ============================================================ -->
+    <section class="section-card" id="s6" aria-labelledby="s6h">
+      <p class="section-card__eyebrow">Section 06</p>
+      <h2 class="section-card__title" id="s6h">Assessment Philosophy</h2>
+      <p class="section-card__note">What you grade and how you protect academic integrity.</p>
+      <div class="form-grid form-grid--wide">
+        <div class="field"><label for="assessMeasures">What should assessments measure?</label><textarea class="textarea" id="assessMeasures" placeholder="Synthesis, transfer, and clinical reasoning. Not recall in isolation."></textarea></div>
+        <div class="field"><label>Preferred assessment types</label>
+          <div class="check-group" data-checkgroup="assessmentTypes">
+            <label class="check-row"><input type="checkbox" value="MCQ"><span>Multiple choice (NCLEX-style)</span></label>
+            <label class="check-row"><input type="checkbox" value="Drawing"><span>Drawing / labeling</span></label>
+            <label class="check-row"><input type="checkbox" value="Short answer"><span>Short answer</span></label>
+            <label class="check-row"><input type="checkbox" value="Case analysis"><span>Case analysis</span></label>
+            <label class="check-row"><input type="checkbox" value="Oral exam"><span>Oral exam</span></label>
+            <label class="check-row"><input type="checkbox" value="Practical"><span>Practical / lab practical</span></label>
+            <label class="check-row"><input type="checkbox" value="Project"><span>Project-based</span></label>
+            <label class="check-row"><input type="checkbox" value="Portfolio"><span>Portfolio</span></label>
+            <label class="check-row"><input type="checkbox" value="Peer eval"><span>Peer evaluation</span></label>
+          </div>
+        </div>
+        <div class="field"><label for="aiResistant">AI-resistant approaches</label><textarea class="textarea" id="aiResistant" placeholder="In-class drawing prompts. Oral defenses. Live patient simulations."></textarea></div>
+        <div class="field"><label for="oralAssessment">Oral assessment use</label>
+          <select class="select" id="oralAssessment">
+            <option value="">Choose one</option>
+            <option>Heavy (weekly oral defenses)</option>
+            <option>Moderate (midterm + final oral)</option>
+            <option>Light (occasional case viva)</option>
+            <option>None</option>
+          </select></div>
+        <div class="field field--span2"><label for="authentic">Authentic assessment preferences</label><textarea class="textarea" id="authentic" placeholder="Clinical case workups graded with the same rubric used in licensure prep."></textarea></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 7 - COMMUNICATION STYLE
+         ============================================================ -->
+    <section class="section-card" id="s7" aria-labelledby="s7h">
+      <p class="section-card__eyebrow">Section 07</p>
+      <h2 class="section-card__title" id="s7h">Communication Style</h2>
+      <p class="section-card__note">How Claude should write. The generator mirrors this in every piece of writing.</p>
+      <div class="form-grid form-grid--wide">
+        <div class="field"><label>How should Claude write?</label>
+          <div class="check-group" data-checkgroup="communicationStyles">
+            <label class="check-row"><input type="checkbox" value="Formal"><span>Formal</span></label>
+            <label class="check-row"><input type="checkbox" value="Conversational"><span>Conversational</span></label>
+            <label class="check-row"><input type="checkbox" value="Encouraging"><span>Encouraging</span></label>
+            <label class="check-row"><input type="checkbox" value="Professional"><span>Professional</span></label>
+            <label class="check-row"><input type="checkbox" value="Faculty-to-student"><span>Faculty-to-student</span></label>
+            <label class="check-row"><input type="checkbox" value="Peer-to-peer"><span>Peer-to-peer</span></label>
+          </div>
+        </div>
+        <div class="field"><label for="signaturePhrases">Signature phrases</label>
+          <div class="chip-input" data-chip-input="signaturePhrases"><input type="text" placeholder="Type a phrase, press Enter"></div>
+          <p class="field__hint">Short phrases you say often. The generator uses these sparingly so they land.</p>
+        </div>
+        <div class="field"><label for="neverSay">Words and phrases to avoid</label>
+          <div class="chip-input" data-chip-input="neverSay"><input type="text" placeholder="e.g. certainly, simply, just"></div>
+          <p class="field__hint">Filler the generator must never use in your voice.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 8 - VISUAL STYLE
+         ============================================================ -->
+    <section class="section-card" id="s8" aria-labelledby="s8h">
+      <p class="section-card__eyebrow">Section 08</p>
+      <h2 class="section-card__title" id="s8h">Visual Style</h2>
+      <p class="section-card__note">Aesthetic, palette, typography, components, and avatar. Defaults to the PRIMARY teaching stack.</p>
+
+      <div class="form-grid form-grid--wide" style="margin-bottom:14px;">
+        <div class="field"><label>Visual aesthetic</label>
+          <div class="check-group" data-checkgroup="visualAesthetic">
+            <label class="check-row"><input type="checkbox" value="Modern"><span>Modern</span></label>
+            <label class="check-row"><input type="checkbox" value="Minimalist"><span>Minimalist</span></label>
+            <label class="check-row"><input type="checkbox" value="Clinical"><span>Clinical</span></label>
+            <label class="check-row"><input type="checkbox" value="Academic"><span>Academic</span></label>
+          </div>
+        </div>
+        <div class="field"><label for="imageStyle">Image style</label><textarea class="textarea" id="imageStyle" placeholder="Anatomical line art. Photographic clinical scenes. No stock photos of generic doctors."></textarea></div>
+      </div>
+
+      <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:8px 0 8px;">Palette tokens</h3>
+      <div class="form-grid">
+        <div class="field"><label for="cNavy">Navy <span class="token-name">--navy</span></label><div class="color-row"><div class="swatch-mini" id="swNavy"></div><input class="input input--color" type="color" id="cNavy"><input class="input" type="text" id="cNavyHex" placeholder="#1E3D4C"></div></div>
+        <div class="field"><label for="cNavyDeep">Navy deep <span class="token-name">--navy-deep</span></label><div class="color-row"><div class="swatch-mini" id="swNavyDeep"></div><input class="input input--color" type="color" id="cNavyDeep"><input class="input" type="text" id="cNavyDeepHex" placeholder="#142a36"></div></div>
+        <div class="field"><label for="cNavyTint">Navy tint <span class="token-name">--navy-tint</span></label><div class="color-row"><div class="swatch-mini" id="swNavyTint"></div><input class="input input--color" type="color" id="cNavyTint"><input class="input" type="text" id="cNavyTintHex" placeholder="#EDF1F3"></div></div>
+        <div class="field"><label for="cGold">Brushed gold <span class="token-name">--gold</span></label><div class="color-row"><div class="swatch-mini" id="swGold"></div><input class="input input--color" type="color" id="cGold"><input class="input" type="text" id="cGoldHex" placeholder="#B8924A"></div></div>
+        <div class="field"><label for="cTerra">Terra cotta <span class="token-name">--terra</span></label><div class="color-row"><div class="swatch-mini" id="swTerra"></div><input class="input input--color" type="color" id="cTerra"><input class="input" type="text" id="cTerraHex" placeholder="#C2734D"></div></div>
+        <div class="field"><label for="cTerraDark">Terra dark <span class="token-name">--terra-dark</span></label><div class="color-row"><div class="swatch-mini" id="swTerraDark"></div><input class="input input--color" type="color" id="cTerraDark"><input class="input" type="text" id="cTerraDarkHex" placeholder="#A0522D"></div></div>
+        <div class="field"><label for="cWhite">White <span class="token-name">--white</span></label><div class="color-row"><div class="swatch-mini" id="swWhite"></div><input class="input input--color" type="color" id="cWhite"><input class="input" type="text" id="cWhiteHex" placeholder="#FFFFFF"></div></div>
+        <div class="field"><label for="cOffWhite">Off-white <span class="token-name">--off-white</span></label><div class="color-row"><div class="swatch-mini" id="swOffWhite"></div><input class="input input--color" type="color" id="cOffWhite"><input class="input" type="text" id="cOffWhiteHex" placeholder="#FAFAF9"></div></div>
+      </div>
+
+      <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:18px 0 8px;">Typography</h3>
+      <div class="form-grid">
+        <div class="field"><label for="fontDisplay">Display font (h1/h2/buttons)</label><input class="input" id="fontDisplay" placeholder="Plus Jakarta Sans"></div>
+        <div class="field"><label for="fontEyebrow">Eyebrow font (small caps labels)</label><input class="input" id="fontEyebrow" placeholder="DM Sans"></div>
+        <div class="field"><label for="fontBody">Body font</label><input class="input" id="fontBody" placeholder="Plus Jakarta Sans"></div>
+      </div>
+
+      <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:18px 0 8px;">Components &amp; interaction</h3>
+      <div class="form-grid">
+        <div class="field"><label for="cardLift">Card hover lift</label>
+          <select class="select" id="cardLift">
+            <option>Subtle (2px translate, soft shadow)</option>
+            <option>Pronounced (4px translate, deeper shadow)</option>
+            <option>None (color/border only)</option>
+          </select></div>
+        <div class="field"><label for="cornerStyle">Corner style</label>
+          <select class="select" id="cornerStyle">
+            <option>Soft (4-8px radius)</option><option>Crisp (2px radius)</option>
+            <option>Pill (full radius on CTAs)</option>
+          </select></div>
+        <div class="field"><label for="borderStyle">Border weight</label>
+          <select class="select" id="borderStyle">
+            <option>Hairline (1px navy on tint)</option><option>Medium (1.5px navy)</option>
+            <option>Heavy (2px navy)</option>
+          </select></div>
+        <div class="field"><label for="primaryCta">Primary CTA style</label>
+          <select class="select" id="primaryCta">
+            <option>Solid navy on white</option><option>Solid gold (navy text)</option>
+            <option>Outline navy</option><option>Terra cotta accent</option>
+          </select></div>
+        <div class="field field--span2"><label for="bannedDecor">Visual elements to NEVER use</label><textarea class="textarea" id="bannedDecor" placeholder="No sage. No cream. No decorative bookend bars. No pastel tints."></textarea></div>
+      </div>
+
+      <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:18px 0 6px;">Course logo <span style="font-weight:500;color:var(--gray-500);font-size:13px;">(optional)</span></h3>
+      <p class="field__hint" style="margin:0 0 12px;">Have you created a logo for your course? If yes, add it below and the MCAS generator will drop it into your course header lockup, the exported brand document, and any Kajabi or GitHub Pages embed it produces. Transparent SVG or PNG works best; the generator will scale to fit (max ~280px wide in headers, 96px in cards).</p>
+      <div class="form-grid">
+        <div class="field"><label for="logoKind">Logo source</label>
+          <select class="select" id="logoKind">
+            <option value="none">No logo</option>
+            <option value="upload">Upload (file becomes data URL)</option>
+            <option value="url">Image URL</option>
+            <option value="svg">Inline SVG paste</option>
+          </select></div>
+        <div class="field"><label for="logoAlt">Logo alt text</label><input class="input" id="logoAlt" placeholder="BIO 004 Course Logo"><p class="field__hint">Required for accessibility. Describes what the logo shows.</p></div>
+        <div class="field field--span2"><label for="logoFile">Upload logo file</label>
+          <input class="input" type="file" id="logoFile" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+          <p class="field__hint">Choose Upload above first. PNG or SVG with transparent background is ideal. Files become embedded data URLs so the brand sheet stays self-contained when shared.</p>
+        </div>
+        <div class="field field--span2"><label for="logoValue">Logo value <span style="font-weight:400;color:var(--gray-500);">(URL, data URL, or inline SVG)</span></label>
+          <textarea class="textarea" id="logoValue" placeholder="https://... or data:image/png;base64,... or <svg ...>...</svg>" style="min-height:64px;font-family:var(--font-mono);font-size:12px;"></textarea>
+          <p class="field__hint">Auto-fills when you upload a file. You can also paste a hosted URL or inline SVG markup directly.</p>
+        </div>
+      </div>
+
+      <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:18px 0 8px;">Avatar / instructor mark</h3>
+      <div class="form-grid">
+        <div class="field"><label for="avatarKind">Avatar source</label>
+          <select class="select" id="avatarKind">
+            <option value="initials">Initials</option>
+            <option value="emoji">Emoji</option>
+            <option value="url">Image URL</option>
+            <option value="none">None</option>
+          </select></div>
+        <div class="field"><label for="avatarValue">Avatar value</label><input class="input" id="avatarValue" placeholder="SR, 🩺, or https://..."></div>
+        <div class="field"><label for="avatarRing">Avatar ring color</label>
+          <select class="select" id="avatarRing">
+            <option value="gold">Brushed gold</option><option value="navy">Navy</option>
+            <option value="terra">Terra cotta</option><option value="none">No ring</option>
+          </select></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 9 - ACCESSIBILITY
+         ============================================================ -->
+    <section class="section-card" id="s9" aria-labelledby="s9h">
+      <p class="section-card__eyebrow">Section 09</p>
+      <h2 class="section-card__title" id="s9h">Accessibility &amp; Compliance</h2>
+      <p class="section-card__note">The accessibility floor for everything the generator produces in your name.</p>
+      <div class="form-grid">
+        <div class="field field--span2"><label for="a11yExpectations">Accessibility expectations</label><textarea class="textarea" id="a11yExpectations" placeholder="Every deliverable accessible by default. No retrofits. Test with keyboard only and screen reader."></textarea></div>
+        <div class="field"><label for="wcagTarget">WCAG goals</label>
+          <select class="select" id="wcagTarget">
+            <option value="AA">2.2 AA (floor)</option>
+            <option value="AA+">2.2 AA floor, AAA where achievable</option>
+            <option value="AAA">2.2 AAA (full)</option>
+          </select></div>
+        <div class="field"><label for="captioning">Caption requirements</label>
+          <select class="select" id="captioning">
+            <option>Captions on every video. Edited transcripts.</option>
+            <option>Captions only.</option><option>Captions plus signed interpretation.</option>
+            <option>Not applicable</option>
+          </select></div>
+        <div class="field field--span2"><label for="altFormats">Alternative formats</label><textarea class="textarea" id="altFormats" placeholder="Tagged PDFs. Plain-text equivalents for image-heavy content. EPUB exports on request."></textarea></div>
+        <div class="field field--span2"><label for="rsi">Regular and substantive interaction (RSI) expectations</label><textarea class="textarea" id="rsi" placeholder="Weekly direct contact, individualized feedback within 48 hours, scheduled office hours."></textarea></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 10 - AI COLLABORATION RULES
+         ============================================================ -->
+    <section class="section-card" id="s10" aria-labelledby="s10h">
+      <p class="section-card__eyebrow">Section 10</p>
+      <h2 class="section-card__title" id="s10h">AI Collaboration Rules</h2>
+      <p class="section-card__note">Hard rules Claude must follow whenever it generates content for your course.</p>
+      <div class="form-grid form-grid--wide">
+        <div class="field"><label>Always do</label>
+          <div class="chip-input" data-chip-input="alwaysDo"><input type="text" placeholder="One rule, press Enter"></div>
+          <p class="field__hint">e.g. "Cite primary sources." "Use my byline rule." "Write in active voice."</p>
+        </div>
+        <div class="field"><label>Never do</label>
+          <div class="chip-input" data-chip-input="neverDo"><input type="text" placeholder="One rule, press Enter"></div>
+          <p class="field__hint">e.g. "Never use em dashes." "Never store student PII." "Never invent course details."</p>
+        </div>
+        <div class="field"><label>Preferred sources</label>
+          <div class="chip-input" data-chip-input="preferredSources"><input type="text" placeholder="Source, press Enter"></div>
+          <p class="field__hint">Textbooks, journals, professional bodies the generator should anchor to.</p>
+        </div>
+        <div class="field"><label for="outputExpectations">Output expectations</label><textarea class="textarea" id="outputExpectations" placeholder="Deliver complete, ready-to-push files. No stitching between snippets. Plain language."></textarea></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         LIVE PREVIEW
+         ============================================================ -->
+    <section class="preview" id="preview" aria-labelledby="previewH">
+      <div class="preview__bar">
+        <p class="preview__label" id="previewH">Live preview</p>
+        <span class="token-name" id="previewMeta">PRIMARY palette</span>
+      </div>
+      <div class="preview__frame">
+        <div class="brand-preview" id="brandPreview">
+          <div class="bp-card">
+            <div id="bpLogoWrap" style="margin:-4px 0 12px;display:none;"><div id="bpLogo" style="max-width:200px;max-height:64px;"></div></div>
+            <div class="bp-avatar-row">
+              <div class="bp-avatar" id="bpAvatar" aria-hidden="true">SR</div>
+              <div>
+                <p class="bp-byline" id="bpByline">Dr. Faculty Name</p>
+                <p class="bp-role" id="bpRole">Discipline · Institution</p>
+              </div>
+            </div>
+            <p class="bp-eyebrow" id="bpEyebrow">YOUR COURSE · YOUR INSTITUTION</p>
+            <h3 class="bp-h1" id="bpH1">Sample Lesson Header</h3>
+            <p class="bp-subhead" id="bpSubhead">Subhead in your secondary accent</p>
+            <p class="bp-usage" id="bpUsage">Usage instructions, in your italic font, telling students how to engage with this material.</p>
+          </div>
+          <div class="bp-card">
+            <p class="bp-eyebrow">Buttons</p>
+            <div class="bp-row" style="margin-top:8px;">
+              <button class="bp-btn bp-btn--primary" type="button">Primary CTA</button>
+              <button class="bp-btn bp-btn--secondary" type="button">Secondary</button>
+              <button class="bp-btn bp-btn--accent" type="button">Accent</button>
+            </div>
+          </div>
+          <div class="bp-card">
+            <p class="bp-eyebrow">Palette</p>
+            <div class="bp-swatch-grid" id="bpSwatches"></div>
+          </div>
+          <div class="bp-card">
+            <p class="bp-eyebrow">Voice sample</p>
+            <p id="bpVoice" style="font-family:var(--bp-font-body, var(--font-body));color:var(--gray-700);font-size:14px;margin:6px 0 0;">Fill in section 7 to see how Claude will sound when writing for your course.</p>
+          </div>
+          <div class="bp-callout">
+            <p class="bp-callout__title">Accessibility</p>
+            <p class="bp-callout__body" id="bpA11y">Target WCAG 2.2 AA. Reduced motion respected. Keyboard navigable. Captions on every video.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </form>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-byline">MCAS &middot; Faculty Brand Sheet Builder &middot; Input 1 of 3</span>
+    <span class="footer-meta">Autosaves locally. Export JSON for the MCAS Engine; HTML or PDF for sharing.</span>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- RESET MODAL -->
+<div class="modal-backdrop" id="resetModal" role="dialog" aria-modal="true" aria-labelledby="resetTitle">
+  <div class="modal">
+    <h2 id="resetTitle">Reset to PRIMARY defaults?</h2>
+    <p>This clears every section and restores the PRIMARY teaching palette and fonts. Export your current sheet first if you want to keep it.</p>
+    <div class="modal__row">
+      <button class="btn btn--ghost btn--sm" type="button" id="resetCancel">Cancel</button>
+      <button class="btn btn--danger btn--sm" type="button" id="resetConfirm">Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   FACULTY BRAND SHEET - APP LOGIC
+   Single-file, no external runtime deps.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  const STORAGE_KEY = 'mcas.facultyBrand.v1';
+  const SCHEMA_VERSION = 1;
+
+  // PRIMARY defaults pulled directly from palettes.md and the MEDMASTERS FACULTY BRAND SHEET
+  const DEFAULTS = Object.freeze({
+    meta: { version: SCHEMA_VERSION, updated: null },
+    identity: {
+      facultyName: '', credentials: '', bylineRule: 'name-only', customByline: '',
+      discipline: '', yearsTeaching: '',
+      clinicalBackground: '', researchBackground: '', expertise: []
+    },
+    philosophy: { beliefs: '', studentExperience: '', frustrations: '', success: '' },
+    studentPopulation: { categories: [], commonChallenges: '', careerGoals: '' },
+    design: { pedagogies: [], weeklyRhythm: '', learningActivities: '' },
+    content: { styles: [], useExamples: '' },
+    assessment: { measures: '', types: [], aiResistant: '', oralAssessment: '', authentic: '' },
+    communication: { styles: [], signaturePhrases: [], neverSay: [] },
+    visual: {
+      aesthetic: [],
+      imageStyle: '',
+      palette: {
+        navy: '#1E3D4C', navyDeep: '#142a36', navyTint: '#EDF1F3',
+        gold: '#B8924A', terra: '#C2734D', terraDark: '#A0522D',
+        white: '#FFFFFF', offWhite: '#FAFAF9'
+      },
+      typography: { display: 'Plus Jakarta Sans', eyebrow: 'DM Sans', body: 'Plus Jakarta Sans' },
+      components: { cardLift: 'Subtle (2px translate, soft shadow)', cornerStyle: 'Soft (4-8px radius)', borderStyle: 'Hairline (1px navy on tint)', primaryCta: 'Solid navy on white', bannedDecor: 'No sage. No cream. No decorative bookend bars. No pastel tints.' },
+      avatar: { kind: 'initials', value: '', ring: 'gold' },
+      logo: { kind: 'none', value: '', alt: '' }
+    },
+    accessibility: { expectations: '', wcagTarget: 'AA+', captioning: 'Captions on every video. Edited transcripts.', altFormats: '', rsi: '' },
+    collaboration: {
+      alwaysDo: ['Cite evidence when possible', 'Align to outcomes', 'Build RSI opportunities', 'Check accessibility'],
+      neverDo: ['Generate busywork', 'Create unnecessary content', 'Sacrifice rigor for convenience'],
+      preferredSources: [],
+      outputExpectations: ''
+    }
+  });
+
+  // ----- field mapping -----
+  // input id -> data path. used for both load and save.
+  const FIELD_MAP = [
+    ['facultyName', 'identity.facultyName'],
+    ['credentials', 'identity.credentials'],
+    ['bylineRule', 'identity.bylineRule'],
+    ['customByline', 'identity.customByline'],
+    ['discipline', 'identity.discipline'],
+    ['yearsTeaching', 'identity.yearsTeaching'],
+    ['clinicalBackground', 'identity.clinicalBackground'],
+    ['researchBackground', 'identity.researchBackground'],
+    ['philBeliefs', 'philosophy.beliefs'],
+    ['philExperience', 'philosophy.studentExperience'],
+    ['philFrustrations', 'philosophy.frustrations'],
+    ['philSuccess', 'philosophy.success'],
+    ['commonChallenges', 'studentPopulation.commonChallenges'],
+    ['careerGoals', 'studentPopulation.careerGoals'],
+    ['weeklyRhythm', 'design.weeklyRhythm'],
+    ['learningActivities', 'design.learningActivities'],
+    ['useExamples', 'content.useExamples'],
+    ['assessMeasures', 'assessment.measures'],
+    ['aiResistant', 'assessment.aiResistant'],
+    ['oralAssessment', 'assessment.oralAssessment'],
+    ['authentic', 'assessment.authentic'],
+    ['imageStyle', 'visual.imageStyle'],
+    ['cNavyHex', 'visual.palette.navy'],
+    ['cNavyDeepHex', 'visual.palette.navyDeep'],
+    ['cNavyTintHex', 'visual.palette.navyTint'],
+    ['cGoldHex', 'visual.palette.gold'],
+    ['cTerraHex', 'visual.palette.terra'],
+    ['cTerraDarkHex', 'visual.palette.terraDark'],
+    ['cWhiteHex', 'visual.palette.white'],
+    ['cOffWhiteHex', 'visual.palette.offWhite'],
+    ['fontDisplay', 'visual.typography.display'],
+    ['fontEyebrow', 'visual.typography.eyebrow'],
+    ['fontBody', 'visual.typography.body'],
+    ['cardLift', 'visual.components.cardLift'],
+    ['cornerStyle', 'visual.components.cornerStyle'],
+    ['borderStyle', 'visual.components.borderStyle'],
+    ['primaryCta', 'visual.components.primaryCta'],
+    ['bannedDecor', 'visual.components.bannedDecor'],
+    ['avatarKind', 'visual.avatar.kind'],
+    ['avatarValue', 'visual.avatar.value'],
+    ['avatarRing', 'visual.avatar.ring'],
+    ['logoKind', 'visual.logo.kind'],
+    ['logoValue', 'visual.logo.value'],
+    ['logoAlt', 'visual.logo.alt'],
+    ['a11yExpectations', 'accessibility.expectations'],
+    ['wcagTarget', 'accessibility.wcagTarget'],
+    ['captioning', 'accessibility.captioning'],
+    ['altFormats', 'accessibility.altFormats'],
+    ['rsi', 'accessibility.rsi'],
+    ['outputExpectations', 'collaboration.outputExpectations']
+  ];
+
+  const COLOR_PAIRS = [
+    ['cNavy', 'cNavyHex', 'swNavy', 'visual.palette.navy'],
+    ['cNavyDeep', 'cNavyDeepHex', 'swNavyDeep', 'visual.palette.navyDeep'],
+    ['cNavyTint', 'cNavyTintHex', 'swNavyTint', 'visual.palette.navyTint'],
+    ['cGold', 'cGoldHex', 'swGold', 'visual.palette.gold'],
+    ['cTerra', 'cTerraHex', 'swTerra', 'visual.palette.terra'],
+    ['cTerraDark', 'cTerraDarkHex', 'swTerraDark', 'visual.palette.terraDark'],
+    ['cWhite', 'cWhiteHex', 'swWhite', 'visual.palette.white'],
+    ['cOffWhite', 'cOffWhiteHex', 'swOffWhite', 'visual.palette.offWhite']
+  ];
+
+  const CHIP_GROUPS = ['expertise', 'signaturePhrases', 'neverSay', 'alwaysDo', 'neverDo', 'preferredSources'];
+  const CHIP_PATHS = {
+    expertise: 'identity.expertise',
+    signaturePhrases: 'communication.signaturePhrases',
+    neverSay: 'communication.neverSay',
+    alwaysDo: 'collaboration.alwaysDo',
+    neverDo: 'collaboration.neverDo',
+    preferredSources: 'collaboration.preferredSources'
+  };
+
+  const CHECK_GROUPS = {
+    studentCategories: 'studentPopulation.categories',
+    pedagogies: 'design.pedagogies',
+    contentStyles: 'content.styles',
+    assessmentTypes: 'assessment.types',
+    communicationStyles: 'communication.styles',
+    visualAesthetic: 'visual.aesthetic'
+  };
+
+  let state = deepClone(DEFAULTS);
+  let saveTimer = null;
+
+  // ===== helpers =====
+  function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+  function getPath(obj, path) { return path.split('.').reduce((a, k) => (a == null ? a : a[k]), obj); }
+  function setPath(obj, path, val) {
+    const ks = path.split('.'); let cur = obj;
+    for (let i = 0; i < ks.length - 1; i++) { if (cur[ks[i]] == null) cur[ks[i]] = {}; cur = cur[ks[i]]; }
+    cur[ks[ks.length - 1]] = val;
+  }
+  function $(s, root) { return (root || document).querySelector(s); }
+  function $$(s, root) { return Array.from((root || document).querySelectorAll(s)); }
+  function isHex(s) { return /^#[0-9a-fA-F]{6}$/.test(s) || /^#[0-9a-fA-F]{3}$/.test(s); }
+  function expandHex(s) { if (/^#[0-9a-fA-F]{3}$/.test(s)) return '#' + s.slice(1).split('').map(c => c + c).join(''); return s; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+  // ===== load / save =====
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      // Defensive merge so older saves still load
+      state = deepMerge(deepClone(DEFAULTS), parsed);
+    } catch (e) { console.warn('load failed', e); }
+  }
+  function deepMerge(target, src) {
+    if (src == null || typeof src !== 'object') return target;
+    Object.keys(src).forEach(k => {
+      if (Array.isArray(src[k])) target[k] = src[k].slice();
+      else if (src[k] && typeof src[k] === 'object') { target[k] = deepMerge(target[k] || {}, src[k]); }
+      else target[k] = src[k];
+    });
+    return target;
+  }
+  function scheduleSave() {
+    setStatus('saving', 'Saving...');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      try {
+        state.meta = { version: SCHEMA_VERSION, updated: new Date().toISOString() };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        const t = new Date(state.meta.updated);
+        setStatus('idle', 'Saved ' + t.toLocaleTimeString());
+      } catch (e) { setStatus('error', 'Save failed'); console.error(e); }
+    }, 350);
+  }
+  function setStatus(s, msg) {
+    const pill = $('#statusPill');
+    pill.dataset.state = s;
+    pill.textContent = msg;
+    $('#statusMeta').textContent = msg;
+  }
+
+  // ===== populate fields from state =====
+  function syncFormFromState() {
+    FIELD_MAP.forEach(([id, path]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const v = getPath(state, path);
+      if (v == null) { el.value = ''; return; }
+      el.value = v;
+    });
+    // sync color pickers
+    COLOR_PAIRS.forEach(([pickerId, hexId, swId, path]) => {
+      const hex = getPath(state, path) || '';
+      const picker = document.getElementById(pickerId);
+      const sw = document.getElementById(swId);
+      if (isHex(hex)) picker.value = expandHex(hex);
+      if (sw) sw.style.background = hex;
+    });
+    // chips
+    CHIP_GROUPS.forEach(g => renderChips(g, getPath(state, CHIP_PATHS[g]) || []));
+    // checkbox groups
+    Object.keys(CHECK_GROUPS).forEach(g => {
+      const path = CHECK_GROUPS[g];
+      const list = getPath(state, path) || [];
+      $$('[data-checkgroup="' + g + '"] input[type=checkbox]').forEach(cb => { cb.checked = list.includes(cb.value); });
+    });
+    renderPreview();
+  }
+
+  // ===== chips =====
+  function renderChips(group, items) {
+    const root = $('[data-chip-input="' + group + '"]');
+    if (!root) return;
+    const input = root.querySelector('input');
+    $$('.chip', root).forEach(c => c.remove());
+    items.forEach(item => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = item;
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'chip__remove'; btn.setAttribute('aria-label', 'Remove ' + item); btn.textContent = '×';
+      btn.addEventListener('click', () => {
+        const arr = (getPath(state, CHIP_PATHS[group]) || []).filter(x => x !== item);
+        setPath(state, CHIP_PATHS[group], arr); renderChips(group, arr); scheduleSave(); renderPreview();
+      });
+      chip.appendChild(btn);
+      root.insertBefore(chip, input);
+    });
+  }
+  function wireChipInputs() {
+    CHIP_GROUPS.forEach(group => {
+      const root = $('[data-chip-input="' + group + '"]');
+      if (!root) return;
+      const input = root.querySelector('input');
+      const add = (val) => {
+        const v = val.trim().replace(/,$/, '').trim();
+        if (!v) return;
+        const arr = (getPath(state, CHIP_PATHS[group]) || []).slice();
+        if (!arr.includes(v)) arr.push(v);
+        setPath(state, CHIP_PATHS[group], arr); renderChips(group, arr); scheduleSave(); renderPreview();
+      };
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(input.value); input.value = ''; }
+        else if (e.key === 'Backspace' && input.value === '') {
+          const arr = (getPath(state, CHIP_PATHS[group]) || []).slice();
+          if (arr.length) { arr.pop(); setPath(state, CHIP_PATHS[group], arr); renderChips(group, arr); scheduleSave(); renderPreview(); }
+        }
+      });
+      input.addEventListener('blur', () => { if (input.value.trim()) { add(input.value); input.value = ''; } });
+    });
+  }
+
+  // ===== wiring =====
+  function wireFields() {
+    FIELD_MAP.forEach(([id, path]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', () => { setPath(state, path, el.value); scheduleSave(); renderPreview(); });
+      el.addEventListener('change', () => { setPath(state, path, el.value); scheduleSave(); renderPreview(); });
+    });
+    // color picker <-> hex text binding
+    COLOR_PAIRS.forEach(([pickerId, hexId, swId, path]) => {
+      const picker = document.getElementById(pickerId);
+      const hex = document.getElementById(hexId);
+      const sw = document.getElementById(swId);
+      picker.addEventListener('input', () => {
+        hex.value = picker.value.toUpperCase();
+        setPath(state, path, hex.value);
+        if (sw) sw.style.background = hex.value;
+        scheduleSave(); renderPreview();
+      });
+      hex.addEventListener('input', () => {
+        const v = hex.value.trim();
+        if (isHex(v)) { picker.value = expandHex(v); if (sw) sw.style.background = v; setPath(state, path, v); scheduleSave(); renderPreview(); }
+      });
+    });
+    // logo file upload -> data URL
+    const logoFile = document.getElementById('logoFile');
+    if (logoFile) {
+      logoFile.addEventListener('change', e => {
+        const f = e.target.files && e.target.files[0];
+        if (!f) return;
+        if (f.size > 5 * 1024 * 1024) { toast('Logo file too large (max 5 MB)', true); return; }
+        const r = new FileReader();
+        r.onload = () => {
+          const dataUrl = r.result;
+          setPath(state, 'visual.logo.value', dataUrl);
+          setPath(state, 'visual.logo.kind', 'upload');
+          document.getElementById('logoValue').value = dataUrl;
+          document.getElementById('logoKind').value = 'upload';
+          if (!state.visual.logo.alt) {
+            const guess = (f.name || '').replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+            setPath(state, 'visual.logo.alt', guess);
+            document.getElementById('logoAlt').value = guess;
+          }
+          scheduleSave(); renderPreview();
+          toast('Logo loaded');
+        };
+        r.onerror = () => toast('Could not read file', true);
+        r.readAsDataURL(f);
+      });
+    }
+    // checkbox groups
+    Object.keys(CHECK_GROUPS).forEach(g => {
+      $$('[data-checkgroup="' + g + '"] input[type=checkbox]').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const path = CHECK_GROUPS[g];
+          const cur = (getPath(state, path) || []).slice();
+          if (cb.checked) { if (!cur.includes(cb.value)) cur.push(cb.value); }
+          else { const i = cur.indexOf(cb.value); if (i > -1) cur.splice(i, 1); }
+          setPath(state, path, cur); scheduleSave(); renderPreview();
+        });
+      });
+    });
+  }
+
+  // ===== preview rendering =====
+  function renderPreview() {
+    const root = $('#brandPreview');
+    const p = state.visual.palette;
+    const t = state.visual.typography;
+    // scope custom props
+    root.style.setProperty('--bp-navy', p.navy);
+    root.style.setProperty('--bp-navy-deep', p.navyDeep);
+    root.style.setProperty('--bp-tint', p.navyTint);
+    root.style.setProperty('--bp-gold', p.gold);
+    root.style.setProperty('--bp-terra', p.terraDark);
+    root.style.setProperty('--bp-white', p.white);
+    root.style.setProperty('--bp-off-white', p.offWhite);
+    root.style.setProperty('--bp-font-display', '"' + (t.display || 'Plus Jakarta Sans') + '", system-ui, sans-serif');
+    root.style.setProperty('--bp-font-eyebrow', '"' + (t.eyebrow || 'DM Sans') + '", system-ui, sans-serif');
+    root.style.setProperty('--bp-font-body', '"' + (t.body || 'Plus Jakarta Sans') + '", system-ui, sans-serif');
+    root.style.setProperty('--bp-font-italic', '"' + (t.body || 'Plus Jakarta Sans') + '", system-ui, sans-serif');
+
+    // header content
+    const byline = computeByline();
+    $('#bpByline').textContent = byline || 'Dr. Faculty Name';
+    const audience = (state.studentPopulation.categories || []).slice(0, 3).join(' · ');
+    const role = [state.identity.discipline, audience].filter(Boolean).join(' · ') || 'Discipline · Audience';
+    $('#bpRole').textContent = role;
+    $('#bpEyebrow').textContent = (state.identity.discipline ? state.identity.discipline.toUpperCase() : 'YOUR COURSE')
+      + ' · ' + (audience ? audience.toUpperCase() : 'YOUR AUDIENCE');
+    $('#bpH1').textContent = 'Sample Lesson Header';
+    const commStyles = (state.communication.styles || []).join(', ');
+    $('#bpSubhead').textContent = commStyles ? ('Voice: ' + commStyles) : 'Subhead in your secondary accent';
+    $('#bpUsage').textContent = state.philosophy.studentExperience || 'Usage instructions, in your italic font, telling students how to engage with this material.';
+
+    // logo
+    const logoWrap = $('#bpLogoWrap');
+    const logoBox = $('#bpLogo');
+    const lg = state.visual.logo || { kind: 'none', value: '', alt: '' };
+    logoBox.innerHTML = '';
+    if (lg.kind !== 'none' && lg.value) {
+      if (lg.kind === 'svg' && /^\s*<svg/i.test(lg.value)) {
+        logoBox.innerHTML = lg.value;
+        const svg = logoBox.querySelector('svg');
+        if (svg) { svg.style.maxWidth = '200px'; svg.style.maxHeight = '64px'; svg.style.height = 'auto'; svg.style.width = 'auto'; svg.setAttribute('role', 'img'); if (lg.alt) svg.setAttribute('aria-label', lg.alt); }
+      } else {
+        const img = document.createElement('img');
+        img.src = lg.value;
+        img.alt = lg.alt || '';
+        img.style.maxWidth = '200px';
+        img.style.maxHeight = '64px';
+        img.style.display = 'block';
+        img.style.objectFit = 'contain';
+        logoBox.appendChild(img);
+      }
+      logoWrap.style.display = '';
+    } else {
+      logoWrap.style.display = 'none';
+    }
+
+    // avatar
+    const av = $('#bpAvatar');
+    av.innerHTML = '';
+    av.style.borderColor = ({ gold: p.gold, navy: p.navy, terra: p.terraDark, none: 'transparent' })[state.visual.avatar.ring] || p.gold;
+    av.style.background = p.navyTint;
+    av.style.color = p.navy;
+    const kind = state.visual.avatar.kind, val = state.visual.avatar.value;
+    if (kind === 'url' && val) {
+      const img = document.createElement('img'); img.alt = ''; img.src = val; av.appendChild(img);
+    } else if (kind === 'emoji' && val) {
+      av.textContent = val;
+    } else if (kind === 'initials') {
+      av.textContent = (val || initialsFrom(byline) || 'SR').slice(0, 3);
+    } else if (kind === 'none') {
+      av.style.display = 'none';
+    } else { av.textContent = initialsFrom(byline) || 'SR'; }
+    if (kind !== 'none') av.style.display = '';
+
+    // swatches
+    const sw = $('#bpSwatches'); sw.innerHTML = '';
+    const swatchList = [
+      ['Navy', p.navy], ['Navy deep', p.navyDeep], ['Navy tint', p.navyTint],
+      ['Gold', p.gold], ['Terra', p.terra], ['Terra dark', p.terraDark],
+      ['White', p.white], ['Off-white', p.offWhite]
+    ];
+    swatchList.forEach(([name, hex]) => {
+      const node = document.createElement('div'); node.className = 'bp-swatch';
+      node.innerHTML = '<div class="bp-swatch__color" style="background:' + esc(hex) + '"></div>'
+        + '<div class="bp-swatch__body"><p class="bp-swatch__name">' + esc(name) + '</p><p class="bp-swatch__hex">' + esc(hex) + '</p></div>';
+      sw.appendChild(node);
+    });
+
+    // voice
+    const voiceBits = (state.communication.styles || []).slice();
+    const signature = (state.communication.signaturePhrases || []).slice(0, 2).join(' · ');
+    $('#bpVoice').textContent = (voiceBits.length ? voiceBits.join(' · ') : 'Fill in section 7 to see how Claude will sound when writing for your course.')
+      + (signature ? '  ·  Signature: ' + signature : '');
+
+    // a11y
+    $('#bpA11y').textContent = 'Target WCAG 2.2 ' + (state.accessibility.wcagTarget || 'AA') + '. '
+      + (state.accessibility.captioning || 'Captions on every video.') + ' '
+      + (state.accessibility.expectations || 'Keyboard navigable. Visible focus rings.');
+
+    // preview meta tag
+    const customPalette = ['navy', 'gold', 'terraDark'].some(k => (DEFAULTS.visual.palette[k] || '').toLowerCase() !== (p[k] || '').toLowerCase());
+    $('#previewMeta').textContent = customPalette ? 'Custom palette' : 'PRIMARY palette';
+  }
+  function computeByline() {
+    const rule = state.identity.bylineRule || 'name-only';
+    if (rule === 'custom' && state.identity.customByline) return state.identity.customByline;
+    if (rule === 'name-plus-creds' && state.identity.credentials) return (state.identity.facultyName || '').trim() + ', ' + state.identity.credentials;
+    return (state.identity.facultyName || '').trim();
+  }
+  function initialsFrom(name) {
+    if (!name) return '';
+    return name.replace(/^Dr\.?\s+/i, '').split(/\s+/).filter(Boolean).map(s => s[0].toUpperCase()).join('').slice(0, 3);
+  }
+
+  // ===== JSON import / export =====
+  function exportJson() {
+    state.meta = { version: SCHEMA_VERSION, updated: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    downloadBlob(blob, fileBaseName() + '.brand.json');
+    toast('Brand JSON downloaded');
+  }
+  function importJson(file) {
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const parsed = JSON.parse(r.result);
+        state = deepMerge(deepClone(DEFAULTS), parsed);
+        syncFormFromState();
+        scheduleSave();
+        toast('Brand sheet imported');
+      } catch (e) { toast('Import failed: ' + e.message, true); }
+    };
+    r.readAsText(file);
+  }
+  function downloadBlob(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 0);
+  }
+  function fileBaseName() {
+    const name = (state.identity.facultyName || 'faculty').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const disc = (state.identity.discipline || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const date = new Date().toISOString().slice(0, 10);
+    return [name || 'faculty', disc, date].filter(Boolean).join('-');
+  }
+
+  // ===== HTML brand document export =====
+  function exportHtml() {
+    const html = buildBrandDoc();
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    downloadBlob(blob, fileBaseName() + '.brand.html');
+    toast('Brand document (HTML) downloaded');
+  }
+
+  function buildBrandDoc() {
+    const s = state;
+    const p = s.visual.palette;
+    const t = s.visual.typography;
+    const byline = computeByline() || 'Faculty Brand Sheet';
+    const updated = new Date().toLocaleString();
+    const list = arr => (arr && arr.length) ? '<ul>' + arr.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<p class="empty"><em>Not specified.</em></p>';
+    const para = v => v ? '<p>' + esc(v) + '</p>' : '<p class="empty"><em>Not specified.</em></p>';
+    const row = (label, v) => '<tr><th scope="row">' + esc(label) + '</th><td>' + (v ? esc(v) : '<em>Not specified.</em>') + '</td></tr>';
+
+    const swatchHtml = [
+      ['Navy', p.navy, 'Primary text, headers, borders'],
+      ['Navy deep', p.navyDeep, 'Hover state on navy elements'],
+      ['Navy tint', p.navyTint, 'Completed-state fill only'],
+      ['Brushed gold', p.gold, 'Accents, unlocked-state borders, key CTAs'],
+      ['Terra cotta', p.terra, 'Eyebrow text, secondary accents'],
+      ['Terra dark', p.terraDark, 'Terra hover, emphasis'],
+      ['White', p.white, 'Cards only'],
+      ['Off-white', p.offWhite, 'Page background only']
+    ].map(([n, h, u]) => '<div class="swatch"><div class="swatch__color" style="background:' + esc(h) + '"></div><div class="swatch__body"><p class="swatch__name">' + esc(n) + '</p><p class="swatch__hex">' + esc(h) + '</p><p class="swatch__use">' + esc(u) + '</p></div></div>').join('');
+
+    const dataJson = JSON.stringify(s);
+    const logoMarkup = renderLogoMarkup(s.visual.logo, 'max-width:280px;max-height:96px;height:auto;display:block;object-fit:contain;');
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(byline)} | Faculty Brand Sheet</title>
+<meta name="description" content="Faculty Brand Sheet for ${esc(byline)}. Generated by the MCAS Faculty Brand Sheet Builder.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: ${esc(p.navy)}; --navy-deep: ${esc(p.navyDeep)}; --navy-tint: ${esc(p.navyTint)};
+  --gold: ${esc(p.gold)}; --terra: ${esc(p.terra)}; --terra-dark: ${esc(p.terraDark)};
+  --white: ${esc(p.white)}; --off-white: ${esc(p.offWhite)};
+  --gray-500: #6B7280; --gray-700: #374151; --gray-300: #D1D5DB;
+  --font-display: '${esc(t.display)}', system-ui, sans-serif;
+  --font-eyebrow: '${esc(t.eyebrow)}', system-ui, sans-serif;
+  --font-body: '${esc(t.body)}', system-ui, sans-serif;
+  --font-italic: '${esc(t.body)}', system-ui, sans-serif;
+  --shadow-rest: 0 1px 3px rgba(0,0,0,0.08); --shadow-hover: 0 8px 16px rgba(0,0,0,0.10);
+  --radius-md: 8px; --max-w: 980px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font-body); background: var(--off-white); color: var(--navy); line-height: 1.55; }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+.skip-link { position: absolute; left: -9999px; top: 0; background: var(--navy); color: var(--white); padding: 10px 16px; z-index: 100; }
+.skip-link:focus { left: 16px; top: 16px; }
+header.brand-head { background: var(--white); border-bottom: 1px solid var(--navy-tint); padding: 32px 24px; }
+.brand-head__inner { max-width: var(--max-w); margin: 0 auto; }
+.eyebrow { font-family: var(--font-eyebrow); font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--terra-dark); margin: 0 0 10px; }
+h1.brand-h1 { font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: clamp(28px, 4vw, 42px); margin: 0 0 6px; letter-spacing: -0.01em; }
+.subhead { font-family: var(--font-display); font-weight: 600; color: var(--terra-dark); font-size: clamp(17px, 2vw, 22px); margin: 0 0 12px; }
+.usage { font-family: var(--font-italic); color: var(--gray-700); font-size: 15px; margin: 0; max-width: 70ch; }
+main { max-width: var(--max-w); margin: 0 auto; padding: 32px 24px 64px; }
+section.section { background: var(--white); border: 1px solid var(--navy-tint); border-radius: var(--radius-md); padding: 24px 28px; box-shadow: var(--shadow-rest); margin-bottom: 22px; }
+section.section h2 { font-family: var(--font-display); font-weight: 700; color: var(--navy); font-size: 22px; margin: 0 0 4px; }
+section.section .num { font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--terra-dark); font-weight: 500; margin: 0 0 4px; }
+section.section .note { font-family: var(--font-italic); color: var(--gray-700); font-size: 13px; margin: 0 0 14px; }
+.meta-table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0; }
+.meta-table th, .meta-table td { padding: 8px 10px; border-bottom: 1px solid var(--navy-tint); text-align: left; vertical-align: top; }
+.meta-table th { width: 220px; font-family: var(--font-display); font-weight: 600; color: var(--navy); background: var(--off-white); }
+ul { padding-left: 22px; margin: 6px 0; }
+li { margin: 3px 0; }
+.empty em { color: var(--gray-500); }
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin: 10px 0; }
+.swatch { background: var(--white); border: 1px solid var(--navy-tint); border-radius: 8px; overflow: hidden; }
+.swatch__color { height: 60px; border-bottom: 1px solid var(--navy-tint); }
+.swatch__body { padding: 8px 12px 12px; }
+.swatch__name { font-weight: 600; font-size: 13px; color: var(--navy); margin: 0; }
+.swatch__hex { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gray-700); margin: 2px 0 0; }
+.swatch__use { font-family: var(--font-italic); font-size: 11px; color: var(--gray-500); margin: 4px 0 0; line-height: 1.4; }
+.byline-block { display: flex; gap: 14px; align-items: center; margin: 6px 0 12px; }
+.avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--navy-tint); color: var(--navy); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 20px; border: 2px solid var(--gold); flex-shrink: 0; overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+footer.brand-foot { max-width: var(--max-w); margin: 0 auto; padding: 18px 24px 32px; font-size: 12px; color: var(--gray-500); border-top: 1px solid var(--navy-tint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.brand-foot .meta-key { font-family: 'JetBrains Mono', monospace; }
+@media print {
+  @page { margin: 16mm 12mm; }
+  body { background: var(--white); }
+  section.section { box-shadow: none; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#brand-main">Skip to content</a>
+<header class="brand-head" role="banner">
+  <div class="brand-head__inner">
+    ${logoMarkup ? '<div class="course-logo" style="margin: 0 0 14px;">' + logoMarkup + '</div>' : ''}
+    <p class="eyebrow">Faculty Brand Sheet &middot; MCAS</p>
+    <h1 class="brand-h1">${esc(byline)}</h1>
+    <p class="subhead">${esc(s.identity.discipline || 'Faculty')}${(s.studentPopulation.categories || []).length ? ' &middot; ' + esc(s.studentPopulation.categories.slice(0,3).join(' · ')) : ''}</p>
+    <p class="usage">Instructional DNA for everything Claude generates in this faculty's course. The MCAS generator reads this document as the authoritative source for tone, structure, palette, typography, and AI collaboration rules.</p>
+  </div>
+</header>
+
+<main id="brand-main">
+
+  <section class="section" aria-labelledby="h-identity">
+    <p class="num">Section 01</p>
+    <h2 id="h-identity">Faculty Identity</h2>
+    <div class="byline-block">
+      <span class="avatar" aria-hidden="true">${avatarMarkup(s, byline)}</span>
+      <div><strong>${esc(byline)}</strong><br><span style="font-family:var(--font-italic);color:var(--gray-700);font-size:13px;">${esc(s.identity.discipline || '')}</span></div>
+    </div>
+    <table class="meta-table">
+      ${row('Discipline', s.identity.discipline)}
+      ${row('Years teaching', s.identity.yearsTeaching)}
+      ${row('Clinical background', s.identity.clinicalBackground)}
+      ${row('Research background', s.identity.researchBackground)}
+      <tr><th scope="row">Professional expertise</th><td>${(s.identity.expertise || []).length ? '<ul>' + s.identity.expertise.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<em>Not specified.</em>'}</td></tr>
+      <tr><th scope="row">Byline rule</th><td>${esc(s.identity.bylineRule)}${s.identity.bylineRule === 'custom' && s.identity.customByline ? ' (' + esc(s.identity.customByline) + ')' : ''}</td></tr>
+    </table>
+  </section>
+
+  <section class="section" aria-labelledby="h-phil">
+    <p class="num">Section 02</p>
+    <h2 id="h-phil">Teaching Philosophy</h2>
+    <table class="meta-table">
+      ${row('What I believe about learning', s.philosophy.beliefs)}
+      ${row('What students should experience', s.philosophy.studentExperience)}
+      ${row('What frustrates me about traditional teaching', s.philosophy.frustrations)}
+      ${row('What student success looks like', s.philosophy.success)}
+    </table>
+  </section>
+
+  <section class="section" aria-labelledby="h-pop">
+    <p class="num">Section 03</p>
+    <h2 id="h-pop">Student Population</h2>
+    <table class="meta-table">
+      <tr><th scope="row">Student categories</th><td>${(s.studentPopulation.categories || []).length ? '<ul>' + s.studentPopulation.categories.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<em>Not specified.</em>'}</td></tr>
+      ${row('Common challenges', s.studentPopulation.commonChallenges)}
+      ${row('Career goals', s.studentPopulation.careerGoals)}
+    </table>
+  </section>
+
+  <section class="section" aria-labelledby="h-design">
+    <p class="num">Section 04</p>
+    <h2 id="h-design">Course Design Preferences</h2>
+    <table class="meta-table">
+      <tr><th scope="row">Preferred pedagogies</th><td>${(s.design.pedagogies || []).length ? '<ul>' + s.design.pedagogies.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<em>Not specified.</em>'}</td></tr>
+      ${row('Weekly rhythm', s.design.weeklyRhythm)}
+      ${row('Learning activities', s.design.learningActivities)}
+    </table>
+  </section>
+
+  <section class="section" aria-labelledby="h-content">
+    <p class="num">Section 05</p>
+    <h2 id="h-content">Content Preferences</h2>
+    <table class="meta-table">
+      <tr><th scope="row">Content styles</th><td>${(s.content.styles || []).length ? '<ul>' + s.content.styles.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<em>Not specified.</em>'}</td></tr>
+      ${row('Examples and analogies', s.content.useExamples)}
+    </table>
+  </section>
+
+  <section class="section" aria-labelledby="h-assess">
+    <p class="num">Section 06</p>
+    <h2 id="h-assess">Assessment Philosophy</h2>
+    <table class="meta-table">
+      ${row('What assessments should measure', s.assessment.measures)}
+      <tr><th scope="row">Preferred types</th><td>${(s.assessment.types || []).length ? '<ul>' + s.assessment.types.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<em>Not specified.</em>'}</td></tr>
+      ${row('AI-resistant approaches', s.assessment.aiResistant)}
+      ${row('Oral assessment use', s.assessment.oralAssessment)}
+      ${row('Authentic assessment preferences', s.assessment.authentic)}
+    </table>
+  </section>
+
+  <section class="section" aria-labelledby="h-comm">
+    <p class="num">Section 07</p>
+    <h2 id="h-comm">Communication Style</h2>
+    <table class="meta-table">
+      <tr><th scope="row">How Claude should write</th><td>${(s.communication.styles || []).length ? '<ul>' + s.communication.styles.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<em>Not specified.</em>'}</td></tr>
+      <tr><th scope="row">Signature phrases</th><td>${(s.communication.signaturePhrases || []).length ? '<ul>' + s.communication.signaturePhrases.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<em>Not specified.</em>'}</td></tr>
+      <tr><th scope="row">Words to avoid</th><td>${(s.communication.neverSay || []).length ? '<ul>' + s.communication.neverSay.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<em>Not specified.</em>'}</td></tr>
+    </table>
+  </section>
+
+  <section class="section" aria-labelledby="h-visual">
+    <p class="num">Section 08</p>
+    <h2 id="h-visual">Visual Style</h2>
+    <table class="meta-table">
+      <tr><th scope="row">Aesthetic</th><td>${(s.visual.aesthetic || []).length ? '<ul>' + s.visual.aesthetic.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' : '<em>Not specified.</em>'}</td></tr>
+      ${row('Image style', s.visual.imageStyle)}
+    </table>
+    <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:14px 0 8px;">Palette</h3>
+    <div class="swatch-grid">${swatchHtml}</div>
+    <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:18px 0 8px;">Typography</h3>
+    <table class="meta-table">
+      ${row('Display', t.display)}
+      ${row('Eyebrow', t.eyebrow)}
+      ${row('Body', t.body)}
+    </table>
+    <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:18px 0 8px;">Components</h3>
+    <table class="meta-table">
+      ${row('Card hover lift', s.visual.components.cardLift)}
+      ${row('Corner style', s.visual.components.cornerStyle)}
+      ${row('Border weight', s.visual.components.borderStyle)}
+      ${row('Primary CTA style', s.visual.components.primaryCta)}
+      ${row('Never use', s.visual.components.bannedDecor)}
+    </table>
+    <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:18px 0 8px;">Course logo</h3>
+    ${s.visual.logo && s.visual.logo.kind !== 'none' && s.visual.logo.value
+      ? '<div style="background:var(--off-white);border:1px solid var(--navy-tint);border-radius:8px;padding:18px;display:flex;align-items:center;justify-content:center;min-height:96px;">' + renderLogoMarkup(s.visual.logo, 'max-width:320px;max-height:120px;height:auto;display:block;object-fit:contain;') + '</div>'
+      : '<p class="empty"><em>No course logo set. Add one in the Brand Sheet Builder under Section 08 → Course logo to have it appear in the generator output.</em></p>'}
+    <table class="meta-table" style="margin-top:8px;">
+      ${row('Logo source', s.visual.logo && s.visual.logo.kind)}
+      ${row('Alt text', s.visual.logo && s.visual.logo.alt)}
+    </table>
+    <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:18px 0 8px;">Avatar</h3>
+    <table class="meta-table">
+      ${row('Source', s.visual.avatar.kind)}
+      ${row('Value', s.visual.avatar.value)}
+      ${row('Ring color', s.visual.avatar.ring)}
+    </table>
+  </section>
+
+  <section class="section" aria-labelledby="h-a11y">
+    <p class="num">Section 09</p>
+    <h2 id="h-a11y">Accessibility &amp; Compliance</h2>
+    <table class="meta-table">
+      ${row('Accessibility expectations', s.accessibility.expectations)}
+      ${row('WCAG goals', s.accessibility.wcagTarget)}
+      ${row('Caption requirements', s.accessibility.captioning)}
+      ${row('Alternative formats', s.accessibility.altFormats)}
+      ${row('RSI expectations', s.accessibility.rsi)}
+    </table>
+  </section>
+
+  <section class="section" aria-labelledby="h-ai">
+    <p class="num">Section 10</p>
+    <h2 id="h-ai">AI Collaboration Rules</h2>
+    <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:6px 0 6px;">Always do</h3>
+    ${list(s.collaboration.alwaysDo)}
+    <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:14px 0 6px;">Never do</h3>
+    ${list(s.collaboration.neverDo)}
+    <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:14px 0 6px;">Preferred sources</h3>
+    ${list(s.collaboration.preferredSources)}
+    <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:14px 0 6px;">Output expectations</h3>
+    ${para(s.collaboration.outputExpectations)}
+  </section>
+
+</main>
+
+<footer class="brand-foot" role="contentinfo">
+  <span>Generated by MCAS Faculty Brand Sheet Builder.</span>
+  <span class="meta-key">Updated ${esc(updated)} &middot; Schema v${SCHEMA_VERSION}</span>
+</footer>
+
+<!-- Machine-readable brand data. The MCAS generator can read this directly. -->
+<script type="application/json" id="mcas-brand-data">${dataJson.replace(/<\/script>/gi, '<\\/script>')}<\/script>
+
+<!-- iframe height-sender for Kajabi / GitHub Pages embeds -->
+<script>
+(function () {
+  var FRAME_ID = 'mcas-brand-sheet';
+  function send() {
+    var h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+    try { window.parent.postMessage({ id: FRAME_ID, height: h }, '*'); } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+  window.addEventListener('load', send);
+  window.addEventListener('resize', send);
+  send();
+})();
+<\/script>
+</body>
+</html>`;
+  }
+  function renderLogoMarkup(logo, styleStr) {
+    if (!logo || logo.kind === 'none' || !logo.value) return '';
+    const alt = logo.alt || 'Course logo';
+    if (logo.kind === 'svg' && /^\s*<svg/i.test(logo.value)) {
+      // Inject style + accessible role on the SVG root
+      return logo.value.replace(/<svg\b([^>]*)>/i, (m, attrs) => {
+        const hasStyle = /\sstyle=/.test(attrs);
+        const hasRole = /\srole=/.test(attrs);
+        const hasLabel = /\saria-label=/.test(attrs);
+        return '<svg' + attrs
+          + (hasStyle ? '' : ' style="' + styleStr + '"')
+          + (hasRole ? '' : ' role="img"')
+          + (hasLabel ? '' : ' aria-label="' + esc(alt) + '"')
+          + '>';
+      });
+    }
+    return '<img src="' + esc(logo.value) + '" alt="' + esc(alt) + '" style="' + styleStr + '">';
+  }
+  function avatarMarkup(s, byline) {
+    const kind = s.visual.avatar.kind, val = s.visual.avatar.value;
+    if (kind === 'url' && val) return '<img alt="" src="' + esc(val) + '">';
+    if (kind === 'emoji' && val) return esc(val);
+    if (kind === 'none') return '';
+    return esc((val && kind === 'initials') ? val.slice(0, 3) : initialsFrom(byline) || 'F');
+  }
+
+  // ===== PDF export (uses native print) =====
+  function exportPdf() {
+    toast('Opening print dialog. Choose "Save as PDF".');
+    setTimeout(() => window.print(), 200);
+  }
+
+  // ===== Send to MCAS generator =====
+  function sendToGenerator() {
+    // 1) If opened from generator via window.opener, postMessage back
+    try {
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage({ type: 'mcas:brand', data: state }, '*');
+        toast('Sent to opener generator');
+        return;
+      }
+    } catch (e) { /* ignore */ }
+    // 2) Try BroadcastChannel for same-origin sibling tabs
+    try {
+      if ('BroadcastChannel' in window) {
+        const bc = new BroadcastChannel('mcas-brand');
+        bc.postMessage({ type: 'mcas:brand', data: state });
+        bc.close();
+      }
+    } catch (e) { /* ignore */ }
+    // 3) Fallback: copy JSON to clipboard so user can paste into generator
+    const json = JSON.stringify(state);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(json).then(
+        () => toast('Brand JSON copied. Paste into MCAS generator.'),
+        () => toast('Copy failed. Use Export JSON instead.', true)
+      );
+    } else { toast('Use Export JSON and load it in the generator.', true); }
+  }
+
+  // ===== Reset =====
+  function openReset() { $('#resetModal').dataset.open = 'true'; $('#resetCancel').focus(); }
+  function closeReset() { $('#resetModal').dataset.open = 'false'; }
+  function doReset() {
+    state = deepClone(DEFAULTS);
+    syncFormFromState();
+    scheduleSave();
+    closeReset();
+    toast('Reset to PRIMARY defaults');
+  }
+
+  // ===== toast =====
+  let toastTimer = null;
+  function toast(msg, isErr) {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.dataset.show = 'true';
+    el.style.background = isErr ? 'var(--terra-dark)' : 'var(--navy)';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.dataset.show = 'false'; }, 3000);
+  }
+
+  // ===== sidenav scrollspy =====
+  function wireScrollspy() {
+    const links = $$('.sidenav a');
+    const targets = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const id = e.target.id;
+          links.forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + id ? 'true' : 'false'));
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+    targets.forEach(t => io.observe(t));
+  }
+
+  // ===== boot =====
+  function boot() {
+    load();
+    syncFormFromState();
+    wireFields();
+    wireChipInputs();
+    wireScrollspy();
+
+    $('#btnReset').addEventListener('click', openReset);
+    $('#resetCancel').addEventListener('click', closeReset);
+    $('#resetConfirm').addEventListener('click', doReset);
+    $('#resetModal').addEventListener('click', e => { if (e.target.id === 'resetModal') closeReset(); });
+
+    $('#btnExportJson').addEventListener('click', exportJson);
+    $('#btnExportHtml').addEventListener('click', exportHtml);
+    $('#btnExportPdf').addEventListener('click', exportPdf);
+    $('#btnSendGenerator').addEventListener('click', sendToGenerator);
+    $('#btnImport').addEventListener('click', () => $('#importFile').click());
+    $('#importFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) importJson(f); e.target.value = ''; });
+
+    // Esc closes modal
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#resetModal').dataset.open === 'true') closeReset(); });
+
+    // status initial
+    if (state.meta && state.meta.updated) {
+      setStatus('idle', 'Saved ' + new Date(state.meta.updated).toLocaleTimeString());
+    } else setStatus('idle', 'Ready');
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+
+<!-- iframe height-sender for Kajabi / GitHub Pages embeds -->
+<script>
+(function () {
+  var FRAME_ID = 'mcas-faculty-branding';
+  function send() {
+    var h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+    try { window.parent.postMessage({ id: FRAME_ID, height: h }, '*'); } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+  window.addEventListener('load', send);
+  window.addEventListener('resize', send);
+  send();
+})();
+</script>
+</body>
+</html>

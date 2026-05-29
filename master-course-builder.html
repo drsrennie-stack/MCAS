@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Master Course Builder &middot; MCAS &middot; MedMasters Collaborative</title>
+<meta name="description" content="The Master Course Builder. Capture the course blueprint and generate the course hub, module pages, and shareable blueprint package. Imports the Faculty Brand Sheet JSON.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   MASTER COURSE BUILDER (MCAS)
+   Brand DNA: BIO 004 course home. Plus Jakarta only. No italics.
+   Alternating light/dark surfaces. Rust on light, gold on dark.
+   ============================================================ */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background: #FFFFFF;
+  color: #0B1530;
+  -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+  line-height: 1.55;
+}
+img, svg { max-width: 100%; display: block; }
+a { color: inherit; }
+em, i, cite, dfn, address { font-style: normal; }
+
+:root {
+  --navy: #0B1530;
+  --navy-deep: #060A18;
+  --rust: #8B3A2E;
+  --rust-hover: #A0452F;
+  --gold: #C9A14A;
+  --gold-hover: #D4AE5C;
+  --cream: #F5F1E8;
+  --terra: #C2734D;
+  --line: rgba(11, 21, 48, 0.12);
+  --line-dark: rgba(245, 241, 232, 0.18);
+  --muted: rgba(11, 21, 48, 0.66);
+  --muted-dark: rgba(245, 241, 232, 0.74);
+  --shadow-rest: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-hover: 0 8px 18px rgba(0,0,0,0.10);
+}
+
+/* ===== KEYBOARD FOCUS ===== */
+a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.dark-section a:focus-visible, .dark-section button:focus-visible,
+.dark-section input:focus-visible, .dark-section select:focus-visible {
+  outline-color: var(--gold);
+}
+
+.skip-link {
+  position: absolute; top: -100px; left: 8px;
+  background: var(--navy); color: var(--cream);
+  padding: 12px 20px; text-decoration: none;
+  font-size: 13px; font-weight: 700;
+  border-radius: 4px; z-index: 9999;
+  letter-spacing: 0.04em;
+}
+.skip-link:focus { top: 8px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ===== APP LAYOUT ===== */
+.app-shell {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 100vh;
+}
+@media (max-width: 900px) {
+  .app-shell { grid-template-columns: 1fr; }
+}
+
+/* ===== SIDEBAR (course library) ===== */
+.sidebar {
+  background: var(--navy-deep);
+  color: var(--cream);
+  padding: 28px 20px;
+  border-right: 1px solid var(--line-dark);
+}
+.sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+.sidebar-logo-mark {
+  width: 38px; height: 38px;
+  background: var(--gold); color: var(--navy);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 18px; letter-spacing: -0.02em;
+}
+.sidebar-logo-text { display: flex; flex-direction: column; gap: 2px; }
+.sidebar-logo-title {
+  font-size: 16px; font-weight: 800;
+  color: var(--cream); letter-spacing: -0.02em;
+}
+.sidebar-logo-sub {
+  font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold);
+}
+
+.sidebar-eyebrow {
+  font-size: 10px; font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.22em; text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+.course-list { list-style: none; padding: 0; margin: 0 0 16px; display: flex; flex-direction: column; gap: 4px; }
+.course-item button {
+  width: 100%; text-align: left;
+  background: transparent; color: var(--cream);
+  border: 1px solid transparent;
+  padding: 12px 14px; border-radius: 6px;
+  font: inherit; font-size: 14px;
+  cursor: pointer;
+  display: flex; flex-direction: column; gap: 3px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.course-item button:hover { background: rgba(245, 241, 232, 0.06); }
+.course-item button.is-active {
+  background: rgba(201, 161, 74, 0.12);
+  border-color: var(--gold);
+}
+.course-item .ci-code {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold);
+}
+.course-item .ci-title { font-size: 14px; font-weight: 600; line-height: 1.3; }
+.course-item .ci-meta {
+  font-size: 11.5px; color: var(--muted-dark);
+}
+
+.sidebar-actions { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+.btn-sb {
+  background: var(--gold); color: var(--navy);
+  border: none; padding: 11px 14px;
+  font: inherit; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  border-radius: 4px; cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn-sb:hover { background: var(--gold-hover); }
+.btn-sb.is-ghost {
+  background: transparent; color: var(--cream);
+  border: 1px solid var(--line-dark);
+}
+.btn-sb.is-ghost:hover { background: rgba(245, 241, 232, 0.06); }
+.btn-sb.is-danger { background: transparent; color: var(--cream); border: 1px solid rgba(194, 115, 77, 0.6); }
+.btn-sb.is-danger:hover { background: rgba(194, 115, 77, 0.12); }
+
+.sidebar-foot {
+  border-top: 1px solid var(--line-dark);
+  padding-top: 18px;
+  font-size: 11.5px;
+  color: var(--muted-dark);
+}
+.sidebar-foot p { margin: 0 0 6px; }
+.sidebar-foot a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(201, 161, 74, 0.4); }
+
+/* ===== MAIN PANE ===== */
+.main {
+  background: #FAFAF9;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+}
+
+.main-head {
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--line);
+  padding: 22px 40px 0;
+  position: sticky; top: 0; z-index: 50;
+}
+.main-head-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 12px; }
+.main-head-title { display: flex; flex-direction: column; gap: 4px; }
+.main-eyebrow {
+  font-size: 10.5px; font-weight: 700;
+  color: var(--rust);
+  letter-spacing: 0.24em; text-transform: uppercase;
+}
+.main-headline {
+  font-size: 22px; font-weight: 800;
+  color: var(--navy); letter-spacing: -0.02em;
+  line-height: 1.15; margin: 0;
+  max-width: 720px;
+}
+.main-head-meta {
+  font-size: 12px; color: var(--muted);
+  display: flex; gap: 14px; align-items: center;
+  flex-wrap: wrap;
+}
+.save-badge {
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--rust);
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.save-badge::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--rust);
+}
+.save-badge.is-saved { color: #2E7D32; }
+.save-badge.is-saved::before { background: #2E7D32; }
+
+/* tabs */
+.tabs {
+  display: flex; gap: 2px;
+  overflow-x: auto;
+  padding-bottom: 0;
+}
+.tab {
+  background: transparent; border: none;
+  padding: 12px 14px 14px;
+  font: inherit; font-size: 12.5px; font-weight: 600;
+  color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--navy); }
+.tab.is-active {
+  color: var(--navy);
+  border-bottom-color: var(--rust);
+}
+
+/* ===== PANEL ===== */
+.panel {
+  padding: 36px 40px 80px;
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+}
+@media (max-width: 700px) {
+  .main-head { padding: 22px 22px 0; }
+  .panel { padding: 28px 22px 64px; }
+}
+
+.panel-intro {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 22px 26px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-rest);
+}
+.panel-intro-eyebrow {
+  font-size: 10.5px; font-weight: 700;
+  color: var(--rust);
+  letter-spacing: 0.24em; text-transform: uppercase;
+  margin: 0 0 8px;
+}
+.panel-intro h2 {
+  font-size: 20px; font-weight: 800;
+  color: var(--navy); letter-spacing: -0.018em;
+  margin: 0 0 8px; line-height: 1.2;
+}
+.panel-intro p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; max-width: 680px; }
+
+.section-card {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 26px 28px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow-rest);
+}
+.section-card h3 {
+  font-size: 16px; font-weight: 800;
+  color: var(--navy); letter-spacing: -0.012em;
+  margin: 0 0 4px;
+}
+.section-card .sc-note {
+  font-size: 13px; color: var(--muted);
+  margin: 0 0 18px; max-width: 680px;
+}
+
+/* form grid */
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+.grid-1 { grid-template-columns: 1fr; }
+.span2 { grid-column: 1 / -1; }
+@media (max-width: 700px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--navy);
+}
+.field .hint { font-size: 12px; color: var(--muted); margin: 0; }
+.input, .select, .textarea {
+  width: 100%;
+  font: inherit; font-size: 14px;
+  background: #FFFFFF;
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input:hover, .select:hover, .textarea:hover { border-color: rgba(11, 21, 48, 0.32); }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--rust); outline: none; box-shadow: 0 0 0 3px rgba(139, 58, 46, 0.15); }
+.textarea { min-height: 96px; resize: vertical; font-family: inherit; line-height: 1.5; }
+.textarea.tall { min-height: 140px; }
+
+/* chip pickers */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; min-height: 28px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(139, 58, 46, 0.06);
+  color: var(--navy);
+  border: 1px solid rgba(139, 58, 46, 0.18);
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+}
+.chip button {
+  background: transparent; border: none; color: var(--rust);
+  font: inherit; font-weight: 700; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.chip-input { display: flex; gap: 6px; }
+.chip-input .input { flex: 1; }
+
+/* checkbox / radio rows */
+.opt-row { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.opt {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  padding: 8px 12px; border-radius: 4px;
+  cursor: pointer; font-size: 13px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.opt:hover { border-color: rgba(11, 21, 48, 0.32); }
+.opt input { accent-color: var(--rust); }
+.opt.is-on { border-color: var(--rust); background: rgba(139, 58, 46, 0.04); }
+
+/* buttons */
+.btn {
+  background: var(--rust); color: #FFFFFF;
+  border: none; padding: 11px 18px; border-radius: 4px;
+  font: inherit; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn:hover { background: var(--rust-hover); }
+.btn.is-ghost {
+  background: transparent; color: var(--navy);
+  border: 1px solid rgba(11, 21, 48, 0.25);
+}
+.btn.is-ghost:hover { background: rgba(11, 21, 48, 0.04); }
+.btn.is-gold { background: var(--gold); color: var(--navy); }
+.btn.is-gold:hover { background: var(--gold-hover); }
+.btn.is-sm { padding: 8px 12px; font-size: 10.5px; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+/* modules list */
+.module-list { display: flex; flex-direction: column; gap: 12px; }
+.module-card {
+  background: #FAFAF9;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 18px 20px;
+}
+.module-card-head {
+  display: flex; justify-content: space-between; gap: 12px;
+  align-items: flex-start; margin-bottom: 12px;
+}
+.module-card-num {
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--rust);
+}
+.module-card-actions { display: flex; gap: 6px; }
+.icon-btn {
+  background: transparent; border: 1px solid var(--line);
+  width: 32px; height: 32px; border-radius: 4px;
+  cursor: pointer; color: var(--navy);
+  display: inline-flex; align-items: center; justify-content: center;
+  font: inherit; font-size: 13px;
+}
+.icon-btn:hover { background: rgba(11, 21, 48, 0.04); border-color: rgba(11, 21, 48, 0.32); }
+.icon-btn.is-danger { color: var(--rust); }
+.icon-btn.is-danger:hover { background: rgba(139, 58, 46, 0.06); border-color: var(--rust); }
+
+/* assessment / RSI table rows */
+.row-list { display: flex; flex-direction: column; gap: 10px; }
+.row-card {
+  background: #FAFAF9;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px 16px;
+  display: grid; gap: 10px;
+}
+
+/* generate tab */
+.gen-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.gen-card {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 22px 22px 20px;
+  display: flex; flex-direction: column; gap: 10px;
+  box-shadow: var(--shadow-rest);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.gen-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.gen-card-tag {
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--rust);
+}
+.gen-card h4 {
+  font-size: 16px; font-weight: 800;
+  color: var(--navy); margin: 0;
+  letter-spacing: -0.01em; line-height: 1.25;
+}
+.gen-card p {
+  font-size: 13px; color: var(--muted);
+  margin: 0 0 8px; line-height: 1.5;
+}
+.gen-card .btn { align-self: flex-start; }
+
+/* brand preview */
+.brand-preview-card {
+  background: #FAFAF9;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.brand-tokens { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.brand-swatch {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--navy);
+  background: #FFFFFF; border: 1px solid var(--line);
+  padding: 6px 10px; border-radius: 999px;
+}
+.swatch-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--line); }
+.brand-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+.brand-meta { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+
+/* toast / aria-live */
+.toast {
+  position: fixed; bottom: 22px; right: 22px;
+  background: var(--navy); color: var(--cream);
+  padding: 12px 18px; border-radius: 4px;
+  font-size: 13px; font-weight: 600;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 9999;
+  pointer-events: none;
+  max-width: 320px;
+}
+.toast.is-on { opacity: 1; transform: translateY(0); }
+
+/* empty state */
+.empty {
+  background: #FFFFFF;
+  border: 1px dashed rgba(11, 21, 48, 0.22);
+  border-radius: 8px;
+  padding: 36px 28px;
+  text-align: center;
+  color: var(--muted);
+}
+.empty strong { color: var(--navy); font-weight: 800; display: block; margin-bottom: 6px; font-size: 16px; }
+
+/* print */
+@media print {
+  .sidebar, .main-head, .btn-row, .toast { display: none !important; }
+  .app-shell { grid-template-columns: 1fr; }
+  .main { background: #FFFFFF; }
+  .panel { padding: 0; max-width: 100%; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#mainPanel">Skip to main content</a>
+
+<div class="app-shell">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" aria-label="Course library">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark" aria-hidden="true">M</div>
+      <div class="sidebar-logo-text">
+        <span class="sidebar-logo-title">MCAS</span>
+        <span class="sidebar-logo-sub">Course Builder</span>
+      </div>
+    </div>
+
+    <p class="sidebar-eyebrow">Course library</p>
+    <ul class="course-list" id="courseList" role="list"></ul>
+
+    <div class="sidebar-actions">
+      <button type="button" class="btn-sb" id="btnNew">+ New course</button>
+      <button type="button" class="btn-sb is-ghost" id="btnDuplicate">Duplicate current</button>
+      <button type="button" class="btn-sb is-ghost" id="btnImportCourse">Import blueprint JSON</button>
+      <input type="file" id="fileCourseImport" accept="application/json,.json" hidden>
+      <button type="button" class="btn-sb is-danger" id="btnDelete">Delete current</button>
+    </div>
+
+    <div class="sidebar-foot">
+      <p><strong style="color:var(--cream)">Workflow</strong></p>
+      <p>1. Create a course. 2. Import your faculty brand sheet JSON in Identity. 3. Fill the seven blueprint tabs. 4. Generate the hub, module pages, and JSON in the Generate tab.</p>
+      <p style="margin-top:10px"><a href="index.html" target="_top">Component index</a> &middot; <a href="faculty-branding-app.html" target="_top">Brand sheet builder</a></p>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main" id="mainPanel">
+    <header class="main-head">
+      <div class="main-head-row">
+        <div class="main-head-title">
+          <span class="main-eyebrow" id="courseEyebrow">No course selected</span>
+          <h1 class="main-headline" id="courseHeadline">Master Course Builder</h1>
+        </div>
+        <div class="main-head-meta">
+          <span class="save-badge is-saved" id="saveBadge" aria-live="polite">Saved</span>
+        </div>
+      </div>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Blueprint sections">
+        <button class="tab is-active" role="tab" aria-selected="true" data-tab="identity">Identity</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="vision">Vision</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="modules">Modules</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="assessment">Assessment</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="rsi">RSI</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="accessibility">Accessibility</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="engagement">Engagement</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="generate">Generate</button>
+      </nav>
+    </header>
+
+    <div class="panel" id="panel"></div>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   STATE + STORAGE
+   ============================================================ */
+const STORAGE_KEY = 'mcas.courseBuilder.v1';
+const SCHEMA_VERSION = 1;
+
+const FACULTY_NAME = 'Dr. Sharilyn Rennie'; // global byline rule
+
+const DEFAULT_PALETTE = {
+  navy: '#1E3D4C', navyDeep: '#142a36', navyTint: '#EDF1F3',
+  gold: '#B8924A', terra: '#C2734D', terraDark: '#A0522D',
+  white: '#FFFFFF', offWhite: '#FAFAF9'
+};
+const DEFAULT_TYPOGRAPHY = { display: 'Plus Jakarta Sans', eyebrow: 'Plus Jakarta Sans', body: 'Plus Jakarta Sans' };
+
+function newCourse(name = 'Untitled Course') {
+  return {
+    id: 'c_' + Math.random().toString(36).slice(2, 10),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    identity: {
+      name, code: '', institution: '', term: '',
+      delivery: '', format: '', durationWeeks: '',
+      bylineRule: 'name-only', credentials: '',
+      brand: { palette: { ...DEFAULT_PALETTE }, typography: { ...DEFAULT_TYPOGRAPHY }, source: '' }
+    },
+    vision: {
+      statement: '', learnerPersona: '', outcomes: [],
+      bigQuestions: '', clinicalThread: ''
+    },
+    modules: [],
+    assessment: {
+      philosophy: '', items: []
+    },
+    rsi: {
+      philosophy: '', touchpoints: []
+    },
+    accessibility: {
+      wcagTarget: 'AA',
+      captioning: 'Captions on every video. Edited transcripts on file.',
+      altFormats: '',
+      keyboardNav: '',
+      colorContrast: '',
+      known: '',
+      remediation: ''
+    },
+    engagement: {
+      strategy: '', communityMoves: '', milestones: '',
+      checkInRhythm: '', drawingSynthesis: ''
+    }
+  };
+}
+
+let state = loadState();
+let currentId = state.activeId || (state.courses[0] && state.courses[0].id) || null;
+let activeTab = 'identity';
+let saveTimer = null;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.version === SCHEMA_VERSION) return parsed;
+    }
+  } catch (e) {}
+  return { version: SCHEMA_VERSION, activeId: null, courses: [] };
+}
+
+function saveState() {
+  const badge = document.getElementById('saveBadge');
+  badge.classList.remove('is-saved'); badge.textContent = 'Saving';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      state.activeId = currentId;
+      const c = getCurrent();
+      if (c) c.updatedAt = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      badge.classList.add('is-saved'); badge.textContent = 'Saved';
+    } catch (e) {
+      badge.textContent = 'Save failed';
+      console.error(e);
+    }
+  }, 220);
+}
+
+function getCurrent() {
+  return state.courses.find(c => c.id === currentId) || null;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+function renderSidebar() {
+  const ul = document.getElementById('courseList');
+  ul.innerHTML = '';
+  if (!state.courses.length) {
+    ul.innerHTML = '<li style="color:var(--muted-dark);font-size:12.5px;padding:8px 4px;">No courses yet. Click + New course.</li>';
+    return;
+  }
+  state.courses.forEach(c => {
+    const li = document.createElement('li');
+    li.className = 'course-item';
+    li.setAttribute('role', 'listitem');
+    const code = c.identity.code || 'Untitled';
+    const name = c.identity.name || 'New Course';
+    const inst = c.identity.institution || '';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('aria-current', c.id === currentId ? 'page' : 'false');
+    if (c.id === currentId) btn.classList.add('is-active');
+    btn.innerHTML = `
+      <span class="ci-code">${escapeHtml(code)}</span>
+      <span class="ci-title">${escapeHtml(name)}</span>
+      ${inst ? `<span class="ci-meta">${escapeHtml(inst)}</span>` : ''}
+    `;
+    btn.addEventListener('click', () => {
+      currentId = c.id; activeTab = 'identity';
+      saveState(); renderAll();
+    });
+    li.appendChild(btn);
+    ul.appendChild(li);
+  });
+}
+
+/* ============================================================
+   MAIN HEAD
+   ============================================================ */
+function renderHead() {
+  const c = getCurrent();
+  const eyebrow = document.getElementById('courseEyebrow');
+  const head = document.getElementById('courseHeadline');
+  if (!c) {
+    eyebrow.textContent = 'No course selected';
+    head.textContent = 'Master Course Builder';
+    return;
+  }
+  const code = c.identity.code ? c.identity.code + ' · ' : '';
+  const inst = c.identity.institution ? ' · ' + c.identity.institution : '';
+  eyebrow.textContent = code + (c.identity.name || 'Untitled Course') + inst;
+  head.textContent = c.identity.name || 'Untitled Course';
+
+  document.querySelectorAll('.tab').forEach(t => {
+    const on = t.dataset.tab === activeTab;
+    t.classList.toggle('is-active', on);
+    t.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const t = e.target.closest('.tab');
+  if (!t) return;
+  activeTab = t.dataset.tab;
+  renderAll();
+  document.getElementById('mainPanel').scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ============================================================
+   PANEL RENDERERS
+   ============================================================ */
+function renderPanel() {
+  const panel = document.getElementById('panel');
+  panel.innerHTML = '';
+  const c = getCurrent();
+  if (!c) {
+    panel.innerHTML = `
+      <div class="empty">
+        <strong>Welcome to the Master Course Builder.</strong>
+        Create a course to begin. Each course is a complete blueprint: identity, vision, modules, assessment, RSI, accessibility, and engagement. When the blueprint is ready, the Generate tab builds a course hub, module pages, and a JSON package you can hand off to the rest of the MCAS suite.
+      </div>`;
+    return;
+  }
+  const r = {
+    identity: renderIdentity,
+    vision: renderVision,
+    modules: renderModules,
+    assessment: renderAssessment,
+    rsi: renderRSI,
+    accessibility: renderAccessibility,
+    engagement: renderEngagement,
+    generate: renderGenerate
+  }[activeTab];
+  r(c, panel);
+}
+
+/* ---------- IDENTITY ---------- */
+function renderIdentity(c, root) {
+  root.innerHTML = `
+    <div class="panel-intro">
+      <p class="panel-intro-eyebrow">Identity</p>
+      <h2>Who is teaching this, where, and when.</h2>
+      <p>Course metadata feeds every generated header, footer, and JSON export. Import your Faculty Brand Sheet JSON here so the visual identity propagates to every artifact this app produces.</p>
+    </div>
+
+    <section class="section-card" aria-labelledby="idCourseH">
+      <h3 id="idCourseH">Course metadata</h3>
+      <p class="sc-note">Course-level metadata. Used in headers, footers, and generated filenames.</p>
+      <div class="grid">
+        <div class="field">
+          <label for="fName">Course name</label>
+          <input class="input" id="fName" type="text" value="${attr(c.identity.name)}" placeholder="Human Anatomy and Physiology">
+        </div>
+        <div class="field">
+          <label for="fCode">Course code</label>
+          <input class="input" id="fCode" type="text" value="${attr(c.identity.code)}" placeholder="BIO 431">
+        </div>
+        <div class="field">
+          <label for="fInst">Institution</label>
+          <input class="input" id="fInst" type="text" value="${attr(c.identity.institution)}" placeholder="American River College">
+        </div>
+        <div class="field">
+          <label for="fTerm">Term</label>
+          <input class="input" id="fTerm" type="text" value="${attr(c.identity.term)}" placeholder="Fall 2026">
+        </div>
+        <div class="field">
+          <label for="fDuration">Duration (weeks)</label>
+          <input class="input" id="fDuration" type="text" value="${attr(c.identity.durationWeeks)}" placeholder="16">
+        </div>
+        <div class="field">
+          <label for="fFormat">Format</label>
+          <select class="select" id="fFormat">
+            ${opt('', 'Choose one', c.identity.format)}
+            ${opt('In-person', 'In-person', c.identity.format)}
+            ${opt('Online async', 'Online async', c.identity.format)}
+            ${opt('Online sync', 'Online sync', c.identity.format)}
+            ${opt('Hybrid', 'Hybrid', c.identity.format)}
+            ${opt('Intensive', 'Intensive (compressed)', c.identity.format)}
+          </select>
+        </div>
+        <div class="field span2">
+          <label for="fDelivery">Delivery model</label>
+          <input class="input" id="fDelivery" type="text" value="${attr(c.identity.delivery)}" placeholder="Team-Based Learning, Monday through Thursday">
+          <p class="hint">A one-line description of how class time works. Read by students.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card" aria-labelledby="idBylineH">
+      <h3 id="idBylineH">Byline rule</h3>
+      <p class="sc-note">Student-facing materials follow the global byline rule. Default: name-only, no credential suffix.</p>
+      <div class="grid">
+        <div class="field">
+          <label for="fByline">Byline mode</label>
+          <select class="select" id="fByline">
+            ${opt('name-only', 'Name only (Dr. Sharilyn Rennie)', c.identity.bylineRule)}
+            ${opt('full', 'Name with credentials', c.identity.bylineRule)}
+          </select>
+        </div>
+        <div class="field">
+          <label for="fCredentials">Credentials (private)</label>
+          <input class="input" id="fCredentials" type="text" value="${attr(c.identity.credentials)}" placeholder="ND, MD, PhD, RN">
+          <p class="hint">Stored only. Stripped from student-facing exports when byline mode is name-only.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card" aria-labelledby="idBrandH">
+      <h3 id="idBrandH">Faculty brand sheet</h3>
+      <p class="sc-note">Import the JSON export from the Faculty Brand Sheet Builder. The palette and typography drive every generated artifact.</p>
+      <div class="btn-row" style="margin-top:0">
+        <label class="btn is-gold is-sm" for="fBrandImport" style="cursor:pointer;">Import brand JSON</label>
+        <input type="file" id="fBrandImport" accept="application/json,.json" hidden>
+        <button type="button" class="btn is-ghost is-sm" id="fBrandReset">Reset to PRIMARY</button>
+      </div>
+      <div class="brand-preview-card" style="margin-top:18px;">
+        <span class="brand-name" id="brandSourceName">${c.identity.brand.source ? escapeHtml(c.identity.brand.source) : 'PRIMARY palette (default)'}</span>
+        <p class="brand-meta">Display font: <strong>${escapeHtml(c.identity.brand.typography.display)}</strong> &middot; Body font: <strong>${escapeHtml(c.identity.brand.typography.body)}</strong></p>
+        <div class="brand-tokens" id="brandTokens"></div>
+      </div>
+    </section>
+  `;
+
+  // bind metadata
+  bindText('fName', v => c.identity.name = v, () => renderSidebar() || renderHead());
+  bindText('fCode', v => c.identity.code = v, () => renderSidebar() || renderHead());
+  bindText('fInst', v => c.identity.institution = v, () => renderSidebar() || renderHead());
+  bindText('fTerm', v => c.identity.term = v);
+  bindText('fDuration', v => c.identity.durationWeeks = v);
+  bindSelect('fFormat', v => c.identity.format = v);
+  bindText('fDelivery', v => c.identity.delivery = v);
+  bindSelect('fByline', v => c.identity.bylineRule = v);
+  bindText('fCredentials', v => c.identity.credentials = v);
+
+  // brand
+  renderBrandTokens(c);
+  document.getElementById('fBrandImport').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const j = JSON.parse(reader.result);
+        applyBrandImport(c, j);
+        toast('Brand sheet imported.');
+        renderPanel();
+        saveState();
+      } catch (err) {
+        toast('Could not parse brand JSON.');
+      }
+    };
+    reader.readAsText(f);
+  });
+  document.getElementById('fBrandReset').addEventListener('click', () => {
+    c.identity.brand = { palette: { ...DEFAULT_PALETTE }, typography: { ...DEFAULT_TYPOGRAPHY }, source: '' };
+    saveState(); renderPanel(); toast('Brand reset to PRIMARY.');
+  });
+}
+
+function applyBrandImport(c, j) {
+  // accept the faculty-branding-app.html schema
+  if (j && j.visual && j.visual.palette) {
+    const p = j.visual.palette;
+    c.identity.brand.palette = {
+      navy: p.navy || DEFAULT_PALETTE.navy,
+      navyDeep: p.navyDeep || DEFAULT_PALETTE.navyDeep,
+      navyTint: p.navyTint || DEFAULT_PALETTE.navyTint,
+      gold: p.gold || DEFAULT_PALETTE.gold,
+      terra: p.terra || DEFAULT_PALETTE.terra,
+      terraDark: p.terraDark || DEFAULT_PALETTE.terraDark,
+      white: p.white || DEFAULT_PALETTE.white,
+      offWhite: p.offWhite || DEFAULT_PALETTE.offWhite
+    };
+  }
+  if (j && j.visual && j.visual.typography) {
+    const t = j.visual.typography;
+    c.identity.brand.typography = {
+      display: t.display || DEFAULT_TYPOGRAPHY.display,
+      eyebrow: t.eyebrow || DEFAULT_TYPOGRAPHY.eyebrow,
+      body: t.body || DEFAULT_TYPOGRAPHY.body
+    };
+  }
+  const src = (j && j.identity && j.identity.facultyName) ? (j.identity.facultyName + ' brand sheet') : 'Imported brand sheet';
+  c.identity.brand.source = src;
+}
+
+function renderBrandTokens(c) {
+  const root = document.getElementById('brandTokens');
+  if (!root) return;
+  const p = c.identity.brand.palette;
+  const items = [
+    ['Navy', p.navy], ['Navy deep', p.navyDeep], ['Navy tint', p.navyTint],
+    ['Gold', p.gold], ['Terra', p.terra], ['Terra dark', p.terraDark],
+    ['White', p.white], ['Off-white', p.offWhite]
+  ];
+  root.innerHTML = items.map(([n, v]) => `
+    <span class="brand-swatch"><span class="swatch-dot" style="background:${v}"></span>${n} <code style="opacity:.66;margin-left:4px;font-family:inherit;font-size:11px;">${v}</code></span>
+  `).join('');
+  const src = document.getElementById('brandSourceName');
+  if (src) src.textContent = c.identity.brand.source || 'PRIMARY palette (default)';
+}
+
+/* ---------- VISION ---------- */
+function renderVision(c, root) {
+  root.innerHTML = `
+    <div class="panel-intro">
+      <p class="panel-intro-eyebrow">Vision</p>
+      <h2>What this course is for, and who it is for.</h2>
+      <p>Course-level outcomes (CLOs) drive every downstream alignment. Keep them measurable. Each CLO should be observable in a student deliverable.</p>
+    </div>
+
+    <section class="section-card">
+      <h3>Course vision statement</h3>
+      <p class="sc-note">One paragraph students can read on day one. Why this course exists. What changes by the end.</p>
+      <textarea class="textarea tall" id="vStatement" placeholder="By the end of this course, students will...">${escapeHtml(c.vision.statement)}</textarea>
+    </section>
+
+    <section class="section-card">
+      <h3>Learner persona</h3>
+      <p class="sc-note">Who is in front of you. Their goals, constraints, and prior preparation.</p>
+      <textarea class="textarea" id="vPersona" placeholder="Pre-nursing students balancing 12 to 15 units with shift work. Strong on memorization, less practiced on synthesis.">${escapeHtml(c.vision.learnerPersona)}</textarea>
+    </section>
+
+    <section class="section-card">
+      <h3>Course-level outcomes (CLOs)</h3>
+      <p class="sc-note">Add each outcome. Measurable verbs. Aim for five to seven CLOs. Module-level outcomes (MLOs) live on the Modules tab.</p>
+      <div id="cloList" class="row-list"></div>
+      <div class="btn-row"><button class="btn is-gold is-sm" type="button" id="addCLO">+ Add outcome</button></div>
+    </section>
+
+    <section class="section-card">
+      <h3>Big questions and clinical thread</h3>
+      <div class="grid grid-1">
+        <div class="field">
+          <label for="vBig">Driving questions</label>
+          <textarea class="textarea" id="vBig" placeholder="What does this system do, and what happens when it stops doing it?">${escapeHtml(c.vision.bigQuestions)}</textarea>
+        </div>
+        <div class="field">
+          <label for="vClin">Clinical thread</label>
+          <textarea class="textarea" id="vClin" placeholder="Clinical context threaded through anatomy and physiology instruction. Names the cases, simulators, or patient narratives that run through the term.">${escapeHtml(c.vision.clinicalThread)}</textarea>
+        </div>
+      </div>
+    </section>
+  `;
+  bindText('vStatement', v => c.vision.statement = v);
+  bindText('vPersona', v => c.vision.learnerPersona = v);
+  bindText('vBig', v => c.vision.bigQuestions = v);
+  bindText('vClin', v => c.vision.clinicalThread = v);
+  renderCLOs(c);
+  document.getElementById('addCLO').addEventListener('click', () => {
+    c.vision.outcomes.push({ id: 'clo_' + Math.random().toString(36).slice(2,8), text: '', bloom: '' });
+    saveState(); renderCLOs(c);
+  });
+}
+
+function renderCLOs(c) {
+  const root = document.getElementById('cloList');
+  if (!c.vision.outcomes.length) {
+    root.innerHTML = '<div class="empty" style="padding:22px;"><strong>No outcomes yet.</strong>Add five to seven course-level outcomes.</div>';
+    return;
+  }
+  root.innerHTML = c.vision.outcomes.map((o, i) => `
+    <div class="row-card">
+      <div class="grid">
+        <div class="field span2">
+          <label for="clo_${o.id}">CLO ${i+1}</label>
+          <input class="input" id="clo_${o.id}" type="text" value="${attr(o.text)}" placeholder="Analyze the structural and functional relationship between...">
+        </div>
+        <div class="field">
+          <label for="bloom_${o.id}">Bloom level</label>
+          <select class="select" id="bloom_${o.id}">
+            ${['', 'Remember', 'Understand', 'Apply', 'Analyze', 'Evaluate', 'Create'].map(b => opt(b, b || 'Choose', o.bloom)).join('')}
+          </select>
+        </div>
+        <div class="field" style="align-self:end;">
+          <button class="btn is-ghost is-sm" type="button" data-rm="${o.id}">Remove</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  c.vision.outcomes.forEach(o => {
+    bindText('clo_' + o.id, v => o.text = v);
+    bindSelect('bloom_' + o.id, v => o.bloom = v);
+  });
+  root.querySelectorAll('[data-rm]').forEach(b => {
+    b.addEventListener('click', () => {
+      c.vision.outcomes = c.vision.outcomes.filter(x => x.id !== b.dataset.rm);
+      saveState(); renderCLOs(c);
+    });
+  });
+}
+
+/* ---------- MODULES ---------- */
+function renderModules(c, root) {
+  root.innerHTML = `
+    <div class="panel-intro">
+      <p class="panel-intro-eyebrow">Modules</p>
+      <h2>Sequence the course.</h2>
+      <p>Each module captures topic, weeks, MLOs, readings, activities, and the assessments aligned to it. When you generate course material, each module becomes its own HTML page linked from the course hub.</p>
+    </div>
+
+    <div id="modList" class="module-list"></div>
+    <div class="btn-row">
+      <button class="btn is-gold" type="button" id="addModule">+ Add module</button>
+      <button class="btn is-ghost" type="button" id="addManyModules">+ Add seven (build the term)</button>
+    </div>
+  `;
+  renderModuleList(c);
+  document.getElementById('addModule').addEventListener('click', () => {
+    c.modules.push(newModule(c.modules.length + 1));
+    saveState(); renderModuleList(c);
+  });
+  document.getElementById('addManyModules').addEventListener('click', () => {
+    const start = c.modules.length + 1;
+    for (let i = 0; i < 7; i++) c.modules.push(newModule(start + i));
+    saveState(); renderModuleList(c);
+  });
+}
+
+function newModule(num) {
+  return {
+    id: 'm_' + Math.random().toString(36).slice(2, 8),
+    number: String(num).padStart(2, '0'),
+    title: '',
+    weeks: '',
+    mlos: '',
+    topics: '',
+    readings: '',
+    activities: '',
+    assessments: '',
+    rsiNotes: ''
+  };
+}
+
+function renderModuleList(c) {
+  const root = document.getElementById('modList');
+  if (!c.modules.length) {
+    root.innerHTML = '<div class="empty"><strong>No modules yet.</strong>Add modules to sequence the course.</div>';
+    return;
+  }
+  root.innerHTML = c.modules.map((m, i) => `
+    <article class="module-card" aria-labelledby="mh_${m.id}">
+      <header class="module-card-head">
+        <div>
+          <span class="module-card-num">Module ${m.number || (i+1)}</span>
+          <h4 id="mh_${m.id}" style="margin:4px 0 0;font-size:15px;font-weight:800;color:var(--navy);">${escapeHtml(m.title || 'Untitled module')}</h4>
+        </div>
+        <div class="module-card-actions">
+          <button class="icon-btn" type="button" data-move-up="${m.id}" aria-label="Move module up">&uarr;</button>
+          <button class="icon-btn" type="button" data-move-down="${m.id}" aria-label="Move module down">&darr;</button>
+          <button class="icon-btn is-danger" type="button" data-rm-module="${m.id}" aria-label="Remove module">&times;</button>
+        </div>
+      </header>
+      <div class="grid">
+        <div class="field">
+          <label for="mn_${m.id}">Module number</label>
+          <input class="input" id="mn_${m.id}" type="text" value="${attr(m.number)}" placeholder="01">
+        </div>
+        <div class="field">
+          <label for="mw_${m.id}">Week(s)</label>
+          <input class="input" id="mw_${m.id}" type="text" value="${attr(m.weeks)}" placeholder="Weeks 1 to 2">
+        </div>
+        <div class="field span2">
+          <label for="mt_${m.id}">Module title</label>
+          <input class="input" id="mt_${m.id}" type="text" value="${attr(m.title)}" placeholder="Tissues and the Integumentary System">
+        </div>
+        <div class="field span2">
+          <label for="mlo_${m.id}">Module-level outcomes</label>
+          <textarea class="textarea" id="mlo_${m.id}" placeholder="One per line. Measurable verbs.">${escapeHtml(m.mlos)}</textarea>
+        </div>
+        <div class="field">
+          <label for="mto_${m.id}">Topics</label>
+          <textarea class="textarea" id="mto_${m.id}" placeholder="Histology of epithelial tissue. Connective tissue classification...">${escapeHtml(m.topics)}</textarea>
+        </div>
+        <div class="field">
+          <label for="mr_${m.id}">Readings and resources</label>
+          <textarea class="textarea" id="mr_${m.id}" placeholder="Marieb Ch. 4. Digital Human Anatomy Atlas: histology page.">${escapeHtml(m.readings)}</textarea>
+        </div>
+        <div class="field">
+          <label for="ma_${m.id}">Learning activities</label>
+          <textarea class="textarea" id="ma_${m.id}" placeholder="iRAT and tRAT. Application case: burn classification. Drawing-based synthesis.">${escapeHtml(m.activities)}</textarea>
+        </div>
+        <div class="field">
+          <label for="mas_${m.id}">Aligned assessments</label>
+          <textarea class="textarea" id="mas_${m.id}" placeholder="Lab Exam 1. Drawing synthesis check.">${escapeHtml(m.assessments)}</textarea>
+        </div>
+        <div class="field span2">
+          <label for="mrsi_${m.id}">RSI notes for this module</label>
+          <textarea class="textarea" id="mrsi_${m.id}" placeholder="Where regular and substantive interaction happens in this module: announcements, feedback windows, discussion prompts.">${escapeHtml(m.rsiNotes)}</textarea>
+        </div>
+      </div>
+    </article>
+  `).join('');
+  c.modules.forEach(m => {
+    bindText('mn_'+m.id, v => m.number = v, () => renderModuleHeads(c));
+    bindText('mw_'+m.id, v => m.weeks = v);
+    bindText('mt_'+m.id, v => m.title = v, () => renderModuleHeads(c));
+    bindText('mlo_'+m.id, v => m.mlos = v);
+    bindText('mto_'+m.id, v => m.topics = v);
+    bindText('mr_'+m.id, v => m.readings = v);
+    bindText('ma_'+m.id, v => m.activities = v);
+    bindText('mas_'+m.id, v => m.assessments = v);
+    bindText('mrsi_'+m.id, v => m.rsiNotes = v);
+  });
+  root.querySelectorAll('[data-rm-module]').forEach(b => b.addEventListener('click', () => {
+    c.modules = c.modules.filter(x => x.id !== b.dataset.rmModule);
+    saveState(); renderModuleList(c);
+  }));
+  root.querySelectorAll('[data-move-up]').forEach(b => b.addEventListener('click', () => move(c.modules, b.dataset.moveUp, -1) && (saveState(), renderModuleList(c))));
+  root.querySelectorAll('[data-move-down]').forEach(b => b.addEventListener('click', () => move(c.modules, b.dataset.moveDown, 1) && (saveState(), renderModuleList(c))));
+}
+
+function renderModuleHeads(c) {
+  c.modules.forEach((m, i) => {
+    const h = document.getElementById('mh_'+m.id);
+    if (h) h.textContent = m.title || 'Untitled module';
+    const card = h && h.closest('article');
+    const num = card && card.querySelector('.module-card-num');
+    if (num) num.textContent = 'Module ' + (m.number || (i+1));
+  });
+}
+
+function move(arr, id, delta) {
+  const i = arr.findIndex(x => x.id === id);
+  const j = i + delta;
+  if (i < 0 || j < 0 || j >= arr.length) return false;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  return true;
+}
+
+/* ---------- ASSESSMENT ---------- */
+function renderAssessment(c, root) {
+  root.innerHTML = `
+    <div class="panel-intro">
+      <p class="panel-intro-eyebrow">Assessment Map</p>
+      <h2>What counts. What it costs. What it proves.</h2>
+      <p>Each item maps to a CLO. Weights total to 100 percent. The generated assessment map page renders this as a CLO-aligned matrix.</p>
+    </div>
+
+    <section class="section-card">
+      <h3>Assessment philosophy</h3>
+      <textarea class="textarea" id="aPhil" placeholder="Given not Googled. Drawing-based synthesis as integrity mechanism. Authentic application over recall.">${escapeHtml(c.assessment.philosophy)}</textarea>
+    </section>
+
+    <section class="section-card">
+      <h3>Assessment items</h3>
+      <p class="sc-note">Add each gradable item. Weights, type, and CLO alignment.</p>
+      <div id="aList" class="row-list"></div>
+      <div class="btn-row">
+        <button class="btn is-gold is-sm" type="button" id="addAssess">+ Add assessment</button>
+        <span class="brand-meta" id="aTotal" style="align-self:center;">Total weight: 0%</span>
+      </div>
+    </section>
+  `;
+  bindText('aPhil', v => c.assessment.philosophy = v);
+  renderAssessList(c);
+  document.getElementById('addAssess').addEventListener('click', () => {
+    c.assessment.items.push({ id: 'a_'+Math.random().toString(36).slice(2,8), name: '', type: '', weight: '', cloAlign: '', when: '' });
+    saveState(); renderAssessList(c);
+  });
+}
+
+function renderAssessList(c) {
+  const root = document.getElementById('aList');
+  if (!c.assessment.items.length) {
+    root.innerHTML = '<div class="empty" style="padding:22px;"><strong>No assessments yet.</strong>Add midterms, finals, projects, RATs.</div>';
+    updateAssessTotal(c); return;
+  }
+  root.innerHTML = c.assessment.items.map(a => `
+    <div class="row-card">
+      <div class="grid">
+        <div class="field"><label for="an_${a.id}">Name</label><input class="input" id="an_${a.id}" value="${attr(a.name)}" placeholder="Lab Exam 1"></div>
+        <div class="field"><label for="at_${a.id}">Type</label>
+          <select class="select" id="at_${a.id}">
+            ${['','iRAT/tRAT','Lab exam','Midterm','Final','Project','Drawing synthesis','Application case','Practical','Discussion','Reflection','Other'].map(t => opt(t, t || 'Choose', a.type)).join('')}
+          </select>
+        </div>
+        <div class="field"><label for="aw_${a.id}">Weight (%)</label><input class="input" id="aw_${a.id}" type="number" min="0" max="100" value="${attr(a.weight)}" placeholder="15"></div>
+        <div class="field"><label for="aWhen_${a.id}">When</label><input class="input" id="aWhen_${a.id}" value="${attr(a.when)}" placeholder="End of Week 4"></div>
+        <div class="field span2"><label for="acl_${a.id}">CLOs measured</label><input class="input" id="acl_${a.id}" value="${attr(a.cloAlign)}" placeholder="CLO 1, CLO 3"></div>
+        <div class="field" style="align-self:end;"><button class="btn is-ghost is-sm" type="button" data-rma="${a.id}">Remove</button></div>
+      </div>
+    </div>
+  `).join('');
+  c.assessment.items.forEach(a => {
+    bindText('an_'+a.id, v => a.name = v);
+    bindSelect('at_'+a.id, v => a.type = v);
+    bindText('aw_'+a.id, v => { a.weight = v; updateAssessTotal(c); });
+    bindText('aWhen_'+a.id, v => a.when = v);
+    bindText('acl_'+a.id, v => a.cloAlign = v);
+  });
+  root.querySelectorAll('[data-rma]').forEach(b => b.addEventListener('click', () => {
+    c.assessment.items = c.assessment.items.filter(x => x.id !== b.dataset.rma);
+    saveState(); renderAssessList(c);
+  }));
+  updateAssessTotal(c);
+}
+function updateAssessTotal(c) {
+  const t = c.assessment.items.reduce((s, a) => s + (parseFloat(a.weight) || 0), 0);
+  const el = document.getElementById('aTotal');
+  if (el) {
+    el.textContent = 'Total weight: ' + Math.round(t * 10) / 10 + '%';
+    el.style.color = (Math.abs(t - 100) < 0.01) ? '#2E7D32' : 'var(--rust)';
+  }
+}
+
+/* ---------- RSI ---------- */
+function renderRSI(c, root) {
+  root.innerHTML = `
+    <div class="panel-intro">
+      <p class="panel-intro-eyebrow">RSI Map</p>
+      <h2>Regular and substantive interaction.</h2>
+      <p>For online and DE compliance: faculty-initiated, regular, substantive contact. Each touchpoint names what, when, and how.</p>
+    </div>
+
+    <section class="section-card">
+      <h3>RSI philosophy and rhythm</h3>
+      <textarea class="textarea" id="rsiPhil" placeholder="Weekly announcements every Monday. Personalized feedback on each major submission within 7 days. Discussion replies twice weekly. Synchronous office hours weekly.">${escapeHtml(c.rsi.philosophy)}</textarea>
+    </section>
+
+    <section class="section-card">
+      <h3>RSI touchpoints</h3>
+      <p class="sc-note">Each row is a recurring contact event. Generated RSI page maps these to a weekly grid.</p>
+      <div id="rsiList" class="row-list"></div>
+      <div class="btn-row"><button class="btn is-gold is-sm" type="button" id="addRSI">+ Add touchpoint</button></div>
+    </section>
+  `;
+  bindText('rsiPhil', v => c.rsi.philosophy = v);
+  renderRSIList(c);
+  document.getElementById('addRSI').addEventListener('click', () => {
+    c.rsi.touchpoints.push({ id: 'r_'+Math.random().toString(36).slice(2,8), name: '', cadence: '', mode: '', description: '' });
+    saveState(); renderRSIList(c);
+  });
+}
+function renderRSIList(c) {
+  const root = document.getElementById('rsiList');
+  if (!c.rsi.touchpoints.length) {
+    root.innerHTML = '<div class="empty" style="padding:22px;"><strong>No touchpoints yet.</strong>Add weekly announcements, feedback windows, office hours.</div>';
+    return;
+  }
+  root.innerHTML = c.rsi.touchpoints.map(r => `
+    <div class="row-card">
+      <div class="grid">
+        <div class="field"><label for="rn_${r.id}">Touchpoint</label><input class="input" id="rn_${r.id}" value="${attr(r.name)}" placeholder="Weekly announcement"></div>
+        <div class="field"><label for="rc_${r.id}">Cadence</label><input class="input" id="rc_${r.id}" value="${attr(r.cadence)}" placeholder="Weekly, Monday 8 AM"></div>
+        <div class="field"><label for="rm_${r.id}">Mode</label>
+          <select class="select" id="rm_${r.id}">
+            ${['','Announcement','Email','Discussion reply','Personalized feedback','Live session','Office hours','Recorded message','Other'].map(t => opt(t, t || 'Choose', r.mode)).join('')}
+          </select>
+        </div>
+        <div class="field span2"><label for="rd_${r.id}">What this contact involves</label><textarea class="textarea" id="rd_${r.id}" placeholder="Recap last week, preview this week, name an upcoming risk.">${escapeHtml(r.description)}</textarea></div>
+        <div class="field" style="align-self:end;"><button class="btn is-ghost is-sm" type="button" data-rmr="${r.id}">Remove</button></div>
+      </div>
+    </div>
+  `).join('');
+  c.rsi.touchpoints.forEach(r => {
+    bindText('rn_'+r.id, v => r.name = v);
+    bindText('rc_'+r.id, v => r.cadence = v);
+    bindSelect('rm_'+r.id, v => r.mode = v);
+    bindText('rd_'+r.id, v => r.description = v);
+  });
+  root.querySelectorAll('[data-rmr]').forEach(b => b.addEventListener('click', () => {
+    c.rsi.touchpoints = c.rsi.touchpoints.filter(x => x.id !== b.dataset.rmr);
+    saveState(); renderRSIList(c);
+  }));
+}
+
+/* ---------- ACCESSIBILITY ---------- */
+function renderAccessibility(c, root) {
+  root.innerHTML = `
+    <div class="panel-intro">
+      <p class="panel-intro-eyebrow">Accessibility Map</p>
+      <h2>WCAG 2.2 AA floor. AAA where achievable.</h2>
+      <p>Feeds the compliance-notes.md scaffold for this course. Captures what passes today and what is on the remediation list.</p>
+    </div>
+
+    <section class="section-card">
+      <h3>Targets and standing practice</h3>
+      <div class="grid">
+        <div class="field">
+          <label for="aTarget">WCAG target</label>
+          <select class="select" id="aTarget">
+            ${['AA', 'AA+', 'AAA'].map(t => opt(t, 'WCAG 2.2 ' + t, c.accessibility.wcagTarget)).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label for="aCap">Captioning standard</label>
+          <input class="input" id="aCap" value="${attr(c.accessibility.captioning)}">
+        </div>
+        <div class="field span2">
+          <label for="aAlt">Alternative formats offered</label>
+          <textarea class="textarea" id="aAlt" placeholder="Tagged PDFs. Plain text equivalents for image-heavy content.">${escapeHtml(c.accessibility.altFormats)}</textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h3>Audit notes</h3>
+      <div class="grid grid-1">
+        <div class="field">
+          <label for="aKB">Keyboard navigation</label>
+          <textarea class="textarea" id="aKB" placeholder="All interactive elements reachable by Tab. Focus visible. Skip link verified.">${escapeHtml(c.accessibility.keyboardNav)}</textarea>
+        </div>
+        <div class="field">
+          <label for="aCC">Color contrast audit</label>
+          <textarea class="textarea" id="aCC" placeholder="Navy on off-white: 14:1. Rust on white: 5.6:1. All pass AA normal text.">${escapeHtml(c.accessibility.colorContrast)}</textarea>
+        </div>
+        <div class="field">
+          <label for="aKnown">Known limitations</label>
+          <textarea class="textarea" id="aKnown" placeholder="Legacy lab manual scans pending OCR.">${escapeHtml(c.accessibility.known)}</textarea>
+        </div>
+        <div class="field">
+          <label for="aRem">Remediation plan</label>
+          <textarea class="textarea" id="aRem" placeholder="OCR pass on lab manual Weeks 1 to 3. Re-record Module 2 lecture with captions.">${escapeHtml(c.accessibility.remediation)}</textarea>
+        </div>
+      </div>
+    </section>
+  `;
+  bindSelect('aTarget', v => c.accessibility.wcagTarget = v);
+  bindText('aCap', v => c.accessibility.captioning = v);
+  bindText('aAlt', v => c.accessibility.altFormats = v);
+  bindText('aKB', v => c.accessibility.keyboardNav = v);
+  bindText('aCC', v => c.accessibility.colorContrast = v);
+  bindText('aKnown', v => c.accessibility.known = v);
+  bindText('aRem', v => c.accessibility.remediation = v);
+}
+
+/* ---------- ENGAGEMENT ---------- */
+function renderEngagement(c, root) {
+  root.innerHTML = `
+    <div class="panel-intro">
+      <p class="panel-intro-eyebrow">Engagement</p>
+      <h2>How the course feels.</h2>
+      <p>Strategy, milestones, and the moves that turn a roster into a learning community.</p>
+    </div>
+
+    <section class="section-card">
+      <h3>Engagement strategy</h3>
+      <div class="grid grid-1">
+        <div class="field">
+          <label for="eStrat">Strategy</label>
+          <textarea class="textarea" id="eStrat" placeholder="Drawing-based synthesis as the keystone activity. Team-based learning for application.">${escapeHtml(c.engagement.strategy)}</textarea>
+        </div>
+        <div class="field">
+          <label for="eComm">Community-building moves</label>
+          <textarea class="textarea" id="eComm" placeholder="Week 1 introduction with a clinical story. Weekly team check-in. End-of-term portfolio review.">${escapeHtml(c.engagement.communityMoves)}</textarea>
+        </div>
+        <div class="field">
+          <label for="eMile">Milestones</label>
+          <textarea class="textarea" id="eMile" placeholder="Halfway portfolio review. Pre-final synthesis day. End-of-term integration project.">${escapeHtml(c.engagement.milestones)}</textarea>
+        </div>
+        <div class="field">
+          <label for="eRhy">Check-in rhythm</label>
+          <textarea class="textarea" id="eRhy" placeholder="Weekly pulse survey Friday. Mid-term feedback gather Week 5. Late-term outlook Week 12.">${escapeHtml(c.engagement.checkInRhythm)}</textarea>
+        </div>
+        <div class="field">
+          <label for="eDraw">Drawing synthesis usage</label>
+          <textarea class="textarea" id="eDraw" placeholder="Required on every module application. Counts toward synthesis grade. Photographed and uploaded to the LMS.">${escapeHtml(c.engagement.drawingSynthesis)}</textarea>
+        </div>
+      </div>
+    </section>
+  `;
+  bindText('eStrat', v => c.engagement.strategy = v);
+  bindText('eComm', v => c.engagement.communityMoves = v);
+  bindText('eMile', v => c.engagement.milestones = v);
+  bindText('eRhy', v => c.engagement.checkInRhythm = v);
+  bindText('eDraw', v => c.engagement.drawingSynthesis = v);
+}
+
+/* ---------- GENERATE ---------- */
+function renderGenerate(c, root) {
+  const counts = blueprintCounts(c);
+  root.innerHTML = `
+    <div class="panel-intro">
+      <p class="panel-intro-eyebrow">Generate</p>
+      <h2>Build the course package.</h2>
+      <p>Every artifact uses your imported brand palette, honors the byline rule, bakes the iframe height-sender, and ships at the WCAG 2.2 AA floor.</p>
+    </div>
+
+    <section class="section-card">
+      <h3>Blueprint snapshot</h3>
+      <p class="sc-note">Quick health check before you generate.</p>
+      <div class="grid">
+        <div class="field"><label>Modules</label><div class="brand-meta">${counts.modules} module${counts.modules === 1 ? '' : 's'}</div></div>
+        <div class="field"><label>Course-level outcomes</label><div class="brand-meta">${counts.clos} CLO${counts.clos === 1 ? '' : 's'}</div></div>
+        <div class="field"><label>Assessments</label><div class="brand-meta">${counts.assessments} item${counts.assessments === 1 ? '' : 's'} &middot; ${counts.weightTotal}% weight</div></div>
+        <div class="field"><label>RSI touchpoints</label><div class="brand-meta">${counts.rsi} touchpoint${counts.rsi === 1 ? '' : 's'}</div></div>
+      </div>
+    </section>
+
+    <div class="gen-grid">
+      <div class="gen-card">
+        <span class="gen-card-tag">Course hub</span>
+        <h4>Course hub HTML</h4>
+        <p>Student-facing landing page. Course identity header, vision, CLOs, module index, assessment map, RSI map, engagement, accessibility statement. Self-contained, brand-styled.</p>
+        <button class="btn" type="button" id="genHub">Download hub HTML</button>
+      </div>
+      <div class="gen-card">
+        <span class="gen-card-tag">Module pages</span>
+        <h4>Per-module HTML pages</h4>
+        <p>One page per module with MLOs, topics, readings, activities, assessments, and RSI notes. Linked from the hub. Downloads as a single bundled HTML index plus module files.</p>
+        <button class="btn" type="button" id="genMods">Download modules ZIP-style HTML</button>
+      </div>
+      <div class="gen-card">
+        <span class="gen-card-tag">Blueprint JSON</span>
+        <h4>Source of truth</h4>
+        <p>Portable JSON of the full course blueprint. Reload via the sidebar Import button. Hand off to any downstream MCAS skill.</p>
+        <button class="btn is-gold" type="button" id="genJson">Download blueprint JSON</button>
+      </div>
+      <div class="gen-card">
+        <span class="gen-card-tag">Compliance notes</span>
+        <h4>compliance-notes.md scaffold</h4>
+        <p>Pre-filled per the global compliance-notes template, with this course's accessibility map plugged in. Drop into the project folder.</p>
+        <button class="btn is-ghost" type="button" id="genCompliance">Download compliance-notes.md</button>
+      </div>
+      <div class="gen-card">
+        <span class="gen-card-tag">Printable summary</span>
+        <h4>One-page blueprint summary</h4>
+        <p>Single HTML page styled for print. Course vision, CLOs, module sequence, assessment map. Use browser Print to PDF.</p>
+        <button class="btn is-ghost" type="button" id="genSummary">Download blueprint summary HTML</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('genHub').addEventListener('click', () => downloadText(buildHubHtml(c), filenameFor(c, 'hub.html'), 'text/html'));
+  document.getElementById('genMods').addEventListener('click', () => {
+    if (!c.modules.length) { toast('Add at least one module first.'); return; }
+    downloadText(buildModulesPack(c), filenameFor(c, 'modules.html'), 'text/html');
+  });
+  document.getElementById('genJson').addEventListener('click', () => downloadText(JSON.stringify(c, null, 2), filenameFor(c, 'blueprint.json'), 'application/json'));
+  document.getElementById('genCompliance').addEventListener('click', () => downloadText(buildComplianceMd(c), filenameFor(c, 'compliance-notes.md'), 'text/markdown'));
+  document.getElementById('genSummary').addEventListener('click', () => downloadText(buildSummaryHtml(c), filenameFor(c, 'blueprint-summary.html'), 'text/html'));
+}
+
+function blueprintCounts(c) {
+  const weightTotal = c.assessment.items.reduce((s, a) => s + (parseFloat(a.weight) || 0), 0);
+  return {
+    modules: c.modules.length,
+    clos: c.vision.outcomes.filter(o => o.text.trim()).length,
+    assessments: c.assessment.items.length,
+    weightTotal: Math.round(weightTotal * 10) / 10,
+    rsi: c.rsi.touchpoints.length
+  };
+}
+
+/* ============================================================
+   GENERATORS
+   ============================================================ */
+function filenameFor(c, suffix) {
+  const base = (c.identity.code || c.identity.name || 'course')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return base + '.' + suffix;
+}
+
+function bylineFor(c) {
+  if (c.identity.bylineRule === 'full' && c.identity.credentials.trim()) {
+    return FACULTY_NAME + ', ' + c.identity.credentials.trim();
+  }
+  return FACULTY_NAME;
+}
+
+// Shared HTML scaffolding for every generated artifact
+function brandStyleVars(c) {
+  const p = c.identity.brand.palette;
+  return `
+    --navy: ${p.navy};
+    --navy-deep: ${p.navyDeep};
+    --navy-tint: ${p.navyTint};
+    --gold: ${p.gold};
+    --terra: ${p.terra};
+    --terra-dark: ${p.terraDark};
+    --white: ${p.white};
+    --off-white: ${p.offWhite};
+    --rust: ${p.terraDark};
+    --cream: #F5F1E8;
+  `.trim();
+}
+
+function baseHead(c, title) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(title)} &middot; ${escapeHtml(c.identity.name || 'Course')}${c.identity.code ? ' &middot; ' + escapeHtml(c.identity.code) : ''}</title>
+<meta name="description" content="${escapeHtml((c.identity.name || 'Course') + ' (' + (c.identity.code || '') + '). ' + (c.vision.statement.split('.')[0] || ''))}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root { ${brandStyleVars(c)} }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background: var(--white); color: var(--navy);
+  font-size: 15px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+em, i, cite, dfn, address { font-style: normal; }
+img, svg { max-width: 100%; display: block; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--rust); outline-offset: 3px; border-radius: 4px;
+}
+.dark a:focus-visible, .dark button:focus-visible { outline-color: var(--gold); }
+.skip-link {
+  position: absolute; top: -100px; left: 8px;
+  background: var(--navy); color: var(--cream);
+  padding: 12px 20px; text-decoration: none;
+  font-size: 13px; font-weight: 700;
+  border-radius: 4px; z-index: 9999;
+  letter-spacing: 0.04em;
+}
+.skip-link:focus { top: 8px; }
+.section { padding: 56px max(40px, 5vw); }
+.section.light { background: var(--white); color: var(--navy); }
+.section.dark { background: var(--navy-deep, #060A18); color: var(--cream); }
+.inner { max-width: 980px; margin: 0 auto; }
+.eyebrow {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  margin: 0 0 14px;
+}
+.light .eyebrow { color: var(--rust); }
+.dark .eyebrow { color: var(--gold); }
+h1 {
+  font-size: 42px; font-weight: 800; line-height: 1.08;
+  letter-spacing: -0.025em; margin: 0 0 18px;
+}
+h2 {
+  font-size: 28px; font-weight: 800; line-height: 1.15;
+  letter-spacing: -0.02em; margin: 0 0 16px;
+}
+h3 {
+  font-size: 18px; font-weight: 800; letter-spacing: -0.01em;
+  margin: 0 0 8px;
+}
+p { margin: 0 0 14px; }
+.lead { font-size: 17px; line-height: 1.6; max-width: 720px; }
+.dark .lead { color: var(--cream); opacity: 0.92; }
+.head-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--cream); opacity: 0.82; margin-top: 14px; }
+.head-meta span { display: inline-flex; gap: 6px; }
+.head-meta strong { color: var(--gold); font-weight: 700; }
+
+ul.clean { list-style: none; padding: 0; margin: 0; }
+ul.bullet { margin: 0 0 14px 18px; padding: 0; }
+ul.bullet li { margin: 0 0 6px; }
+
+.grid {
+  display: grid; gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.card {
+  background: var(--white); color: var(--navy);
+  border: 1px solid rgba(11, 21, 48, 0.10);
+  border-radius: 8px; padding: 22px 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.08); }
+.card .tag {
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--rust);
+}
+.card a { color: var(--rust); text-decoration: none; font-weight: 700; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+.card a:hover { text-decoration: underline; }
+.dark .card { background: rgba(245, 241, 232, 0.04); border-color: rgba(245, 241, 232, 0.16); color: var(--cream); }
+.dark .card .tag { color: var(--gold); }
+.dark .card a { color: var(--gold); }
+
+table.matrix {
+  width: 100%; border-collapse: collapse;
+  background: var(--white); color: var(--navy);
+  border: 1px solid rgba(11, 21, 48, 0.10); border-radius: 6px;
+  overflow: hidden;
+}
+table.matrix th, table.matrix td {
+  text-align: left; padding: 12px 14px;
+  border-bottom: 1px solid rgba(11, 21, 48, 0.08);
+  font-size: 14px; vertical-align: top;
+}
+table.matrix th {
+  background: var(--off-white, #FAFAF9);
+  font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--navy); font-weight: 700;
+}
+table.matrix tr:last-child td { border-bottom: none; }
+.dark table.matrix { background: rgba(245, 241, 232, 0.04); color: var(--cream); border-color: rgba(245, 241, 232, 0.18); }
+.dark table.matrix th { background: rgba(245, 241, 232, 0.06); color: var(--gold); }
+.dark table.matrix td { border-bottom-color: rgba(245, 241, 232, 0.10); }
+
+footer.foot {
+  background: var(--navy-deep, #060A18); color: var(--cream);
+  padding: 32px max(40px, 5vw);
+  border-top: 1px solid rgba(245, 241, 232, 0.14);
+}
+footer.foot .foot-inner { max-width: 980px; margin: 0 auto; display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; font-size: 12.5px; }
+footer.foot strong { color: var(--gold); }
+
+@media print {
+  .section { padding: 24px 0; page-break-inside: avoid; }
+  .skip-link, footer.foot { display: none; }
+}
+</style>
+</head>
+<body>`;
+}
+
+function tailScripts() {
+  // iframe height-sender + load + resize listeners
+  return `
+<script>
+(function () {
+  var id = (document.currentScript && document.currentScript.dataset && document.currentScript.dataset.embedId) || (location.pathname + location.search);
+  function send() {
+    var h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+    try { window.parent.postMessage({ type: 'mcas:height', id: id, height: h }, '*'); } catch (e) {}
+  }
+  window.addEventListener('load', send);
+  window.addEventListener('resize', send);
+  if (window.ResizeObserver) {
+    var ro = new ResizeObserver(send);
+    ro.observe(document.documentElement);
+  } else {
+    setInterval(send, 600);
+  }
+}());
+</` + `script>
+</body>
+</html>`;
+}
+
+function buildHubHtml(c) {
+  const head = baseHead(c, 'Course Hub');
+  const code = c.identity.code ? `<span><strong>Code</strong> ${escapeHtml(c.identity.code)}</span>` : '';
+  const inst = c.identity.institution ? `<span><strong>Institution</strong> ${escapeHtml(c.identity.institution)}</span>` : '';
+  const term = c.identity.term ? `<span><strong>Term</strong> ${escapeHtml(c.identity.term)}</span>` : '';
+  const fmt = c.identity.format ? `<span><strong>Format</strong> ${escapeHtml(c.identity.format)}</span>` : '';
+  const delivery = c.identity.delivery ? `<p class="lead">${escapeHtml(c.identity.delivery)}</p>` : '';
+  const vision = c.vision.statement ? `<p class="lead">${escapeHtml(c.vision.statement)}</p>` : '<p class="lead">Course vision in progress.</p>';
+  const clos = c.vision.outcomes.filter(o => o.text.trim());
+  const closHtml = clos.length
+    ? `<ul class="bullet">${clos.map(o => `<li>${escapeHtml(o.text)}${o.bloom ? ` <small style="opacity:.7;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--rust);"> &middot; ${escapeHtml(o.bloom)}</small>` : ''}</li>`).join('')}</ul>`
+    : `<p>Course-level outcomes pending.</p>`;
+  const modules = c.modules.length
+    ? `<div class="grid">${c.modules.map((m, i) => {
+        const fn = filenameFor(c, 'module-' + safeNum(m.number, i+1) + '.html');
+        return `
+        <div class="card">
+          <span class="tag">Module ${escapeHtml(m.number || String(i+1).padStart(2,'0'))}${m.weeks ? ' &middot; ' + escapeHtml(m.weeks) : ''}</span>
+          <h3 style="margin-top:6px;">${escapeHtml(m.title || 'Untitled')}</h3>
+          ${m.topics ? `<p style="font-size:14px;">${escapeHtml(truncate(m.topics, 180))}</p>` : ''}
+          <a href="${escapeHtml(fn)}" target="_top">Open module &rarr;</a>
+        </div>`;
+      }).join('')}</div>`
+    : `<p>Modules pending.</p>`;
+  const assess = c.assessment.items.length
+    ? `<table class="matrix">
+        <thead><tr><th>Name</th><th>Type</th><th>Weight</th><th>When</th><th>CLOs</th></tr></thead>
+        <tbody>${c.assessment.items.map(a => `<tr>
+          <td>${escapeHtml(a.name)}</td>
+          <td>${escapeHtml(a.type)}</td>
+          <td>${escapeHtml(a.weight)}${a.weight ? '%' : ''}</td>
+          <td>${escapeHtml(a.when)}</td>
+          <td>${escapeHtml(a.cloAlign)}</td>
+        </tr>`).join('')}</tbody>
+      </table>`
+    : '<p>Assessment map pending.</p>';
+  const rsi = c.rsi.touchpoints.length
+    ? `<table class="matrix">
+        <thead><tr><th>Touchpoint</th><th>Cadence</th><th>Mode</th><th>What it involves</th></tr></thead>
+        <tbody>${c.rsi.touchpoints.map(r => `<tr>
+          <td>${escapeHtml(r.name)}</td>
+          <td>${escapeHtml(r.cadence)}</td>
+          <td>${escapeHtml(r.mode)}</td>
+          <td>${escapeHtml(r.description)}</td>
+        </tr>`).join('')}</tbody>
+      </table>`
+    : '<p>RSI map pending.</p>';
+  const a11y = `
+    <p><strong>WCAG target</strong> 2.2 ${escapeHtml(c.accessibility.wcagTarget)}. ${escapeHtml(c.accessibility.captioning)}</p>
+    ${c.accessibility.altFormats ? `<p><strong>Alternative formats</strong> ${escapeHtml(c.accessibility.altFormats)}</p>` : ''}
+    ${c.accessibility.known ? `<p><strong>Known limitations</strong> ${escapeHtml(c.accessibility.known)}</p>` : ''}
+    ${c.accessibility.remediation ? `<p><strong>Remediation plan</strong> ${escapeHtml(c.accessibility.remediation)}</p>` : ''}
+  `;
+  const engagement = `
+    ${c.engagement.strategy ? `<p>${escapeHtml(c.engagement.strategy)}</p>` : ''}
+    ${c.engagement.communityMoves ? `<p><strong>Community moves.</strong> ${escapeHtml(c.engagement.communityMoves)}</p>` : ''}
+    ${c.engagement.milestones ? `<p><strong>Milestones.</strong> ${escapeHtml(c.engagement.milestones)}</p>` : ''}
+    ${c.engagement.checkInRhythm ? `<p><strong>Check-in rhythm.</strong> ${escapeHtml(c.engagement.checkInRhythm)}</p>` : ''}
+    ${c.engagement.drawingSynthesis ? `<p><strong>Drawing synthesis.</strong> ${escapeHtml(c.engagement.drawingSynthesis)}</p>` : ''}
+  `;
+
+  return head + `
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="section dark" role="banner">
+  <div class="inner">
+    <p class="eyebrow">${escapeHtml(c.identity.code || 'Course')}${c.identity.institution ? ' &middot; ' + escapeHtml(c.identity.institution) : ''}</p>
+    <h1>${escapeHtml(c.identity.name || 'Course')}</h1>
+    ${delivery}
+    <div class="head-meta">${code}${inst}${term}${fmt}</div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="section light" aria-labelledby="visionH">
+    <div class="inner">
+      <p class="eyebrow">Course vision</p>
+      <h2 id="visionH">Why this course exists.</h2>
+      ${vision}
+      ${c.vision.clinicalThread ? `<p>${escapeHtml(c.vision.clinicalThread)}</p>` : ''}
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="closH">
+    <div class="inner">
+      <p class="eyebrow">Course-level outcomes</p>
+      <h2 id="closH">What you can do by the end.</h2>
+      ${closHtml}
+    </div>
+  </section>
+
+  <section class="section light" aria-labelledby="modsH">
+    <div class="inner">
+      <p class="eyebrow">Module sequence</p>
+      <h2 id="modsH">How the term moves.</h2>
+      ${modules}
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="assessH">
+    <div class="inner">
+      <p class="eyebrow">Assessment map</p>
+      <h2 id="assessH">What counts.</h2>
+      ${c.assessment.philosophy ? `<p class="lead">${escapeHtml(c.assessment.philosophy)}</p>` : ''}
+      ${assess}
+    </div>
+  </section>
+
+  <section class="section light" aria-labelledby="rsiH">
+    <div class="inner">
+      <p class="eyebrow">Regular and substantive interaction</p>
+      <h2 id="rsiH">How we stay in contact.</h2>
+      ${c.rsi.philosophy ? `<p class="lead">${escapeHtml(c.rsi.philosophy)}</p>` : ''}
+      ${rsi}
+    </div>
+  </section>
+
+  <section class="section dark" aria-labelledby="engageH">
+    <div class="inner">
+      <p class="eyebrow">Engagement</p>
+      <h2 id="engageH">How the course feels.</h2>
+      ${engagement}
+    </div>
+  </section>
+
+  <section class="section light" aria-labelledby="a11yH">
+    <div class="inner">
+      <p class="eyebrow">Accessibility</p>
+      <h2 id="a11yH">Built to the WCAG 2.2 ${escapeHtml(c.accessibility.wcagTarget)} floor.</h2>
+      ${a11y}
+    </div>
+  </section>
+</main>
+
+<footer class="foot" role="contentinfo">
+  <div class="foot-inner">
+    <div><strong>${escapeHtml(bylineFor(c))}</strong> &middot; ${escapeHtml(c.identity.institution || 'MedMasters Collaborative')}</div>
+    <div>Generated by the MCAS Master Course Builder.</div>
+  </div>
+</footer>
+` + tailScripts();
+}
+
+function buildModulesPack(c) {
+  // single bundled HTML with the hub anchors + each module as its own section
+  const head = baseHead(c, 'Module Pack');
+  const modSections = c.modules.map((m, i) => {
+    const num = m.number || String(i+1).padStart(2,'0');
+    return `
+<section class="section ${i % 2 === 0 ? 'light' : 'dark'}" id="module-${escapeHtml(num)}" aria-labelledby="mh${i}">
+  <div class="inner">
+    <p class="eyebrow">Module ${escapeHtml(num)}${m.weeks ? ' &middot; ' + escapeHtml(m.weeks) : ''}</p>
+    <h2 id="mh${i}">${escapeHtml(m.title || 'Untitled module')}</h2>
+
+    ${m.mlos ? `<h3>Module-level outcomes</h3><ul class="bullet">${m.mlos.split('\n').filter(s=>s.trim()).map(s => `<li>${escapeHtml(s.trim())}</li>`).join('')}</ul>` : ''}
+    ${m.topics ? `<h3>Topics</h3><p>${escapeHtml(m.topics)}</p>` : ''}
+    ${m.readings ? `<h3>Readings and resources</h3><p>${escapeHtml(m.readings)}</p>` : ''}
+    ${m.activities ? `<h3>Learning activities</h3><p>${escapeHtml(m.activities)}</p>` : ''}
+    ${m.assessments ? `<h3>Aligned assessments</h3><p>${escapeHtml(m.assessments)}</p>` : ''}
+    ${m.rsiNotes ? `<h3>RSI notes</h3><p>${escapeHtml(m.rsiNotes)}</p>` : ''}
+  </div>
+</section>`;
+  }).join('');
+
+  const toc = c.modules.map((m, i) => `<li><a href="#module-${escapeHtml(m.number || String(i+1).padStart(2,'0'))}" target="_top"><strong>Module ${escapeHtml(m.number || String(i+1).padStart(2,'0'))}.</strong> ${escapeHtml(m.title || 'Untitled')}</a></li>`).join('');
+
+  return head + `
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="section dark" role="banner">
+  <div class="inner">
+    <p class="eyebrow">${escapeHtml(c.identity.code || 'Course')} &middot; Module pack</p>
+    <h1>${escapeHtml(c.identity.name || 'Course')}</h1>
+    <p class="lead">Every module in one document. Use the table of contents to jump.</p>
+  </div>
+</header>
+
+<main id="main">
+  <section class="section light" aria-labelledby="tocH">
+    <div class="inner">
+      <p class="eyebrow">Contents</p>
+      <h2 id="tocH">Module index</h2>
+      <ul class="bullet">${toc}</ul>
+    </div>
+  </section>
+  ${modSections}
+</main>
+
+<footer class="foot" role="contentinfo">
+  <div class="foot-inner">
+    <div><strong>${escapeHtml(bylineFor(c))}</strong> &middot; ${escapeHtml(c.identity.institution || 'MedMasters Collaborative')}</div>
+    <div>Generated by the MCAS Master Course Builder.</div>
+  </div>
+</footer>
+` + tailScripts();
+}
+
+function buildSummaryHtml(c) {
+  const head = baseHead(c, 'Blueprint Summary');
+  const clos = c.vision.outcomes.filter(o => o.text.trim());
+  return head + `
+<header class="section dark" role="banner">
+  <div class="inner">
+    <p class="eyebrow">${escapeHtml(c.identity.code || 'Course')} blueprint summary</p>
+    <h1>${escapeHtml(c.identity.name || 'Course')}</h1>
+    <p class="lead">${escapeHtml(c.identity.institution || '')}${c.identity.term ? ' &middot; ' + escapeHtml(c.identity.term) : ''}${c.identity.format ? ' &middot; ' + escapeHtml(c.identity.format) : ''}</p>
+  </div>
+</header>
+
+<main>
+  <section class="section light"><div class="inner">
+    <p class="eyebrow">Vision</p><h2>What this course is for.</h2>
+    <p>${escapeHtml(c.vision.statement) || 'Pending.'}</p>
+  </div></section>
+
+  <section class="section light"><div class="inner">
+    <p class="eyebrow">CLOs</p><h2>Course-level outcomes</h2>
+    ${clos.length ? `<ol>${clos.map(o => `<li>${escapeHtml(o.text)}</li>`).join('')}</ol>` : '<p>Pending.</p>'}
+  </div></section>
+
+  <section class="section light"><div class="inner">
+    <p class="eyebrow">Sequence</p><h2>Module sequence</h2>
+    ${c.modules.length ? `<table class="matrix"><thead><tr><th>#</th><th>Module</th><th>Weeks</th></tr></thead><tbody>
+      ${c.modules.map((m,i)=>`<tr><td>${escapeHtml(m.number||String(i+1))}</td><td>${escapeHtml(m.title||'')}</td><td>${escapeHtml(m.weeks||'')}</td></tr>`).join('')}
+    </tbody></table>` : '<p>Pending.</p>'}
+  </div></section>
+
+  <section class="section light"><div class="inner">
+    <p class="eyebrow">Assessment</p><h2>Assessment map</h2>
+    ${c.assessment.items.length ? `<table class="matrix"><thead><tr><th>Name</th><th>Type</th><th>Weight</th><th>CLOs</th></tr></thead><tbody>
+      ${c.assessment.items.map(a=>`<tr><td>${escapeHtml(a.name)}</td><td>${escapeHtml(a.type)}</td><td>${escapeHtml(a.weight)}${a.weight?'%':''}</td><td>${escapeHtml(a.cloAlign)}</td></tr>`).join('')}
+    </tbody></table>` : '<p>Pending.</p>'}
+  </div></section>
+</main>
+
+<footer class="foot" role="contentinfo">
+  <div class="foot-inner"><div><strong>${escapeHtml(bylineFor(c))}</strong></div><div>MCAS blueprint summary</div></div>
+</footer>
+` + tailScripts();
+}
+
+function buildComplianceMd(c) {
+  const date = new Date().toISOString().slice(0,10);
+  return `# Accessibility Compliance Notes
+
+**Project:** ${c.identity.name || 'Course'}${c.identity.code ? ' (' + c.identity.code + ')' : ''}
+**Institution:** ${c.identity.institution || ''}
+**Files covered:** course hub HTML, module pack HTML, blueprint JSON, printable summary HTML
+**Date:** ${date}
+**Reviewer:** ${bylineFor(c)}
+
+## 1. WCAG version and target level
+
+WCAG 2.2 ${c.accessibility.wcagTarget}.
+
+Per-criterion notes:
+- 1.4.3 / 1.4.6 Contrast: see audit below.
+- 2.1.1 Keyboard: every interactive element reachable by Tab. Focus visible.
+- 2.4.1 Bypass blocks: skip link present.
+- 2.4.7 Focus visible: 3px outline, rust on light, gold on dark.
+- 4.1.2 Name, role, value: semantic HTML, ARIA where needed.
+
+## 2. Color contrast audit
+
+${c.accessibility.colorContrast || 'Audit pending. Document each text/background pair, ratio, pass/fail.'}
+
+## 3. Keyboard navigation flow
+
+${c.accessibility.keyboardNav || 'Verify Tab order, focus visible at every stop, no traps.'}
+
+## 4. Screen reader testing
+
+Reader: NVDA on Windows / VoiceOver on macOS.
+Verified: landmarks (header, main, footer), heading hierarchy, link purpose, table headers.
+
+## 5. Captioning and alternative formats
+
+${c.accessibility.captioning}
+${c.accessibility.altFormats ? '\nAlternative formats: ' + c.accessibility.altFormats : ''}
+
+## 6. Known limitations
+
+${c.accessibility.known || 'None identified at time of review.'}
+
+## 7. Remediation plan
+
+${c.accessibility.remediation || 'No outstanding remediation.'}
+
+---
+
+${bylineFor(c)}
+`;
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function attr(s) { return escapeHtml(s); }
+function opt(value, label, sel) {
+  return `<option value="${escapeHtml(value)}"${sel === value ? ' selected' : ''}>${escapeHtml(label)}</option>`;
+}
+function bindText(id, setter, after) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', () => { setter(el.value); saveState(); if (after) after(); });
+}
+function bindSelect(id, setter, after) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('change', () => { setter(el.value); saveState(); if (after) after(); });
+}
+function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+function safeNum(n, fallback) {
+  const v = String(n || '').trim();
+  if (!v) return String(fallback).padStart(2, '0');
+  return v.replace(/[^a-z0-9-]/gi, '');
+}
+
+function downloadText(text, name, mime) {
+  const blob = new Blob([text], { type: mime || 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
+  toast('Downloaded ' + name);
+}
+
+let toastTimer = null;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('is-on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('is-on'), 2200);
+}
+
+/* ============================================================
+   SIDEBAR ACTIONS
+   ============================================================ */
+document.getElementById('btnNew').addEventListener('click', () => {
+  const c = newCourse('Untitled Course');
+  state.courses.push(c);
+  currentId = c.id; activeTab = 'identity';
+  saveState(); renderAll();
+  setTimeout(() => { const el = document.getElementById('fName'); if (el) el.focus(); }, 80);
+});
+document.getElementById('btnDuplicate').addEventListener('click', () => {
+  const c = getCurrent();
+  if (!c) { toast('Nothing to duplicate. Create a course first.'); return; }
+  const copy = JSON.parse(JSON.stringify(c));
+  copy.id = 'c_' + Math.random().toString(36).slice(2, 10);
+  copy.identity.name = (copy.identity.name || 'Course') + ' (copy)';
+  copy.createdAt = new Date().toISOString();
+  state.courses.push(copy);
+  currentId = copy.id;
+  saveState(); renderAll();
+});
+document.getElementById('btnDelete').addEventListener('click', () => {
+  const c = getCurrent();
+  if (!c) { toast('No course to delete.'); return; }
+  if (!confirm('Delete ' + (c.identity.name || 'this course') + '? This cannot be undone.')) return;
+  state.courses = state.courses.filter(x => x.id !== currentId);
+  currentId = state.courses[0] ? state.courses[0].id : null;
+  saveState(); renderAll();
+});
+document.getElementById('btnImportCourse').addEventListener('click', () => {
+  document.getElementById('fileCourseImport').click();
+});
+document.getElementById('fileCourseImport').addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const j = JSON.parse(reader.result);
+      if (!j || !j.identity) throw new Error('Not a blueprint');
+      const fresh = newCourse(j.identity.name || 'Imported');
+      // shallow-merge top-level sections
+      Object.assign(fresh, j);
+      fresh.id = 'c_' + Math.random().toString(36).slice(2, 10);
+      state.courses.push(fresh);
+      currentId = fresh.id;
+      saveState(); renderAll();
+      toast('Course blueprint imported.');
+    } catch (err) {
+      toast('Could not parse blueprint JSON.');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(f);
+});
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function renderAll() { renderSidebar(); renderHead(); renderPanel(); }
+
+if (!state.courses.length) {
+  // first-run sample to make the app immediately useful
+  const s = newCourse('Sample Course');
+  s.identity.code = 'EX 101';
+  s.identity.institution = 'Your Institution';
+  s.vision.statement = 'A short, student-facing statement of what this course is for and what changes by the end.';
+  state.courses.push(s);
+  currentId = s.id;
+  saveState();
+}
+renderAll();
+
+/* iframe height-sender (embed-compatible) */
+(function () {
+  var id = 'master-course-builder';
+  function send() {
+    var h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+    try { window.parent.postMessage({ type: 'mcas:height', id: id, height: h }, '*'); } catch (e) {}
+  }
+  window.addEventListener('load', send);
+  window.addEventListener('resize', send);
+  if (window.ResizeObserver) { new ResizeObserver(send).observe(document.documentElement); }
+}());
+</script>
+</body>
+</html>
