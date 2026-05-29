@@ -78,15 +78,16 @@ Detailed Prototype Specifications are the next development priority (per the Pro
 |---|---|---|
 | `faculty-branding-app.html` | Input 1: Brand Sheet builder | Fill once, export `.brand.json`, reuse |
 | `MCAS_Master_Course_Workbook_v3.xlsx` | Input 2: Course architecture | Duplicate per course, fill, save, adjust through term |
-| (Prototype Selection) | Input 3: Structural template | Pick on tab 01 dropdown |
+| `prototype-picker.html` | Input 3: Prototype Specifications | Browse the 7 prototypes; pick one on workbook tab 01 |
 | `master-course-builder.html` | MCAS Engine UI (in progress) | Upload Workbook + Brand JSON; engine produces course |
 | `accessibility-engine.html` | Compliance Phase tool | Run against the generated course package |
 
 ## Open work
 
-1. Detailed Prototype Specifications for each of the 7 prototypes. **Next priority per Project Update PDF.**
-2. Wire `master-course-builder.html` to actually ingest a Workbook + Brand JSON and emit a Course Package.
+1. ~~Detailed Prototype Specifications for each of the 7 prototypes.~~ **Done.** See `prototype-picker.html` for the full spec.
+2. Wire `master-course-builder.html` to actually ingest a Workbook + Brand JSON + Prototype choice and emit a Course Package.
 3. Future workbook dashboard features: faculty workload analysis, student workload analysis, readiness score formulas (current dashboard has WCAG % and Launch %; RSI score and QA score still to add).
+4. Repaint `faculty-branding-app.html` to match the new MCAS palette (currently uses PRIMARY teaching palette).
 
 ## Notes on branding
 

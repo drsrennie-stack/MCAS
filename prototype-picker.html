@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prototype Specifications | MCAS</title>
+<meta name="description" content="MCAS Prototype Specifications. Seven course architectures, each with module structure, navigation, assessment mix, engagement scaffolding, RSI pattern, accessibility floor, default deliverable formats, and engine outputs. Input 3 of 3 to the MCAS Engine.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   MCAS DESIGN TOKENS (per Project Update PDF 2026-05-29)
+   ============================================================ */
+:root {
+  --navy: #0B1530;
+  --navy-deep: #060A18;
+  --rust: #8B3A2E;
+  --rust-deep: #6f2e24;
+  --gold: #C9A14A;
+  --cream: #F5F1E8;
+  --dark: #060A18;
+  --white: #FFFFFF;
+  --off-white: #FAFAF9;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-500: #6B7280;
+  --gray-700: #374151;
+
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-eyebrow: 'DM Sans', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --shadow-rest: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-hover: 0 8px 16px rgba(0,0,0,0.10);
+  --shadow-focus: 0 0 0 3px rgba(201, 161, 74, 0.45);
+
+  --t-fast: 150ms ease;
+  --t-base: 200ms ease;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --max-w: 1240px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--off-white);
+  color: var(--navy);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Skip link */
+.skip-link { position: absolute; left: -9999px; top: 0; background: var(--navy); color: var(--white); padding: 12px 18px; z-index: 1000; text-decoration: none; font-weight: 600; border-radius: var(--radius-sm); }
+.skip-link:focus { left: 16px; top: 16px; outline: 3px solid var(--gold); outline-offset: 2px; }
+
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.mcas-header { background: var(--white); border-bottom: 1px solid var(--cream); padding: 28px 24px 24px; }
+.mcas-header__inner { max-width: var(--max-w); margin: 0 auto; }
+.mcas-eyebrow { font-family: var(--font-eyebrow); font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rust); margin: 0 0 10px; }
+.mcas-h1 { font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: clamp(26px, 3.6vw, 38px); line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.01em; }
+.mcas-subhead { font-family: var(--font-display); font-weight: 600; color: var(--rust); font-size: clamp(16px, 1.8vw, 20px); margin: 0 0 12px; }
+.mcas-usage { color: var(--gray-700); font-size: 14px; margin: 0; max-width: 78ch; }
+
+/* ============================================================
+   DECISION MATRIX (TOP)
+   ============================================================ */
+.decision { background: var(--cream); border-bottom: 1px solid var(--gray-200); padding: 22px 24px; }
+.decision__inner { max-width: var(--max-w); margin: 0 auto; }
+.decision__title { font-family: var(--font-display); font-weight: 700; color: var(--navy); font-size: 18px; margin: 0 0 4px; }
+.decision__note { color: var(--gray-700); font-size: 13px; margin: 0 0 14px; }
+.decision__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.decision__item { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 12px 14px; font-size: 13px; }
+.decision__item strong { display: block; color: var(--navy); font-size: 13px; margin-bottom: 4px; font-weight: 700; }
+.decision__item span { color: var(--gray-700); }
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+main { max-width: var(--max-w); margin: 0 auto; padding: 28px 24px 64px; display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: start; }
+@media (max-width: 980px) { main { grid-template-columns: 1fr; } .sidenav { position: static !important; max-height: none !important; } }
+
+/* Left nav */
+.sidenav { position: sticky; top: 16px; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 18px 16px; box-shadow: var(--shadow-rest); max-height: calc(100vh - 32px); overflow-y: auto; }
+.sidenav h2 { font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--rust); margin: 0 0 12px; font-weight: 600; }
+.sidenav ol { list-style: none; margin: 0; padding: 0; counter-reset: nav; }
+.sidenav li { counter-increment: nav; margin: 4px 0; }
+.sidenav button { width: 100%; text-align: left; display: block; padding: 10px 12px 10px 36px; color: var(--navy); background: transparent; border: 1px solid transparent; cursor: pointer; font-family: var(--font-body); font-size: 14px; border-radius: var(--radius-sm); position: relative; transition: background var(--t-fast), border-color var(--t-fast); font-weight: 500; }
+.sidenav button::before { content: counter(nav, decimal-leading-zero); position: absolute; left: 10px; top: 10px; font-family: var(--font-eyebrow); font-size: 11px; color: var(--gray-500); font-weight: 600; }
+.sidenav button:hover { background: var(--cream); }
+.sidenav button[aria-current="true"] { background: var(--cream); border-color: var(--rust); color: var(--navy); font-weight: 700; }
+.sidenav button[aria-current="true"]::before { color: var(--rust); }
+.sidenav__tag { display: block; font-size: 11px; color: var(--gray-500); font-weight: 400; margin-top: 2px; }
+
+/* Detail panel */
+.detail { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); box-shadow: var(--shadow-rest); padding: 0; min-width: 0; overflow: hidden; }
+.detail__header { padding: 24px 28px 18px; border-bottom: 1px solid var(--cream); }
+.detail__eyebrow { font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--rust); margin: 0 0 6px; font-weight: 600; }
+.detail__title { font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+.detail__tagline { color: var(--gray-700); font-size: 15px; margin: 0; max-width: 64ch; }
+
+.detail__body { padding: 24px 28px 32px; }
+.section { margin: 0 0 28px; }
+.section:last-child { margin-bottom: 0; }
+.section__eyebrow { font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--rust); margin: 0 0 4px; font-weight: 600; }
+.section__title { font-family: var(--font-display); font-weight: 700; color: var(--navy); font-size: 18px; margin: 0 0 12px; }
+.section p { margin: 0 0 10px; font-size: 14px; color: var(--gray-700); }
+.section ul { margin: 0 0 10px; padding-left: 22px; font-size: 14px; color: var(--gray-700); }
+.section li { margin: 4px 0; }
+.section li strong { color: var(--navy); font-weight: 700; }
+
+/* Rhythm strip (module structure) */
+.rhythm { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 14px; }
+.rhythm__step { background: var(--cream); color: var(--navy); padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; border: 1px solid var(--gray-200); display: inline-flex; align-items: center; gap: 8px; }
+.rhythm__step::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--rust); }
+.rhythm__arrow { color: var(--gray-500); font-weight: 700; align-self: center; }
+
+/* Assessment weight bar */
+.weights { display: flex; height: 36px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--gray-200); margin: 8px 0 8px; }
+.weights__seg { display: flex; align-items: center; justify-content: center; color: var(--white); font-family: var(--font-eyebrow); font-size: 11px; font-weight: 700; padding: 0 6px; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.weights__legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12px; color: var(--gray-700); margin: 0 0 14px; }
+.weights__legend span { display: inline-flex; align-items: center; gap: 6px; }
+.weights__legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+
+/* Spec table */
+.spec-table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 13px; }
+.spec-table th, .spec-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+.spec-table th { background: var(--cream); color: var(--navy); font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.spec-table td:first-child { font-weight: 600; color: var(--navy); width: 38%; }
+
+/* Callout boxes */
+.callout { border-left: 4px solid var(--rust); background: var(--cream); padding: 12px 16px; border-radius: var(--radius-sm); margin: 8px 0 14px; }
+.callout p { margin: 0; font-size: 13px; color: var(--navy); }
+.callout strong { color: var(--rust); }
+.callout--gold { border-left-color: var(--gold); }
+.callout--gold strong { color: var(--rust-deep); }
+
+/* CTA buttons */
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--cream); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--font-display); font-weight: 600; font-size: 14px; padding: 10px 18px; border-radius: var(--radius-sm); border: 1px solid transparent; cursor: pointer; text-decoration: none; line-height: 1.2; transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast), transform var(--t-fast); }
+.btn:active { transform: translateY(1px); }
+/* Rust on white = ~6.8:1 = AA Normal pass */
+.btn--primary { background: var(--rust); color: var(--white); border-color: var(--rust); }
+.btn--primary:hover { background: var(--rust-deep); border-color: var(--rust-deep); box-shadow: var(--shadow-hover); }
+.btn--secondary { background: var(--white); color: var(--navy); border-color: var(--navy); }
+.btn--secondary:hover { background: var(--cream); }
+
+/* Footer */
+footer { background: var(--white); border-top: 1px solid var(--cream); margin-top: 0; padding: 24px; }
+.footer-inner { max-width: var(--max-w); margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--gray-700); }
+.footer-byline { font-weight: 600; color: var(--navy); }
+
+@media print {
+  .skip-link, .sidenav, .decision, .btn-row { display: none !important; }
+  main { grid-template-columns: 1fr; }
+  .detail { box-shadow: none; border: none; }
+  .section { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<header class="mcas-header" role="banner">
+  <div class="mcas-header__inner">
+    <p class="mcas-eyebrow">MCAS &middot; Input 3 of 3 &middot; Prototype Specifications</p>
+    <h1 class="mcas-h1">Prototype Specifications</h1>
+    <p class="mcas-subhead">How the course should be organized. Pick one prototype per course.</p>
+    <p class="mcas-usage">Seven structural templates for the MCAS Engine. Each one locks the module rhythm, navigation pattern, assessment architecture, RSI scaffolding, and accessibility floor so faculty don't have to redesign these from scratch. The Engine reads your selection from the Master Course Workbook (tab 01) and applies the matching architecture to your content.</p>
+  </div>
+</header>
+
+<aside class="decision" role="region" aria-labelledby="decisionTitle">
+  <div class="decision__inner">
+    <h2 class="decision__title" id="decisionTitle">Which prototype is right for me?</h2>
+    <p class="decision__note">Pick the closest match. You can switch later, but the prototype shapes everything downstream.</p>
+    <div class="decision__grid">
+      <div class="decision__item"><strong>Fully online, async</strong><span>Choose Traditional Online.</span></div>
+      <div class="decision__item"><strong>Online + in-person mix</strong><span>Choose Hybrid.</span></div>
+      <div class="decision__item"><strong>In-person teams, application-heavy</strong><span>Choose Team-Based Learning.</span></div>
+      <div class="decision__item"><strong>Clinical reasoning, professional program</strong><span>Choose Case-Based.</span></div>
+      <div class="decision__item"><strong>4 to 8-week intensive</strong><span>Choose Accelerated.</span></div>
+      <div class="decision__item"><strong>Mastery-driven, self-paced</strong><span>Choose Competency-Based.</span></div>
+      <div class="decision__item"><strong>Auditing or refactoring an existing course</strong><span>Choose Course Redesign.</span></div>
+    </div>
+  </div>
+</aside>
+
+<main id="main-content">
+  <nav class="sidenav" aria-label="Prototype navigation">
+    <h2>Prototypes</h2>
+    <ol>
+      <li><button type="button" data-target="p1" aria-current="true">Traditional Online<span class="sidenav__tag">Async, content-driven</span></button></li>
+      <li><button type="button" data-target="p2">Hybrid<span class="sidenav__tag">Online + in-person</span></button></li>
+      <li><button type="button" data-target="p3">Team-Based Learning<span class="sidenav__tag">In-person, 4S design</span></button></li>
+      <li><button type="button" data-target="p4">Case-Based<span class="sidenav__tag">Clinical reasoning</span></button></li>
+      <li><button type="button" data-target="p5">Accelerated<span class="sidenav__tag">4 to 8-week intensive</span></button></li>
+      <li><button type="button" data-target="p6">Competency-Based<span class="sidenav__tag">Mastery learning</span></button></li>
+      <li><button type="button" data-target="p7">Course Redesign<span class="sidenav__tag">Audit and refactor</span></button></li>
+    </ol>
+  </nav>
+
+  <div class="detail" id="detail" aria-live="polite">
+    <!-- ============================================================
+         PROTOTYPE 1 · TRADITIONAL ONLINE
+         ============================================================ -->
+    <article id="p1" class="prototype" aria-labelledby="p1title">
+      <header class="detail__header">
+        <p class="detail__eyebrow">Prototype 01</p>
+        <h2 class="detail__title" id="p1title">Traditional Online</h2>
+        <p class="detail__tagline">Fully online, asynchronous, content-driven. Individual learners progress through weekly modules at their own pace within a fixed term.</p>
+      </header>
+      <div class="detail__body">
+        <section class="section">
+          <p class="section__eyebrow">When to use</p>
+          <h3 class="section__title">Identity</h3>
+          <ul>
+            <li><strong>Pick this</strong> when the course is fully online, students cannot meet synchronously, and content delivery is the dominant mode.</li>
+            <li><strong>Don't pick this</strong> if you need team-based application, in-person labs, or competency mastery gating.</li>
+            <li><strong>Pedagogical bias:</strong> independent study with structured retrieval and one or two summative anchors.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Module rhythm</p>
+          <h3 class="section__title">Weekly module structure</h3>
+          <div class="rhythm">
+            <span class="rhythm__step">Overview</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Read / Watch</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Retrieval quiz</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Application activity</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Discussion</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Wrap-up</span>
+          </div>
+          <p>One module per week. Fixed sequence. Each module opens Monday and closes Sunday. Students see what's open, what's locked, and what's overdue.</p>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Navigation</p>
+          <h3 class="section__title">Course shell layout</h3>
+          <ul>
+            <li><strong>Home page:</strong> course banner, weekly checklist, "What's due this week," contact, RSI announcement zone.</li>
+            <li><strong>Module page:</strong> linear navigation with a visible progress bar. Locked / unlocked / completed states.</li>
+            <li><strong>Persistent sidebar:</strong> outcomes map, calendar, instructor presence indicator.</li>
+            <li><strong>Pattern:</strong> top-down. Every page anchors to outcomes; every asset shows what outcomes it serves.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Assessment architecture</p>
+          <h3 class="section__title">Weight distribution</h3>
+          <div class="weights" role="img" aria-label="Weekly quizzes 40 percent, discussions 15 percent, midterm 20 percent, final 25 percent">
+            <div class="weights__seg" style="background:#0B1530;flex:40;">Weekly 40%</div>
+            <div class="weights__seg" style="background:#8B3A2E;flex:15;">Disc 15%</div>
+            <div class="weights__seg" style="background:#C9A14A;color:#0B1530;flex:20;">Mid 20%</div>
+            <div class="weights__seg" style="background:#374151;flex:25;">Final 25%</div>
+          </div>
+          <p class="weights__legend">
+            <span><i style="background:#0B1530;"></i>Weekly quizzes 40%</span>
+            <span><i style="background:#8B3A2E;"></i>Discussions 15%</span>
+            <span><i style="background:#C9A14A;"></i>Midterm 20%</span>
+            <span><i style="background:#374151;"></i>Final 25%</span>
+          </p>
+          <ul>
+            <li>Frequent low-stakes retrieval. Weekly quizzes are short (10 to 15 items), auto-graded, with one retake.</li>
+            <li>Midterm and final use mixed item types: MCQ, short answer, scenario.</li>
+            <li>Discussion grading uses a clear rubric. No "any post counts" scoring.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Engagement signature</p>
+          <h3 class="section__title">How students stay connected</h3>
+          <ul>
+            <li><strong>Weekly threaded discussion</strong> tied to a discipline-relevant prompt.</li>
+            <li><strong>Async office hours</strong> via a forum or scheduled video drop-ins.</li>
+            <li><strong>Instructor-led announcements</strong> every Monday morning previewing the week.</li>
+            <li><strong>Two-deep replies:</strong> students post once, reply substantively to two peers.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">RSI pattern</p>
+          <h3 class="section__title">Regular and substantive interaction</h3>
+          <ul>
+            <li><strong>Weekly announcement</strong> (Monday): preview, framing, instructor voice.</li>
+            <li><strong>48-hour response window</strong> on student questions and email.</li>
+            <li><strong>Individualized feedback</strong> on midterm and final, plus on at least one discussion per module.</li>
+            <li><strong>Live touchpoint</strong> at least once per term (synchronous Zoom drop-in, optional but documented).</li>
+          </ul>
+          <div class="callout">
+            <p><strong>Compliance note:</strong> Traditional Online is the highest-risk prototype for RSI failure. Every interaction must be initiated by the instructor and be substantive (not a canned reply). Document evidence on workbook tab 11.</p>
+          </div>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Accessibility floor</p>
+          <h3 class="section__title">Highest-risk WCAG criteria</h3>
+          <table class="spec-table">
+            <thead><tr><th>Risk area</th><th>What to verify</th></tr></thead>
+            <tbody>
+              <tr><td>Video captions (1.2.2)</td><td>Every video has accurate, edited captions. Auto-captions are not enough.</td></tr>
+              <tr><td>Video transcripts (1.2.1)</td><td>Plain-text transcript downloadable for every video.</td></tr>
+              <tr><td>Color contrast (1.4.3)</td><td>Slide decks, infographics, PDFs all hit 4.5:1 for normal text.</td></tr>
+              <tr><td>Document structure (1.3.1)</td><td>PDFs are tagged. DOCX uses heading styles, not bold-as-heading.</td></tr>
+              <tr><td>Keyboard navigation (2.1.1)</td><td>Every interactive element on every page is operable with Tab + Enter.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Default deliverable formats</p>
+          <h3 class="section__title">What ships as what</h3>
+          <table class="spec-table">
+            <thead><tr><th>Asset</th><th>Default format</th></tr></thead>
+            <tbody>
+              <tr><td>Lectures</td><td>HTML page with embedded video + transcript</td></tr>
+              <tr><td>Readings</td><td>HTML (preferred), DOCX or PDF fallback</td></tr>
+              <tr><td>Quizzes</td><td>HTML (LMS-native or iframe-embedded)</td></tr>
+              <tr><td>Exams</td><td>HTML (LMS-native) with secure proctoring policy</td></tr>
+              <tr><td>Syllabus</td><td>HTML (primary), DOCX export available</td></tr>
+              <tr><td>Slide decks</td><td>HTML or PPTX with accessible export</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">MCAS Engine outputs</p>
+          <h3 class="section__title">What the Engine generates from this prototype</h3>
+          <ul>
+            <li>Course home page (HTML)</li>
+            <li>Weekly module pages with linear navigation (HTML, one per module on workbook tab 06)</li>
+            <li>Weekly checklist template</li>
+            <li>Announcement scaffolds (one per week)</li>
+            <li>Quiz scaffolds (auto-graded, with feedback per outcome)</li>
+            <li>Discussion prompt scaffolds</li>
+            <li>Syllabus from tab 01 + tab 02 + outcomes</li>
+            <li>RSI evidence log linked to workbook tab 11</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Compliance gotchas</p>
+          <h3 class="section__title">What faculty miss</h3>
+          <div class="callout callout--gold">
+            <p><strong>Gotcha:</strong> "Regular" without "substantive" is a finding. Auto-announcements and gradebook-triggered messages do not count as RSI. Plan one substantive instructor-initiated interaction per module.</p>
+          </div>
+          <div class="callout">
+            <p><strong>Gotcha:</strong> Discussion rubrics that reward word count over reasoning produce shallow engagement and audit findings. Score for synthesis, not volume.</p>
+          </div>
+        </section>
+
+        <div class="btn-row">
+          <a class="btn btn--primary" href="MCAS_Master_Course_Workbook_v3.xlsx">Open Course Workbook</a>
+          <a class="btn btn--secondary" href="faculty-branding-app.html">Open Brand Sheet</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============================================================
+         PROTOTYPE 2 · HYBRID
+         ============================================================ -->
+    <article id="p2" class="prototype" aria-labelledby="p2title" hidden>
+      <header class="detail__header">
+        <p class="detail__eyebrow">Prototype 02</p>
+        <h2 class="detail__title" id="p2title">Hybrid</h2>
+        <p class="detail__tagline">Split delivery: asynchronous online prep plus in-person synthesis. Pre / In / Post cycle each week.</p>
+      </header>
+      <div class="detail__body">
+        <section class="section">
+          <p class="section__eyebrow">When to use</p>
+          <h3 class="section__title">Identity</h3>
+          <ul>
+            <li><strong>Pick this</strong> when students meet in person at least once per week and async work fills the gap between sessions.</li>
+            <li><strong>Don't pick this</strong> if you need team cohesion (use TBL) or fully self-paced (use Competency-Based).</li>
+            <li><strong>Pedagogical bias:</strong> flipped classroom. Content prep happens online; class time is for application and synthesis.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Module rhythm</p>
+          <h3 class="section__title">Weekly Pre / In / Post cycle</h3>
+          <div class="rhythm">
+            <span class="rhythm__step">Pre-class prep (online)</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Readiness check</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">In-class application</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Post-class consolidation</span>
+          </div>
+          <p>Each week is one cycle. Pre-class work opens 7 days before class. Readiness check closes 1 hour before. In-class time is application. Post-class consolidates with retrieval practice or reflection.</p>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Navigation</p>
+          <h3 class="section__title">Course shell layout</h3>
+          <ul>
+            <li><strong>Home page:</strong> weekly cycle banner, "This week's class meeting" highlight, Pre / In / Post links.</li>
+            <li><strong>Weekly module:</strong> three clearly labeled sections: Pre-class, In-class, Post-class.</li>
+            <li><strong>Pattern:</strong> visual differentiation between online and in-person components. Color or icon cues for which mode each item lives in.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Assessment architecture</p>
+          <h3 class="section__title">Weight distribution</h3>
+          <div class="weights" role="img" aria-label="Online quizzes 25 percent, in-class activities 25 percent, midterm 20 percent, final 30 percent">
+            <div class="weights__seg" style="background:#0B1530;flex:25;">Online 25%</div>
+            <div class="weights__seg" style="background:#8B3A2E;flex:25;">In-class 25%</div>
+            <div class="weights__seg" style="background:#C9A14A;color:#0B1530;flex:20;">Mid 20%</div>
+            <div class="weights__seg" style="background:#374151;flex:30;">Final 30%</div>
+          </div>
+          <p class="weights__legend">
+            <span><i style="background:#0B1530;"></i>Online quizzes 25%</span>
+            <span><i style="background:#8B3A2E;"></i>In-class activities 25%</span>
+            <span><i style="background:#C9A14A;"></i>Midterm 20%</span>
+            <span><i style="background:#374151;"></i>Final 30%</span>
+          </p>
+          <ul>
+            <li>Online readiness quizzes gate full participation in in-class application.</li>
+            <li>In-class activities scored for participation + product (small group worksheet, drawing, problem set).</li>
+            <li>Midterm and final test integration across pre and in-class material.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Engagement signature</p>
+          <h3 class="section__title">How students stay connected</h3>
+          <ul>
+            <li><strong>Readiness checks</strong> before each in-class meeting.</li>
+            <li><strong>In-class small groups</strong> applying pre-class material.</li>
+            <li><strong>Async discussion</strong> threading between class meetings.</li>
+            <li><strong>Weekly recap</strong> connecting in-class observations back to outcomes.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">RSI pattern</p>
+          <h3 class="section__title">Regular and substantive interaction</h3>
+          <ul>
+            <li><strong>In-person presence</strong> handles substantive interaction during class meetings (logged automatically).</li>
+            <li><strong>Online feedback</strong> required on readiness checks and post-class reflections.</li>
+            <li><strong>Weekly announcement</strong> bridges from last in-class to next pre-class.</li>
+            <li><strong>Office hours</strong> offered both in-person and via Zoom.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Accessibility floor</p>
+          <h3 class="section__title">Highest-risk WCAG criteria</h3>
+          <table class="spec-table">
+            <thead><tr><th>Risk area</th><th>What to verify</th></tr></thead>
+            <tbody>
+              <tr><td>Dual-format equity (1.3.1)</td><td>Students who miss the in-person session can access equivalent material online.</td></tr>
+              <tr><td>Captions for recorded class (1.2.2)</td><td>If class meetings are recorded, captions required within 5 business days.</td></tr>
+              <tr><td>In-class handouts (1.4.3, 1.3.1)</td><td>Handouts pre-distributed in accessible HTML, not just printed in class.</td></tr>
+              <tr><td>Polling and clickers (4.1.2)</td><td>Polling tools must have accessible alternatives for students using AT.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Default deliverable formats</p>
+          <h3 class="section__title">What ships as what</h3>
+          <table class="spec-table">
+            <thead><tr><th>Asset</th><th>Default format</th></tr></thead>
+            <tbody>
+              <tr><td>Pre-class prep</td><td>HTML (lecture page or reading)</td></tr>
+              <tr><td>Readiness check</td><td>HTML (LMS-native)</td></tr>
+              <tr><td>In-class slides</td><td>HTML or PPTX (with accessible export)</td></tr>
+              <tr><td>In-class handouts</td><td>HTML (preferred) or accessible DOCX</td></tr>
+              <tr><td>Post-class consolidation</td><td>HTML retrieval tool or reflection prompt</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">MCAS Engine outputs</p>
+          <h3 class="section__title">What the Engine generates from this prototype</h3>
+          <ul>
+            <li>Weekly Pre / In / Post module template</li>
+            <li>Readiness check scaffolds</li>
+            <li>In-class activity worksheet templates</li>
+            <li>Post-class consolidation prompts</li>
+            <li>In-person attendance log</li>
+            <li>Recording captions workflow checklist</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Compliance gotchas</p>
+          <h3 class="section__title">What faculty miss</h3>
+          <div class="callout">
+            <p><strong>Gotcha:</strong> Duplicating content across online and in-person modes wastes student time. Differentiate: pre-class introduces, in-class applies, post-class consolidates. Same content in two modes is a design failure.</p>
+          </div>
+          <div class="callout callout--gold">
+            <p><strong>Gotcha:</strong> Missing-class policy must offer accessible asynchronous equivalent. "You had to be there" is not compliant with disability accommodation.</p>
+          </div>
+        </section>
+
+        <div class="btn-row">
+          <a class="btn btn--primary" href="MCAS_Master_Course_Workbook_v3.xlsx">Open Course Workbook</a>
+          <a class="btn btn--secondary" href="faculty-branding-app.html">Open Brand Sheet</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============================================================
+         PROTOTYPE 3 · TEAM-BASED LEARNING (TBL)
+         ============================================================ -->
+    <article id="p3" class="prototype" aria-labelledby="p3title" hidden>
+      <header class="detail__header">
+        <p class="detail__eyebrow">Prototype 03</p>
+        <h2 class="detail__title" id="p3title">Team-Based Learning</h2>
+        <p class="detail__tagline">Permanent teams. Readiness Assurance + 4S Application. Content prep is individual; class time is collective problem-solving.</p>
+      </header>
+      <div class="detail__body">
+        <section class="section">
+          <p class="section__eyebrow">When to use</p>
+          <h3 class="section__title">Identity</h3>
+          <ul>
+            <li><strong>Pick this</strong> when application matters more than recall, students meet in-person or sync hybrid, and team cohesion is a goal.</li>
+            <li><strong>Don't pick this</strong> for fully async or for content too procedural for problem-solving.</li>
+            <li><strong>Pedagogical bias:</strong> high-stakes accountability for prep, collective sense-making in class, frequent peer evaluation.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Module rhythm</p>
+          <h3 class="section__title">TBL session structure</h3>
+          <div class="rhythm">
+            <span class="rhythm__step">Pre-class prep</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">iRAT</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">tRAT</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Appeals</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Mini-lecture (as needed)</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">4S Application</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Gallery defense</span>
+          </div>
+          <p><strong>4S design:</strong> Significant problem, Same problem for all teams, Specific choice (not open-ended), Simultaneous reveal. Skipping any of the four S's is the most common TBL failure.</p>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Navigation</p>
+          <h3 class="section__title">Course shell layout</h3>
+          <ul>
+            <li><strong>Home page:</strong> team roster, current unit, readiness phase, next class.</li>
+            <li><strong>Unit page:</strong> Prep, RAT, Application phases visible as a phased process.</li>
+            <li><strong>Team page:</strong> private team workspace, peer evaluation portal, appeals log.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Assessment architecture</p>
+          <h3 class="section__title">Weight distribution</h3>
+          <div class="weights" role="img" aria-label="iRAT 10 percent, tRAT 10 percent, applications 40 percent, individual exams 30 percent, peer evaluation 10 percent">
+            <div class="weights__seg" style="background:#0B1530;flex:10;">iRAT 10%</div>
+            <div class="weights__seg" style="background:#1f3556;flex:10;">tRAT 10%</div>
+            <div class="weights__seg" style="background:#8B3A2E;flex:40;">Application 40%</div>
+            <div class="weights__seg" style="background:#374151;flex:30;">Exams 30%</div>
+            <div class="weights__seg" style="background:#C9A14A;color:#0B1530;flex:10;">Peer 10%</div>
+          </div>
+          <p class="weights__legend">
+            <span><i style="background:#0B1530;"></i>iRAT 10%</span>
+            <span><i style="background:#1f3556;"></i>tRAT 10%</span>
+            <span><i style="background:#8B3A2E;"></i>4S Application 40%</span>
+            <span><i style="background:#374151;"></i>Individual exams 30%</span>
+            <span><i style="background:#C9A14A;"></i>Peer evaluation 10%</span>
+          </p>
+          <ul>
+            <li>iRAT and tRAT use the same items. Individual first, then team.</li>
+            <li>Confidence-based scoring (IF-AT cards or equivalent) lets teams partially recover on incorrect first picks.</li>
+            <li>Peer evaluation is required and grade-bearing; without it, teams free-ride.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Engagement signature</p>
+          <h3 class="section__title">Drawing-based synthesis</h3>
+          <p>Application activities use visual reasoning. Teams draw, label, and defend on whiteboards or large paper. Gallery walks expose every team's reasoning simultaneously. "Given not Googled" is enforced by drawing in real time.</p>
+          <ul>
+            <li><strong>4S application problems</strong> per unit, drawn or built in class.</li>
+            <li><strong>Gallery defense:</strong> 90 seconds per team to explain their answer.</li>
+            <li><strong>Peer probing:</strong> teams cross-examine before the instructor reveals.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">RSI pattern</p>
+          <h3 class="section__title">Regular and substantive interaction</h3>
+          <ul>
+            <li><strong>Instructor circulates</strong> during application phase; substantive probing of team reasoning.</li>
+            <li><strong>Appeals process</strong> after tRAT: teams submit written challenge with reasoning; instructor responds publicly.</li>
+            <li><strong>Mini-lectures</strong> calibrated to gaps revealed by RAT performance.</li>
+            <li><strong>Peer evaluation debrief</strong> midterm and end-of-term.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Accessibility floor</p>
+          <h3 class="section__title">Highest-risk WCAG criteria</h3>
+          <table class="spec-table">
+            <thead><tr><th>Risk area</th><th>What to verify</th></tr></thead>
+            <tbody>
+              <tr><td>RAT delivery (1.3.1, 2.1.1)</td><td>If RATs are on paper, screen reader users need a digital equivalent. If digital, screen reader-compatible item types only.</td></tr>
+              <tr><td>Gallery walks (1.4.5)</td><td>Wall-displayed work needs an accessible digital copy for students with mobility or vision constraints.</td></tr>
+              <tr><td>Team workspaces (2.1.1)</td><td>Shared docs and whiteboards must be navigable by keyboard and screen reader.</td></tr>
+              <tr><td>Peer evaluation (1.3.1)</td><td>Evaluation forms accessible; comments visible to evaluated team member.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Default deliverable formats</p>
+          <h3 class="section__title">What ships as what</h3>
+          <table class="spec-table">
+            <thead><tr><th>Asset</th><th>Default format</th></tr></thead>
+            <tbody>
+              <tr><td>Pre-class prep</td><td>HTML reading or short video</td></tr>
+              <tr><td>iRAT / tRAT</td><td>HTML (digital, accessible) OR paper with IF-AT cards</td></tr>
+              <tr><td>4S problems</td><td>HTML problem cards (one per session)</td></tr>
+              <tr><td>Application worksheets</td><td>HTML (preferred) for accessibility, optional print</td></tr>
+              <tr><td>Peer evaluation</td><td>HTML form (LMS or custom)</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">MCAS Engine outputs</p>
+          <h3 class="section__title">What the Engine generates from this prototype</h3>
+          <ul>
+            <li>TBL session template (Prep + RAT + Application + Gallery)</li>
+            <li>RAT item generator (with answer key)</li>
+            <li>4S application problem template (with 4S checklist)</li>
+            <li>Peer evaluation form (Michaelsen or modified)</li>
+            <li>Appeals log template</li>
+            <li>Team roster page</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Compliance gotchas</p>
+          <h3 class="section__title">What faculty miss</h3>
+          <div class="callout callout--gold">
+            <p><strong>Gotcha:</strong> "TBL-ish" courses skip the 4S discipline and end up running case studies with extra steps. If the problem is open-ended, not specific-choice, or teams reveal at different times, it isn't TBL. The Engine will flag the 4S audit on workbook tab 12.</p>
+          </div>
+          <div class="callout">
+            <p><strong>Gotcha:</strong> Peer evaluation without consequence (just informational) does not produce team accountability. The Michaelsen model requires it to be grade-bearing.</p>
+          </div>
+        </section>
+
+        <div class="btn-row">
+          <a class="btn btn--primary" href="MCAS_Master_Course_Workbook_v3.xlsx">Open Course Workbook</a>
+          <a class="btn btn--secondary" href="faculty-branding-app.html">Open Brand Sheet</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============================================================
+         PROTOTYPE 4 · CASE-BASED
+         ============================================================ -->
+    <article id="p4" class="prototype" aria-labelledby="p4title" hidden>
+      <header class="detail__header">
+        <p class="detail__eyebrow">Prototype 04</p>
+        <h2 class="detail__title" id="p4title">Case-Based</h2>
+        <p class="detail__tagline">Cases drive the content. Students reason through patient, client, or scenario unfolding over a unit. Clinical and professional programs.</p>
+      </header>
+      <div class="detail__body">
+        <section class="section">
+          <p class="section__eyebrow">When to use</p>
+          <h3 class="section__title">Identity</h3>
+          <ul>
+            <li><strong>Pick this</strong> when clinical or applied reasoning is the dominant skill, and concepts are best understood embedded in context.</li>
+            <li><strong>Don't pick this</strong> when content is foundational and prerequisite to reasoning (use Traditional Online or Hybrid first).</li>
+            <li><strong>Pedagogical bias:</strong> contextualized learning. Concept introduced through the case, not before it.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Module rhythm</p>
+          <h3 class="section__title">Case progression</h3>
+          <div class="rhythm">
+            <span class="rhythm__step">Case opens</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Initial analysis</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">New data drops</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Revised analysis</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Resolution</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Expert reveal</span>
+          </div>
+          <p>Cases unfold over a week or unit. New data introduces complexity. Students refine their reasoning rather than answer once and move on.</p>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Navigation</p>
+          <h3 class="section__title">Course shell layout</h3>
+          <ul>
+            <li><strong>Home page:</strong> active case dashboard, "this week's case" framing.</li>
+            <li><strong>Case page:</strong> patient card or scenario card at top, progressive disclosure of new data, prompts at each phase.</li>
+            <li><strong>Pattern:</strong> case-driven sequencing, not topic-driven. Concepts surface when the case demands them.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Assessment architecture</p>
+          <h3 class="section__title">Weight distribution</h3>
+          <div class="weights" role="img" aria-label="Case analyses 50 percent, midterm case 20 percent, final case 30 percent">
+            <div class="weights__seg" style="background:#8B3A2E;flex:50;">Case analyses 50%</div>
+            <div class="weights__seg" style="background:#C9A14A;color:#0B1530;flex:20;">Mid case 20%</div>
+            <div class="weights__seg" style="background:#0B1530;flex:30;">Final case 30%</div>
+          </div>
+          <p class="weights__legend">
+            <span><i style="background:#8B3A2E;"></i>Weekly case analyses 50%</span>
+            <span><i style="background:#C9A14A;"></i>Midterm case 20%</span>
+            <span><i style="background:#0B1530;"></i>Final case 30%</span>
+          </p>
+          <ul>
+            <li>Case analyses graded with a consistent rubric: hypothesis, data interpretation, plan, justification.</li>
+            <li>Midterm and final cases are novel and individual.</li>
+            <li>Cases must be original or sufficiently modified to be non-Googleable.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Engagement signature</p>
+          <h3 class="section__title">How students stay connected</h3>
+          <ul>
+            <li><strong>Case discussion</strong> in person or async forum.</li>
+            <li><strong>Role-play moments</strong> (student as clinician, family, advocate).</li>
+            <li><strong>Expert reveal videos</strong> at case resolution.</li>
+            <li><strong>Reflection</strong> on what reasoning shifted and why.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">RSI pattern</p>
+          <h3 class="section__title">Regular and substantive interaction</h3>
+          <ul>
+            <li><strong>Probing questions</strong> from instructor during case discussion (not just confirming correctness).</li>
+            <li><strong>Individualized feedback</strong> on each case write-up with reasoning audit.</li>
+            <li><strong>Live debrief</strong> after each case resolution.</li>
+            <li><strong>Office hours</strong> framed as "case consultation."</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Accessibility floor</p>
+          <h3 class="section__title">Highest-risk WCAG criteria</h3>
+          <table class="spec-table">
+            <thead><tr><th>Risk area</th><th>What to verify</th></tr></thead>
+            <tbody>
+              <tr><td>Case images and charts (1.1.1)</td><td>Detailed alt text describing what the image conveys clinically, not "image of x-ray."</td></tr>
+              <tr><td>Patient or scenario cards (1.3.1)</td><td>Structured semantically (headings, labeled data fields) not just visual layout.</td></tr>
+              <tr><td>Progressive disclosure (4.1.3)</td><td>aria-live regions or focus management announce new case data when it drops.</td></tr>
+              <tr><td>Video case scenarios (1.2.2, 1.2.5)</td><td>Captions and audio description where visual detail carries meaning.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Default deliverable formats</p>
+          <h3 class="section__title">What ships as what</h3>
+          <table class="spec-table">
+            <thead><tr><th>Asset</th><th>Default format</th></tr></thead>
+            <tbody>
+              <tr><td>Case packet</td><td>HTML (progressive disclosure) or accessible DOCX</td></tr>
+              <tr><td>Case analysis</td><td>HTML form or DOCX submission</td></tr>
+              <tr><td>Rubrics</td><td>HTML (preferred for accessibility)</td></tr>
+              <tr><td>Expert reveal</td><td>HTML page with video + transcript</td></tr>
+              <tr><td>Reflection</td><td>HTML form or short discussion post</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">MCAS Engine outputs</p>
+          <h3 class="section__title">What the Engine generates from this prototype</h3>
+          <ul>
+            <li>Case template (patient or scenario card + progressive data + prompts)</li>
+            <li>Reasoning rubric (hypothesis, data, plan, justification)</li>
+            <li>Case analysis submission form</li>
+            <li>Expert reveal page template</li>
+            <li>Reflection prompt scaffolds</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Compliance gotchas</p>
+          <h3 class="section__title">What faculty miss</h3>
+          <div class="callout callout--gold">
+            <p><strong>Gotcha:</strong> Reused public cases (USMLE banks, published case books) appear in AI training data and Google results. Cases must be original or substantially modified, or integrity collapses.</p>
+          </div>
+          <div class="callout">
+            <p><strong>Gotcha:</strong> Image-heavy cases without alt text exclude students using screen readers. Detailed alt is non-negotiable.</p>
+          </div>
+        </section>
+
+        <div class="btn-row">
+          <a class="btn btn--primary" href="MCAS_Master_Course_Workbook_v3.xlsx">Open Course Workbook</a>
+          <a class="btn btn--secondary" href="faculty-branding-app.html">Open Brand Sheet</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============================================================
+         PROTOTYPE 5 · ACCELERATED
+         ============================================================ -->
+    <article id="p5" class="prototype" aria-labelledby="p5title" hidden>
+      <header class="detail__header">
+        <p class="detail__eyebrow">Prototype 05</p>
+        <h2 class="detail__title" id="p5title">Accelerated</h2>
+        <p class="detail__tagline">Compressed term: 4 to 8 weeks. Daily or twice-weekly pacing. Same outcomes, half the calendar.</p>
+      </header>
+      <div class="detail__body">
+        <section class="section">
+          <p class="section__eyebrow">When to use</p>
+          <h3 class="section__title">Identity</h3>
+          <ul>
+            <li><strong>Pick this</strong> for summer intensives, 8-week sessions, or compressed certification programs.</li>
+            <li><strong>Don't pick this</strong> if the same content is offered in a full term simultaneously and students can choose either. Accelerated has its own design demands.</li>
+            <li><strong>Pedagogical bias:</strong> spaced retrieval to combat compressed forgetting, front-loaded scaffolding, ruthless prioritization.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Module rhythm</p>
+          <h3 class="section__title">Daily or twice-weekly cycle</h3>
+          <div class="rhythm">
+            <span class="rhythm__step">Daily overview</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Focused input (60-90 min)</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Retrieval practice</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Application</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Spaced review</span>
+          </div>
+          <p>Each day is its own micro-module. Retrieval practice from previous day baked in. Cumulative spaced review every 3 days.</p>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Navigation</p>
+          <h3 class="section__title">Course shell layout</h3>
+          <ul>
+            <li><strong>Home page:</strong> today's date, today's module, urgent items, exam countdown.</li>
+            <li><strong>Daily module:</strong> tight 5-section template, every day the same shape.</li>
+            <li><strong>Pattern:</strong> visible pacing. "You are on day 12 of 32." Predictability reduces cognitive load in a compressed term.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Assessment architecture</p>
+          <h3 class="section__title">Weight distribution</h3>
+          <div class="weights" role="img" aria-label="Daily retrieval 25 percent, applications 25 percent, midterm 20 percent, final 30 percent">
+            <div class="weights__seg" style="background:#0B1530;flex:25;">Daily 25%</div>
+            <div class="weights__seg" style="background:#8B3A2E;flex:25;">App 25%</div>
+            <div class="weights__seg" style="background:#C9A14A;color:#0B1530;flex:20;">Mid 20%</div>
+            <div class="weights__seg" style="background:#374151;flex:30;">Final 30%</div>
+          </div>
+          <p class="weights__legend">
+            <span><i style="background:#0B1530;"></i>Daily retrieval 25%</span>
+            <span><i style="background:#8B3A2E;"></i>Application 25%</span>
+            <span><i style="background:#C9A14A;"></i>Midterm 20%</span>
+            <span><i style="background:#374151;"></i>Final 30%</span>
+          </p>
+          <ul>
+            <li>Daily retrieval is short (5 to 10 items, 10 minutes max).</li>
+            <li>Applications are concise (1 problem per day).</li>
+            <li>Midterm and final are cumulative; rule out cramming-only success.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Engagement signature</p>
+          <h3 class="section__title">How students stay connected</h3>
+          <ul>
+            <li><strong>Daily check-in</strong> from instructor: voice memo, short video, or written.</li>
+            <li><strong>Drawing-based retrieval</strong> (low time cost, high integrity value).</li>
+            <li><strong>Cohort pacing</strong> with whole-class progress markers.</li>
+            <li><strong>Wellness reminders</strong>: compressed terms drive burnout.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">RSI pattern</p>
+          <h3 class="section__title">Regular and substantive interaction</h3>
+          <ul>
+            <li><strong>Daily presence</strong> required: every weekday has an instructor touch.</li>
+            <li><strong>24-hour response window</strong> on student questions (tighter than full-term).</li>
+            <li><strong>Feedback within 48 hours</strong> on graded work; otherwise grades arrive after relevance has passed.</li>
+            <li><strong>Live touchpoint</strong> at least once per week (sync class meeting or Zoom drop-in).</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Accessibility floor</p>
+          <h3 class="section__title">Highest-risk WCAG criteria</h3>
+          <table class="spec-table">
+            <thead><tr><th>Risk area</th><th>What to verify</th></tr></thead>
+            <tbody>
+              <tr><td>Front-loaded compliance</td><td>No time to remediate mid-term. Every module published accessible from day 1.</td></tr>
+              <tr><td>Reading load (3.1.5)</td><td>Plain language critical; compressed timelines amplify cognitive load.</td></tr>
+              <tr><td>Captions on rapid content (1.2.2)</td><td>If videos drop daily, caption workflow must keep pace.</td></tr>
+              <tr><td>Pacing transparency (3.2.3)</td><td>Predictable layout day-to-day reduces navigational fatigue.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Default deliverable formats</p>
+          <h3 class="section__title">What ships as what</h3>
+          <table class="spec-table">
+            <thead><tr><th>Asset</th><th>Default format</th></tr></thead>
+            <tbody>
+              <tr><td>Daily lecture</td><td>HTML page with short video (10 to 15 min) + transcript</td></tr>
+              <tr><td>Readings</td><td>HTML, chunked into 15-minute segments</td></tr>
+              <tr><td>Retrieval quiz</td><td>HTML (LMS-native), auto-graded with answer key</td></tr>
+              <tr><td>Application</td><td>HTML drawing or short problem</td></tr>
+              <tr><td>Exams</td><td>HTML or paper, proctored per institution policy</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">MCAS Engine outputs</p>
+          <h3 class="section__title">What the Engine generates from this prototype</h3>
+          <ul>
+            <li>Daily module template (consistent shape across the term)</li>
+            <li>Spaced review scheduler (3-day, 7-day, 14-day intervals)</li>
+            <li>Daily retrieval generator</li>
+            <li>Cumulative midterm and final builder</li>
+            <li>Pacing calendar (visible day-by-day plan)</li>
+            <li>Wellness check-in cadence</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Compliance gotchas</p>
+          <h3 class="section__title">What faculty miss</h3>
+          <div class="callout callout--gold">
+            <p><strong>Gotcha:</strong> Copying a full-term course into an 8-week shell breaks. Pace, sequencing, and assessment all need redesign. Accelerated is not "the same course, faster."</p>
+          </div>
+          <div class="callout">
+            <p><strong>Gotcha:</strong> Faculty burnout. Daily presence in a 4 to 8-week term is sustainable only with batched feedback, async announcements scheduled in advance, and clear office-hour blocks.</p>
+          </div>
+        </section>
+
+        <div class="btn-row">
+          <a class="btn btn--primary" href="MCAS_Master_Course_Workbook_v3.xlsx">Open Course Workbook</a>
+          <a class="btn btn--secondary" href="faculty-branding-app.html">Open Brand Sheet</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============================================================
+         PROTOTYPE 6 · COMPETENCY-BASED
+         ============================================================ -->
+    <article id="p6" class="prototype" aria-labelledby="p6title" hidden>
+      <header class="detail__header">
+        <p class="detail__eyebrow">Prototype 06</p>
+        <h2 class="detail__title" id="p6title">Competency-Based</h2>
+        <p class="detail__tagline">Mastery learning. Students progress when they demonstrate the competency, not when the calendar says so.</p>
+      </header>
+      <div class="detail__body">
+        <section class="section">
+          <p class="section__eyebrow">When to use</p>
+          <h3 class="section__title">Identity</h3>
+          <ul>
+            <li><strong>Pick this</strong> for professional certification, skills-based programs, or self-paced graduate work.</li>
+            <li><strong>Don't pick this</strong> when accreditation requires fixed-term grade reporting and you can't get mastery thresholds approved.</li>
+            <li><strong>Pedagogical bias:</strong> demonstrated mastery over seat time. Retakes allowed and expected.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Module rhythm</p>
+          <h3 class="section__title">Competency cluster progression</h3>
+          <div class="rhythm">
+            <span class="rhythm__step">Learn</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Practice</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Self-check</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Mastery checkpoint</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Portfolio entry</span>
+          </div>
+          <p>Competencies organize the course, not weeks. Each competency has its own learn-practice-master loop. Students may be on different competencies simultaneously.</p>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Navigation</p>
+          <h3 class="section__title">Course shell layout</h3>
+          <ul>
+            <li><strong>Home page:</strong> competency map (visual progress tracker), portfolio entry, coaching schedule.</li>
+            <li><strong>Competency page:</strong> learning resources, practice tasks, mastery checkpoint, prior attempts.</li>
+            <li><strong>Pattern:</strong> non-linear. Students can work on any unlocked competency.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Assessment architecture</p>
+          <h3 class="section__title">Weight distribution</h3>
+          <div class="weights" role="img" aria-label="Mastery checkpoints 60 percent, portfolio 25 percent, coaching attendance 15 percent">
+            <div class="weights__seg" style="background:#0B1530;flex:60;">Mastery checkpoints 60%</div>
+            <div class="weights__seg" style="background:#8B3A2E;flex:25;">Portfolio 25%</div>
+            <div class="weights__seg" style="background:#C9A14A;color:#0B1530;flex:15;">Coaching 15%</div>
+          </div>
+          <p class="weights__legend">
+            <span><i style="background:#0B1530;"></i>Mastery checkpoints 60%</span>
+            <span><i style="background:#8B3A2E;"></i>Portfolio 25%</span>
+            <span><i style="background:#C9A14A;"></i>Coaching engagement 15%</span>
+          </p>
+          <ul>
+            <li>Mastery checkpoints scored pass/redo, not letter-grade per attempt.</li>
+            <li>Portfolio collects evidence across competencies; submitted at term end.</li>
+            <li>Coaching attendance is required and grade-bearing (counts as RSI evidence).</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Engagement signature</p>
+          <h3 class="section__title">How students stay connected</h3>
+          <ul>
+            <li><strong>1:1 coaching sessions</strong> scheduled by competency, not week.</li>
+            <li><strong>Mastery groups:</strong> peer accountability for students on the same competency.</li>
+            <li><strong>Public progress map</strong> showing cohort momentum.</li>
+            <li><strong>Reflection on attempts</strong> (what shifted between attempt 1 and 2?).</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">RSI pattern</p>
+          <h3 class="section__title">Regular and substantive interaction</h3>
+          <ul>
+            <li><strong>Coaching session per competency</strong> at minimum.</li>
+            <li><strong>Substantive feedback on every mastery attempt</strong>, pass or redo.</li>
+            <li><strong>Weekly cohort touchpoint</strong> (announcement or sync).</li>
+            <li><strong>Portfolio reviews</strong> midpoint and term end.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Accessibility floor</p>
+          <h3 class="section__title">Highest-risk WCAG criteria</h3>
+          <table class="spec-table">
+            <thead><tr><th>Risk area</th><th>What to verify</th></tr></thead>
+            <tbody>
+              <tr><td>Competency map (1.3.1, 4.1.2)</td><td>Visual map must have an accessible text-based alternative listing competencies and status.</td></tr>
+              <tr><td>Progress dashboard (4.1.3)</td><td>State changes (competency unlocked, mastery achieved) announced via aria-live.</td></tr>
+              <tr><td>Portfolio submission (1.3.1)</td><td>Portfolio tool must support keyboard, screen reader, and multiple submission formats.</td></tr>
+              <tr><td>Retake equity (3.3.4)</td><td>Clear error identification on redo attempts so students learn from failures.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Default deliverable formats</p>
+          <h3 class="section__title">What ships as what</h3>
+          <table class="spec-table">
+            <thead><tr><th>Asset</th><th>Default format</th></tr></thead>
+            <tbody>
+              <tr><td>Learning resources per competency</td><td>HTML page (short, focused)</td></tr>
+              <tr><td>Practice tasks</td><td>HTML, unscored, with feedback</td></tr>
+              <tr><td>Mastery checkpoints</td><td>HTML (preferred) or in-person performance</td></tr>
+              <tr><td>Portfolio</td><td>HTML hub + DOCX or PDF artifacts</td></tr>
+              <tr><td>Coaching notes</td><td>HTML form (kept private to faculty and student)</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">MCAS Engine outputs</p>
+          <h3 class="section__title">What the Engine generates from this prototype</h3>
+          <ul>
+            <li>Competency map page</li>
+            <li>Per-competency learn-practice-master template</li>
+            <li>Mastery checkpoint scaffold (with rubric and retake policy)</li>
+            <li>Portfolio scaffold</li>
+            <li>Coaching session note template</li>
+            <li>Cohort progress dashboard</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Compliance gotchas</p>
+          <h3 class="section__title">What faculty miss</h3>
+          <div class="callout callout--gold">
+            <p><strong>Gotcha:</strong> Retake policy. Unlimited attempts often produces gaming; zero retakes defeats the model. Codify the policy (e.g., 2 attempts with mandatory coaching before the third).</p>
+          </div>
+          <div class="callout">
+            <p><strong>Gotcha:</strong> Mastery threshold definition. "Pass" needs a defensible criterion (rubric score, accuracy threshold, expert sign-off). Without it, the model collapses into pass-anyone or fail-anyone.</p>
+          </div>
+        </section>
+
+        <div class="btn-row">
+          <a class="btn btn--primary" href="MCAS_Master_Course_Workbook_v3.xlsx">Open Course Workbook</a>
+          <a class="btn btn--secondary" href="faculty-branding-app.html">Open Brand Sheet</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- ============================================================
+         PROTOTYPE 7 · COURSE REDESIGN
+         ============================================================ -->
+    <article id="p7" class="prototype" aria-labelledby="p7title" hidden>
+      <header class="detail__header">
+        <p class="detail__eyebrow">Prototype 07</p>
+        <h2 class="detail__title" id="p7title">Course Redesign / Program Review</h2>
+        <p class="detail__tagline">Not building new. Auditing, aligning, and remediating an existing course or program against quality, accessibility, and RSI standards.</p>
+      </header>
+      <div class="detail__body">
+        <section class="section">
+          <p class="section__eyebrow">When to use</p>
+          <h3 class="section__title">Identity</h3>
+          <ul>
+            <li><strong>Pick this</strong> when the course already exists and the work is audit, alignment, and remediation rather than greenfield design.</li>
+            <li><strong>Don't pick this</strong> if you're starting from scratch; pick the prototype that matches the new course's modality.</li>
+            <li><strong>Pedagogical bias:</strong> evidence-based audit. Decisions backed by alignment matrices, compliance scans, and student outcome data.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Redesign rhythm</p>
+          <h3 class="section__title">Audit and remediation phases</h3>
+          <div class="rhythm">
+            <span class="rhythm__step">Discover</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Audit</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Plan</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Implement</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Verify</span>
+            <span class="rhythm__arrow">&rarr;</span>
+            <span class="rhythm__step">Certify</span>
+          </div>
+          <p>Not weekly modules. Phase-based workflow. Each phase has deliverables and gates.</p>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Navigation</p>
+          <h3 class="section__title">Workspace layout</h3>
+          <ul>
+            <li><strong>Home page:</strong> course under review, current phase, overall readiness score.</li>
+            <li><strong>Phase page:</strong> audit checklist, evidence captured, remediation backlog.</li>
+            <li><strong>Pattern:</strong> diagnostic and project-management oriented, not pedagogical delivery.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Audit areas (not student assessment)</p>
+          <h3 class="section__title">What gets evaluated</h3>
+          <table class="spec-table">
+            <thead><tr><th>Area</th><th>Method</th></tr></thead>
+            <tbody>
+              <tr><td>Outcome alignment</td><td>Alignment matrix: outcomes &harr; assets &harr; assessments</td></tr>
+              <tr><td>Accessibility</td><td>WCAG 2.2 audit per asset (workbook tab 10)</td></tr>
+              <tr><td>RSI</td><td>RSI evidence inventory (workbook tab 11)</td></tr>
+              <tr><td>Quality assurance</td><td>QA checklist (workbook tab 12)</td></tr>
+              <tr><td>Student outcome data</td><td>Pass rates, withdrawal patterns, qualitative feedback</td></tr>
+              <tr><td>Workload</td><td>Faculty time per week; student time per week</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Engagement signature</p>
+          <h3 class="section__title">How stakeholders stay connected</h3>
+          <ul>
+            <li><strong>Stakeholder interviews</strong> (faculty, students, accreditors).</li>
+            <li><strong>Peer review</strong> by a fellow faculty member or instructional designer.</li>
+            <li><strong>Public remediation backlog</strong> so progress is visible.</li>
+            <li><strong>Certification milestone</strong> announced when readiness threshold met.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">RSI in the audit</p>
+          <h3 class="section__title">Documenting and improving RSI</h3>
+          <ul>
+            <li><strong>Inventory current RSI</strong> (what evidence exists today).</li>
+            <li><strong>Identify gaps</strong> (modules, weeks, or interactions with no documented evidence).</li>
+            <li><strong>Plan remediation</strong> (additions or replacements with stronger evidence).</li>
+            <li><strong>Verify post-implementation</strong>.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Accessibility audit</p>
+          <h3 class="section__title">WCAG 2.2 scan</h3>
+          <table class="spec-table">
+            <thead><tr><th>Scope</th><th>Output</th></tr></thead>
+            <tbody>
+              <tr><td>Every asset reviewed</td><td>Pass / Fail / Partial per criterion (workbook tab 10)</td></tr>
+              <tr><td>Heading hierarchy</td><td>Documented per page</td></tr>
+              <tr><td>Color contrast</td><td>Ratios per text/background pair</td></tr>
+              <tr><td>Keyboard navigation</td><td>Flow verified; trapped or skipped elements flagged</td></tr>
+              <tr><td>Screen reader testing</td><td>NVDA or VoiceOver pass with reviewer named</td></tr>
+              <tr><td>Remediation plan</td><td>Backlog of fixes with owners and dates</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Default deliverable formats</p>
+          <h3 class="section__title">What the audit ships</h3>
+          <table class="spec-table">
+            <thead><tr><th>Deliverable</th><th>Format</th></tr></thead>
+            <tbody>
+              <tr><td>Audit report</td><td>HTML (primary), DOCX export</td></tr>
+              <tr><td>Alignment matrix</td><td>HTML interactive or XLSX</td></tr>
+              <tr><td>Remediation backlog</td><td>HTML kanban or XLSX tracker</td></tr>
+              <tr><td>Compliance notes</td><td>compliance-notes.md in project folder</td></tr>
+              <tr><td>Certification package</td><td>PDF with sign-offs</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">MCAS Engine outputs</p>
+          <h3 class="section__title">What the Engine generates from this prototype</h3>
+          <ul>
+            <li>Audit report template (per phase)</li>
+            <li>Alignment matrix (outcomes &harr; assets &harr; assessments)</li>
+            <li>Accessibility audit log (per asset)</li>
+            <li>RSI evidence inventory</li>
+            <li>QA checklist</li>
+            <li>Remediation backlog</li>
+            <li>Certification package</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <p class="section__eyebrow">Compliance gotchas</p>
+          <h3 class="section__title">What audits miss</h3>
+          <div class="callout callout--gold">
+            <p><strong>Gotcha:</strong> Scope creep. A redesign that tries to fix everything fixes nothing. Pick 3 to 5 prioritized findings per phase and ship.</p>
+          </div>
+          <div class="callout">
+            <p><strong>Gotcha:</strong> Sacred cows. The signature assignment that "everyone loves" may not be aligned to outcomes. Be willing to retire it.</p>
+          </div>
+          <div class="callout">
+            <p><strong>Gotcha:</strong> Accreditor deadlines. Map the redesign timeline to accreditor cycles so the work counts toward review, not against it.</p>
+          </div>
+        </section>
+
+        <div class="btn-row">
+          <a class="btn btn--primary" href="MCAS_Master_Course_Workbook_v3.xlsx">Open Course Workbook</a>
+          <a class="btn btn--secondary" href="faculty-branding-app.html">Open Brand Sheet</a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</main>
+
+<footer role="contentinfo">
+  <div class="footer-inner">
+    <span class="footer-byline">MCAS &middot; Prototype Specifications &middot; Input 3 of 3</span>
+    <span>The MCAS Engine reads your prototype selection from Master Course Workbook tab 01.</span>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+  const buttons = document.querySelectorAll('.sidenav button');
+  const panels = document.querySelectorAll('.prototype');
+
+  function show(targetId) {
+    panels.forEach(p => {
+      const match = p.id === targetId;
+      p.hidden = !match;
+      if (match) {
+        // Move focus to the article heading for screen reader users.
+        const h = p.querySelector('.detail__title');
+        if (h) {
+          h.setAttribute('tabindex', '-1');
+          h.focus({preventScroll: true});
+        }
+      }
+    });
+    buttons.forEach(b => {
+      const cur = b.getAttribute('data-target') === targetId;
+      if (cur) b.setAttribute('aria-current', 'true');
+      else b.removeAttribute('aria-current');
+    });
+    // Scroll the detail panel into view smoothly on small screens.
+    if (window.innerWidth < 980) {
+      document.getElementById('detail').scrollIntoView({behavior: 'smooth', block: 'start'});
+    }
+  }
+
+  buttons.forEach(b => {
+    b.addEventListener('click', () => show(b.getAttribute('data-target')));
+    // Allow arrow-key navigation in the side nav.
+    b.addEventListener('keydown', (e) => {
+      const list = Array.from(buttons);
+      const i = list.indexOf(b);
+      if (e.key === 'ArrowDown') { e.preventDefault(); list[(i+1) % list.length].focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); list[(i-1+list.length) % list.length].focus(); }
+      else if (e.key === 'Home') { e.preventDefault(); list[0].focus(); }
+      else if (e.key === 'End') { e.preventDefault(); list[list.length-1].focus(); }
+    });
+  });
+
+  // Deep-link via hash (e.g., #p3 jumps to TBL)
+  function fromHash() {
+    const h = (location.hash || '').replace('#', '');
+    if (h && document.getElementById(h)) show(h);
+  }
+  window.addEventListener('hashchange', fromHash);
+  fromHash();
+})();
+</script>
+
+<!-- iframe height-sender for Kajabi / GitHub Pages embedding -->
+<script>
+(function() {
+  'use strict';
+  const id = 'mcas-prototype-picker';
+  function send() {
+    try {
+      const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      window.parent && window.parent.postMessage({type: 'iframe-height', id: id, height: h}, '*');
+    } catch (e) {}
+  }
+  window.addEventListener('load', send);
+  window.addEventListener('resize', send);
+  if (typeof ResizeObserver !== 'undefined') {
+    try { new ResizeObserver(send).observe(document.body); } catch (e) {}
+  }
+})();
+</script>
+
+</body>
+</html>
