@@ -1,882 +1,1115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MCAS Component Index | MedMasters Course Architecture System</title>
-<meta name="description" content="Single source of truth for MCAS generator and Architect app branding, components, and patterns.">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCAS &middot; Component Index &middot; MedMasters Collaborative</title>
+<meta name="description" content="The MCAS component index. Single source of truth for the generator suite, the Architect app, and every internal MedMasters deliverable.">
 <style>
-  /* ============================================================
-     MCAS DESIGN TOKENS
-     Source of truth. Generators and Architect app inherit these.
-     ============================================================ */
-  :root {
-    /* PRIMARY palette (teaching stack default) */
-    --navy: #1E3D4C;
-    --navy-deep: #142a36;
-    --navy-tint: #EDF1F3;
-    --gold: #B8924A;
-    --gold-deep: #9a7a3e;
-    --terra: #C2734D;
-    --terra-dark: #A0522D;
-    --white: #FFFFFF;
-    --off-white: #FAFAF9;
+@import url('https://cdn.jsdelivr.net/npm/@fontsource-variable/plus-jakarta-sans/index.css');
+/*
+  ============================================================
+  MCAS COMPONENT INDEX
+  Brand DNA mirrors the BIO 004 course home. Plus Jakarta only.
+  No italics anywhere. Alternating light/dark sections.
+  Accent rule: rust (#8B3A2E) on LIGHT, gold (#C9A14A) on DARK.
+  Every internal MCAS deliverable inherits from this file.
+  ============================================================
+*/
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: #FFFFFF;
+  color: #0B1530;
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { max-width: 100%; display: block; }
+a { color: inherit; }
 
-    /* Neutrals for locked/disabled states */
-    --gray-300: #D1D5DB;
-    --gray-500: #6B7280;
-    --gray-700: #374151;
+/* ===== KEYBOARD FOCUS ===== */
+a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #8B3A2E;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.dark-section a:focus-visible, .dark-section button:focus-visible,
+.dark-section input:focus-visible, .dark-section select:focus-visible {
+  outline-color: #C9A14A;
+}
 
-    /* Type scale */
-    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
-    --font-eyebrow: 'DM Sans', system-ui, sans-serif;
-    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
-    --font-italic: 'Lora', Georgia, serif;
-    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+.skip-link {
+  position: absolute;
+  top: -100px; left: 8px;
+  background: #0B1530; color: #F5F1E8;
+  padding: 12px 20px;
+  text-decoration: none;
+  font-size: 13px; font-weight: 700;
+  border-radius: 4px;
+  z-index: 9999;
+  letter-spacing: 0.04em;
+}
+.skip-link:focus { top: 8px; }
 
-    /* Elevation */
-    --shadow-rest: 0 1px 3px rgba(0,0,0,0.08);
-    --shadow-hover: 0 8px 16px rgba(0,0,0,0.10);
-    --shadow-focus: 0 0 0 3px rgba(184, 146, 74, 0.45);
+/* ===== SECTION PADDING ===== */
+.site-header, .hero-card, .logo-section, .principles-section, .tokens-section,
+.type-section, .cards-section, .buttons-section, .forms-section, .tables-section,
+.lists-section, .code-section, .callouts-section, .rules-section, .footer-section {
+  padding-left: max(40px, 5vw);
+  padding-right: max(40px, 5vw);
+}
 
-    /* Motion */
-    --t-fast: 150ms ease;
-    --t-base: 200ms ease;
+/* ===== SITE HEADER ===== */
+.site-header {
+  background: #FFFFFF;
+  padding-top: 28px; padding-bottom: 28px;
+  border-bottom: 0.5px solid rgba(11, 21, 48, 0.10);
+}
+.site-logo { display: inline-flex; align-items: center; gap: 16px; text-decoration: none; }
+.site-logo svg { height: 58px; width: auto; display: block; }
+.logo-text { display: flex; flex-direction: column; gap: 3px; }
+.logo-title {
+  font-size: 26px; font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0B1530;
+  line-height: 1;
+}
+.logo-title .logo-accent { color: #8B3A2E; }
+.logo-sub {
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: #0B1530; opacity: 0.72;
+}
 
-    /* Layout */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --max-w: 1100px;
-  }
+/* ===== HERO ===== */
+.hero-card { background: #FFFFFF; padding-top: 60px; padding-bottom: 60px; }
+.hero-content { max-width: 760px; }
+.hero-eyebrow {
+  font-size: 11px; font-weight: 700;
+  color: #8B3A2E;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.hero-headline {
+  font-size: 46px; font-weight: 800;
+  color: #0B1530;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  margin: 0 0 20px;
+}
+.hero-headline .accent { color: #8B3A2E; }
+.hero-subhead {
+  font-size: 16px; font-weight: 400;
+  color: #0B1530;
+  line-height: 1.6;
+  opacity: 0.80;
+  margin-bottom: 32px;
+  max-width: 620px;
+}
+.hero-ctas { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.cta-primary {
+  background: #8B3A2E; color: #FFFFFF;
+  padding: 14px 26px; border-radius: 4px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  text-decoration: none; display: inline-block;
+  border: none; cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease;
+}
+.cta-primary:hover { background: #A0452F; }
+.cta-secondary {
+  color: #0B1530;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  border-bottom: 1px solid rgba(11, 21, 48, 0.4);
+  padding-bottom: 6px;
+  text-decoration: none; display: inline-block;
+}
+.dark-section .cta-primary { background: #C9A14A; color: #0B1530; }
+.dark-section .cta-primary:hover { background: #D4AE5C; }
+.dark-section .cta-secondary { color: #F5F1E8; border-bottom-color: rgba(245, 241, 232, 0.4); }
 
-  *, *::before, *::after { box-sizing: border-box; }
+/* ===== SHARED SECTION HEADINGS ===== */
+.section-eyebrow {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.section-headline {
+  font-size: 31px; font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  margin: 0 0 22px;
+  max-width: 700px;
+}
+.section-intro {
+  font-size: 15px; font-weight: 400;
+  line-height: 1.6;
+  max-width: 640px;
+  margin: 0 0 40px;
+}
+.light-section .section-eyebrow { color: #8B3A2E; }
+.light-section .section-headline { color: #0B1530; }
+.light-section .section-headline .accent { color: #8B3A2E; }
+.light-section .section-intro { color: #0B1530; opacity: 0.80; }
 
-  html { scroll-behavior: smooth; }
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
+.dark-section .section-eyebrow { color: #C9A14A; }
+.dark-section .section-headline { color: #F5F1E8; }
+.dark-section .section-headline .accent { color: #C2734D; }
+.dark-section .section-intro { color: #F5F1E8; opacity: 0.82; }
 
-  body {
-    margin: 0;
-    font-family: var(--font-body);
-    background: var(--off-white);
-    color: var(--navy);
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
+.light-section { background: #FFFFFF; padding-top: 64px; padding-bottom: 64px; }
+.dark-section { background: #060A18; padding-top: 64px; padding-bottom: 64px; }
 
-  /* Skip link */
-  .skip-link {
-    position: absolute;
-    left: -9999px;
-    top: 0;
-    background: var(--navy);
-    color: var(--white);
-    padding: 12px 18px;
-    z-index: 1000;
-    text-decoration: none;
-    font-weight: 600;
-  }
-  .skip-link:focus {
-    left: 16px;
-    top: 16px;
-    outline: 3px solid var(--gold);
-    outline-offset: 2px;
-  }
+/* ===== LOGO SHOWCASE ===== */
+.logo-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+.logo-card {
+  border: 1px solid #8C90A0; border-radius: 8px;
+  padding: 28px; text-align: center;
+  background: #FFFFFF;
+}
+.logo-card.is-default { border: 2px solid #8B3A2E; }
+.logo-card.is-dark { background: #060A18; border-color: rgba(245, 241, 232, 0.18); }
+.logo-card-label {
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.20em; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.logo-card.is-default .logo-card-label { color: #8B3A2E; }
+.logo-card.is-dark .logo-card-label { color: #C9A14A; }
+.logo-card-display { padding: 14px 0 18px; }
+.logo-card-display svg { max-width: 360px; margin: 0 auto; width: 100%; height: auto; display: block; }
+.logo-card.is-tight .logo-card-display svg { max-width: 140px; }
+.logo-card-meta {
+  font-size: 13px; font-weight: 400;
+  line-height: 1.55;
+  margin: 0 0 8px;
+  color: #0B1530; opacity: 0.80;
+}
+.logo-card.is-dark .logo-card-meta { color: #F5F1E8; opacity: 0.80; }
+.logo-card-file {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: #8B3A2E;
+}
+.logo-card.is-dark .logo-card-file { color: #C9A14A; }
+@media (min-width: 800px) {
+  .logo-grid { grid-template-columns: 1fr 1fr; }
+  .logo-card.is-default { grid-column: 1 / -1; }
+}
 
-  /* Focus indicators (visible, gold halo) */
-  :focus-visible {
-    outline: 3px solid var(--gold);
-    outline-offset: 2px;
-    border-radius: 3px;
-  }
+/* ===== PRINCIPLES (numbered cards on dark) ===== */
+.prin-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+.prin-card { padding: 0 26px; border-left: 0.5px solid rgba(245, 241, 232, 0.16); }
+.prin-card:first-child { padding-left: 0; border-left: none; }
+.prin-num {
+  font-size: 52px; font-weight: 800;
+  color: #C2734D;
+  letter-spacing: -0.02em; line-height: 1;
+  margin-bottom: 18px;
+}
+.prin-title {
+  font-size: 18px; font-weight: 700;
+  color: #F5F1E8;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+  line-height: 1.25;
+}
+.prin-body {
+  font-size: 13.5px; font-weight: 400;
+  color: #F5F1E8; opacity: 0.82;
+  line-height: 1.65;
+  margin: 0;
+}
 
-  /* ============================================================
-     HEADER LOCKUP (MCAS branded)
-     Generators copy this block verbatim and only change H1/subhead.
-     ============================================================ */
-  .mcas-header {
-    background: var(--white);
-    border-bottom: 1px solid var(--navy-tint);
-    padding: 32px 24px 28px;
-  }
-  .mcas-header__inner {
-    max-width: var(--max-w);
-    margin: 0 auto;
-  }
-  .mcas-eyebrow {
-    font-family: var(--font-eyebrow);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--terra-dark);
-    margin: 0 0 12px;
-  }
-  .mcas-h1 {
-    font-family: var(--font-display);
-    font-weight: 800;
-    color: var(--navy);
-    font-size: clamp(28px, 4vw, 40px);
-    line-height: 1.15;
-    margin: 0 0 8px;
-    letter-spacing: -0.01em;
-  }
-  .mcas-subhead {
-    font-family: var(--font-display);
-    font-weight: 600;
-    color: var(--terra-dark);
-    font-size: clamp(17px, 2vw, 22px);
-    margin: 0 0 14px;
-  }
-  .mcas-usage {
-    font-family: var(--font-italic);
-    font-style: italic;
-    color: var(--gray-700);
-    font-size: 15px;
-    margin: 0;
-    max-width: 70ch;
-  }
+/* ===== COLOR TOKENS ===== */
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+.swatch {
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.swatch-chip { height: 84px; border-bottom: 1px solid rgba(11, 21, 48, 0.10); }
+.swatch-body { padding: 14px 16px 16px; }
+.swatch-name {
+  font-size: 14px; font-weight: 800;
+  color: #0B1530;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+.swatch-hex {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  color: #8B3A2E;
+  margin: 0 0 6px;
+}
+.swatch-use {
+  font-size: 12.5px; font-weight: 400;
+  color: #0B1530; opacity: 0.78;
+  line-height: 1.5;
+  margin: 0;
+}
 
-  /* ============================================================
-     PAGE LAYOUT
-     ============================================================ */
-  main {
-    max-width: var(--max-w);
-    margin: 0 auto;
-    padding: 32px 24px 64px;
-  }
-  section {
-    margin-bottom: 56px;
-    scroll-margin-top: 24px;
-  }
-  h2 {
-    font-family: var(--font-display);
-    font-weight: 600;
-    color: var(--terra-dark);
-    font-size: 24px;
-    margin: 0 0 6px;
-    letter-spacing: -0.005em;
-  }
-  h3 {
-    font-family: var(--font-display);
-    font-weight: 600;
-    color: var(--terra-dark);
-    font-size: 18px;
-    margin: 20px 0 8px;
-  }
-  .section-note {
-    font-family: var(--font-italic);
-    font-style: italic;
-    color: var(--gray-700);
-    margin: 0 0 20px;
-    font-size: 14px;
-  }
-  p { margin: 0 0 12px; }
+/* ===== TYPOGRAPHY DEMO ===== */
+.type-rows { border-top: 0.5px solid rgba(11, 21, 48, 0.16); }
+.type-row { padding: 22px 0; border-bottom: 0.5px solid rgba(11, 21, 48, 0.16); display: grid; grid-template-columns: 230px 1fr; gap: 26px; align-items: start; }
+.type-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: #8B3A2E;
+  margin: 6px 0 0;
+}
+.type-sample { font-size: 16px; color: #0B1530; }
+@media (max-width: 640px) {
+  .type-row { grid-template-columns: 1fr; gap: 8px; }
+}
 
-  /* In-page nav */
-  .toc {
-    background: var(--white);
-    border: 1px solid var(--navy-tint);
-    border-radius: var(--radius-md);
-    padding: 16px 20px;
-    margin-bottom: 40px;
-    box-shadow: var(--shadow-rest);
-  }
-  .toc h2 { font-size: 14px; color: var(--navy); margin-bottom: 10px; font-family: var(--font-eyebrow); text-transform: uppercase; letter-spacing: 0.1em; }
-  .toc ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px 16px; }
-  .toc a { color: var(--navy); text-decoration: none; font-size: 14px; border-bottom: 1px solid transparent; transition: border-color var(--t-fast); }
-  .toc a:hover { border-bottom-color: var(--gold); }
+/* ===== CARDS (component demo) ===== */
+.comp-card-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.comp-card {
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 8px;
+  padding: 24px 22px;
+  display: flex; flex-direction: column; height: 100%;
+  text-decoration: none; color: #0B1530;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(11, 21, 48, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.comp-card:hover, .comp-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(11, 21, 48, 0.12);
+  border-color: #8B3A2E;
+}
+.comp-card.is-locked { border-style: dashed; border-color: #8C90A0; opacity: 0.75; }
+.comp-card.is-unlocked { border-color: #C9A14A; border-width: 2px; }
+.comp-card.is-completed { background: #EDF1F3; border-color: #0B1530; border-width: 2px; }
+.comp-eyebrow {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.20em; text-transform: uppercase;
+  color: #8B3A2E;
+  margin: 0 0 10px;
+}
+.comp-card.is-locked .comp-eyebrow { color: #8C90A0; }
+.comp-title {
+  font-size: 17px; font-weight: 800;
+  color: #0B1530;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  margin: 0 0 10px;
+}
+.comp-card.is-locked .comp-title { color: #8C90A0; }
+.comp-body {
+  font-size: 13px; font-weight: 400;
+  color: #0B1530; opacity: 0.80;
+  line-height: 1.55;
+  margin: 0 0 16px;
+  flex: 1 1 auto;
+}
 
-  /* ============================================================
-     COLOR TOKEN CHIPS
-     ============================================================ */
-  .swatch-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 14px;
-  }
-  .swatch {
-    background: var(--white);
-    border: 1px solid var(--navy-tint);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    box-shadow: var(--shadow-rest);
-  }
-  .swatch__color {
-    height: 72px;
-    border-bottom: 1px solid var(--navy-tint);
-  }
-  .swatch__body { padding: 10px 14px 14px; }
-  .swatch__name { font-weight: 600; font-size: 14px; color: var(--navy); margin: 0; }
-  .swatch__hex { font-family: var(--font-mono); font-size: 12px; color: var(--gray-700); margin: 2px 0 0; }
-  .swatch__use { font-family: var(--font-italic); font-style: italic; font-size: 12px; color: var(--gray-500); margin: 6px 0 0; line-height: 1.4; }
+/* ===== BUTTONS DEMO (dark) ===== */
+.btn-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: inherit;
+  font-size: 11px; font-weight: 700;
+  padding: 12px 22px;
+  border-radius: 4px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.btn-primary { background: #8B3A2E; color: #FFFFFF; }
+.btn-primary:hover { background: #A0452F; }
+.btn-accent { background: #C9A14A; color: #0B1530; }
+.btn-accent:hover { background: #D4AE5C; }
+.btn-secondary { background: transparent; color: #F5F1E8; border-color: #F5F1E8; }
+.btn-secondary:hover { background: rgba(245, 241, 232, 0.10); }
+.btn-ghost { background: transparent; color: #F5F1E8; opacity: 0.85; }
+.btn-ghost:hover { opacity: 1; background: rgba(245, 241, 232, 0.06); }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+.light-section .btn-secondary { color: #0B1530; border-color: #0B1530; }
+.light-section .btn-secondary:hover { background: rgba(11, 21, 48, 0.05); }
+.light-section .btn-ghost { color: #0B1530; }
 
-  /* ============================================================
-     TYPOGRAPHY DEMO
-     ============================================================ */
-  .type-demo {
-    background: var(--white);
-    border: 1px solid var(--navy-tint);
-    border-radius: var(--radius-md);
-    padding: 24px 28px;
-    box-shadow: var(--shadow-rest);
-  }
-  .type-row { padding: 10px 0; border-bottom: 1px dashed var(--navy-tint); }
-  .type-row:last-child { border-bottom: none; }
-  .type-label {
-    font-family: var(--font-eyebrow);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--terra-dark);
-    margin: 0 0 4px;
-  }
+/* ===== FORMS ===== */
+.form-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 8px;
+  padding: 28px;
+}
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: #0B1530;
+}
+.field-hint {
+  font-size: 12px; font-weight: 400;
+  color: #0B1530; opacity: 0.72;
+  line-height: 1.5;
+}
+.input, .select, .textarea {
+  font-family: inherit;
+  font-size: 14px; font-weight: 500;
+  color: #0B1530;
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 4px;
+  padding: 11px 14px;
+  width: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input:hover, .select:hover, .textarea:hover { border-color: #0B1530; }
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: #8B3A2E;
+  box-shadow: 0 0 0 3px rgba(139, 58, 46, 0.18);
+}
+.textarea { min-height: 96px; resize: vertical; }
+.select {
+  appearance: none; -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #0B1530 50%),
+    linear-gradient(135deg, #0B1530 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+}
+.check-row {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 14px; color: #0B1530;
+}
+.check-row input { width: 18px; height: 18px; accent-color: #8B3A2E; cursor: pointer; }
 
-  /* ============================================================
-     CARDS
-     ============================================================ */
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
-  }
-  .card {
-    background: var(--white);
-    border: 1px solid var(--navy-tint);
-    border-radius: var(--radius-md);
-    padding: 22px;
-    box-shadow: var(--shadow-rest);
-    transition: transform var(--t-base), box-shadow var(--t-base);
-  }
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-  }
-  .card__eyebrow {
-    font-family: var(--font-eyebrow);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--terra-dark);
-    margin: 0 0 6px;
-  }
-  .card__title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--navy);
-    margin: 0 0 8px;
-    font-size: 18px;
-  }
-  .card__body { font-size: 14px; color: var(--gray-700); margin: 0 0 14px; }
+/* ===== TABLES ===== */
+.table-wrap {
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.dark-section .table-wrap { background: rgba(245, 241, 232, 0.04); border-color: rgba(245, 241, 232, 0.18); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+caption {
+  text-align: left;
+  padding: 16px 20px 6px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.20em; text-transform: uppercase;
+  color: #8B3A2E;
+  caption-side: top;
+}
+.dark-section caption { color: #C9A14A; }
+th, td {
+  text-align: left;
+  padding: 13px 20px;
+  border-bottom: 0.5px solid rgba(11, 21, 48, 0.12);
+}
+.dark-section th, .dark-section td { border-bottom-color: rgba(245, 241, 232, 0.14); color: #F5F1E8; }
+th {
+  background: rgba(11, 21, 48, 0.06);
+  color: #0B1530;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.dark-section th { background: rgba(245, 241, 232, 0.06); color: #C9A14A; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(11, 21, 48, 0.03); }
+.dark-section tbody tr:hover { background: rgba(245, 241, 232, 0.04); }
 
-  /* State variants */
-  .card--locked {
-    border: 1px dashed var(--gray-300);
-    background: var(--off-white);
-    color: var(--gray-500);
-  }
-  .card--locked .card__title { color: var(--gray-500); }
-  .card--unlocked { border: 1px solid var(--gold); }
-  .card--completed {
-    border: 1px solid var(--navy);
-    background: var(--navy-tint);
-  }
+/* ===== LISTS DEMO ===== */
+.list-card {
+  background: #060A18;
+  border: 1px solid rgba(245, 241, 232, 0.18);
+  border-radius: 8px;
+  padding: 28px;
+  color: #F5F1E8;
+}
+.list-card h3 {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.20em; text-transform: uppercase;
+  color: #C9A14A;
+  margin: 22px 0 12px;
+}
+.list-card h3:first-of-type { margin-top: 0; }
+.list-card ul, .list-card ol { padding-left: 22px; margin: 6px 0 14px; }
+.list-card li { margin: 6px 0; opacity: 0.88; line-height: 1.55; }
+.list-card dt { font-weight: 800; color: #F5F1E8; margin-top: 10px; }
+.list-card dd { margin: 4px 0 8px 16px; color: #F5F1E8; opacity: 0.78; font-size: 14px; }
 
-  /* ============================================================
-     BUTTONS
-     ============================================================ */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 14px;
-    padding: 10px 18px;
-    border-radius: var(--radius-sm);
-    border: 1px solid transparent;
-    cursor: pointer;
-    text-decoration: none;
-    line-height: 1.2;
-    transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast), transform var(--t-fast);
-  }
-  .btn:active { transform: translateY(1px); }
-  .btn--primary {
-    background: var(--navy);
-    color: var(--white);
-    border-color: var(--navy);
-  }
-  .btn--primary:hover { background: var(--navy-deep); border-color: var(--navy-deep); }
-  .btn--secondary {
-    background: var(--white);
-    color: var(--navy);
-    border-color: var(--navy);
-  }
-  .btn--secondary:hover { background: var(--navy-tint); }
-  /* Gold + navy-deep text passes WCAG AA at 5.13:1.
-     Do NOT use white text on gold (only 2.90:1, fails AA). */
-  .btn--accent {
-    background: var(--gold);
-    color: var(--navy-deep);
-    border-color: var(--gold);
-  }
-  .btn--accent:hover {
-    background: var(--gold);
-    color: var(--navy-deep);
-    border-color: var(--navy-deep);
-    box-shadow: var(--shadow-hover);
-  }
-  .btn--ghost {
-    background: transparent;
-    color: var(--navy);
-    border-color: transparent;
-  }
-  .btn--ghost:hover { background: var(--navy-tint); }
-  .btn[disabled],
-  .btn[aria-disabled="true"] {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-  .btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+/* ===== CODE ===== */
+pre {
+  background: #060A18;
+  color: #F5F1E8;
+  padding: 22px 24px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0;
+  line-height: 1.6;
+  font-family: 'SF Mono', Consolas, 'Liberation Mono', monospace;
+  font-size: 13px;
+}
+code {
+  background: rgba(11, 21, 48, 0.06);
+  color: #0B1530;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-family: 'SF Mono', Consolas, 'Liberation Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dark-section code { background: rgba(245, 241, 232, 0.10); color: #C9A14A; }
+pre code { background: transparent; color: inherit; padding: 0; font-weight: 400; }
 
-  /* ============================================================
-     FORM FIELDS (with dropdowns / pulldowns)
-     ============================================================ */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 18px;
-    background: var(--white);
-    border: 1px solid var(--navy-tint);
-    border-radius: var(--radius-md);
-    padding: 24px;
-    box-shadow: var(--shadow-rest);
-  }
-  .field { display: flex; flex-direction: column; gap: 6px; }
-  .field label {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--navy);
-  }
-  .field__hint {
-    font-family: var(--font-italic);
-    font-style: italic;
-    font-size: 12px;
-    color: var(--gray-500);
-  }
-  .input,
-  .select,
-  .textarea {
-    font-family: var(--font-body);
-    font-size: 14px;
-    color: var(--navy);
-    background: var(--white);
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-sm);
-    padding: 9px 12px;
-    width: 100%;
-    transition: border-color var(--t-fast), box-shadow var(--t-fast);
-  }
-  .input:hover, .select:hover, .textarea:hover { border-color: var(--navy); }
-  .input:focus, .select:focus, .textarea:focus {
-    outline: none;
-    border-color: var(--gold);
-    box-shadow: var(--shadow-focus);
-  }
-  .textarea { min-height: 88px; resize: vertical; font-family: var(--font-body); }
+/* ===== CALLOUTS ===== */
+.callout {
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-left: 4px solid #8B3A2E;
+  border-radius: 4px;
+  padding: 18px 22px;
+  margin: 0 0 14px;
+}
+.callout.is-info { border-left-color: #0B1530; }
+.callout.is-warn { border-left-color: #C2734D; }
+.callout-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: #0B1530;
+  margin: 0 0 6px;
+}
+.callout-body { font-size: 14px; color: #0B1530; opacity: 0.85; margin: 0; line-height: 1.6; }
 
-  /* Custom-styled select (native, accessible) */
-  .select {
-    appearance: none;
-    -webkit-appearance: none;
-    background-image:
-      linear-gradient(45deg, transparent 50%, var(--navy) 50%),
-      linear-gradient(135deg, var(--navy) 50%, transparent 50%);
-    background-position:
-      calc(100% - 18px) 50%,
-      calc(100% - 12px) 50%;
-    background-size: 6px 6px, 6px 6px;
-    background-repeat: no-repeat;
-    padding-right: 32px;
-  }
+/* ===== RULES (dark, numbered) ===== */
+.rules-list { margin: 0; padding: 0; list-style: none; counter-reset: rule; }
+.rules-list li {
+  counter-increment: rule;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 24px;
+  padding: 22px 0;
+  border-top: 0.5px solid rgba(245, 241, 232, 0.16);
+  align-items: start;
+}
+.rules-list li:first-child { border-top: none; padding-top: 0; }
+.rules-list li::before {
+  content: counter(rule, decimal-leading-zero);
+  font-size: 42px; font-weight: 800;
+  color: #C9A14A;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+.rule-title {
+  font-size: 17px; font-weight: 800;
+  color: #F5F1E8;
+  letter-spacing: -0.015em;
+  margin: 4px 0 6px;
+}
+.rule-desc {
+  font-size: 14px; font-weight: 400;
+  color: #F5F1E8; opacity: 0.82;
+  line-height: 1.6;
+  max-width: 620px;
+  margin: 0;
+}
 
-  /* Checkbox / radio rows */
-  .check-row { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--navy); }
-  .check-row input[type="checkbox"],
-  .check-row input[type="radio"] {
-    width: 18px; height: 18px;
-    accent-color: var(--navy);
-    cursor: pointer;
-  }
+/* ===== FOOTER ===== */
+.footer-section { background: #060A18; padding-top: 56px; padding-bottom: 32px; }
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid rgba(245, 241, 232, 0.16);
+  margin-bottom: 22px;
+}
+.footer-logo { display: inline-flex; align-items: center; gap: 14px; text-decoration: none; margin-bottom: 16px; }
+.footer-logo svg { height: 50px; width: auto; }
+.footer-logo .logo-title { color: #F5F1E8; font-size: 22px; }
+.footer-logo .logo-accent { color: #C9A14A; }
+.footer-logo .logo-sub { color: #F5F1E8; opacity: 0.62; }
+.footer-tagline {
+  font-size: 13px; font-weight: 400;
+  color: #F5F1E8; opacity: 0.72;
+  line-height: 1.6;
+  max-width: 320px; margin: 0;
+}
+.footer-col-header {
+  font-size: 10px; font-weight: 700;
+  color: #C9A14A;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.footer-link {
+  font-size: 13px; font-weight: 500;
+  color: #F5F1E8; opacity: 0.78;
+  display: block; margin-bottom: 10px;
+  text-decoration: none;
+}
+.footer-link:hover { opacity: 1; text-decoration: underline; }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px;
+}
+.footer-copyright { font-size: 11px; font-weight: 500; color: #F5F1E8; opacity: 0.6; letter-spacing: 0.03em; }
+.footer-byline { font-size: 11px; font-weight: 700; color: #C9A14A; letter-spacing: 0.16em; text-transform: uppercase; }
 
-  /* ============================================================
-     TABLES
-     ============================================================ */
-  .table-wrap {
-    background: var(--white);
-    border: 1px solid var(--navy-tint);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    box-shadow: var(--shadow-rest);
+/* ===== RESPONSIVE ===== */
+@media (max-width: 860px) {
+  .hero-headline { font-size: 34px; }
+  .section-headline { font-size: 26px; }
+  .prin-grid { grid-template-columns: 1fr; }
+  .prin-card {
+    padding-left: 0; border-left: none;
+    border-top: 0.5px solid rgba(245, 241, 232, 0.16);
+    padding-top: 26px; margin-top: 26px;
   }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
-  caption {
-    text-align: left;
-    padding: 14px 18px 6px;
-    font-family: var(--font-eyebrow);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--terra-dark);
-    caption-side: top;
-  }
-  th, td {
-    text-align: left;
-    padding: 12px 18px;
-    border-bottom: 1px solid var(--navy-tint);
-  }
-  th {
-    background: var(--navy-tint);
-    color: var(--navy);
-    font-weight: 600;
-    font-family: var(--font-display);
-  }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: var(--off-white); }
-
-  /* ============================================================
-     LISTS
-     ============================================================ */
-  .list-demo {
-    background: var(--white);
-    border: 1px solid var(--navy-tint);
-    border-radius: var(--radius-md);
-    padding: 20px 24px;
-    box-shadow: var(--shadow-rest);
-  }
-  .list-demo ul, .list-demo ol { padding-left: 22px; margin: 6px 0 14px; }
-  .list-demo li { margin: 4px 0; }
-  .list-demo dt { font-weight: 600; color: var(--navy); margin-top: 8px; }
-  .list-demo dd { margin: 2px 0 6px 16px; color: var(--gray-700); font-size: 14px; }
-
-  /* ============================================================
-     CODE BLOCKS
-     ============================================================ */
-  pre, code {
-    font-family: var(--font-mono);
-    font-size: 13px;
-  }
-  code {
-    background: var(--navy-tint);
-    color: var(--navy);
-    padding: 1px 6px;
-    border-radius: 3px;
-  }
-  pre {
-    background: var(--navy);
-    color: #E8EEF1;
-    padding: 18px 20px;
-    border-radius: var(--radius-md);
-    overflow-x: auto;
-    margin: 0;
-    line-height: 1.55;
-  }
-  pre code { background: transparent; color: inherit; padding: 0; }
-
-  /* ============================================================
-     ALERTS / CALLOUTS
-     ============================================================ */
-  .callout {
-    border-left: 4px solid var(--gold);
-    background: var(--white);
-    border-radius: var(--radius-sm);
-    padding: 14px 18px;
-    box-shadow: var(--shadow-rest);
-    margin: 10px 0;
-  }
-  .callout--info { border-left-color: var(--navy); }
-  .callout--warn { border-left-color: var(--terra); }
-  .callout__title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: var(--navy);
-    font-size: 14px;
-    margin: 0 0 4px;
-  }
-  .callout__body { font-size: 14px; color: var(--gray-700); margin: 0; }
-
-  /* ============================================================
-     FOOTER
-     ============================================================ */
-  footer {
-    border-top: 1px solid var(--navy-tint);
-    background: var(--white);
-    padding: 24px;
-    margin-top: 32px;
-  }
-  .footer-inner {
-    max-width: var(--max-w);
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-    color: var(--gray-700);
-  }
-  .footer-byline { font-weight: 600; color: var(--navy); }
-  .footer-meta { font-family: var(--font-italic); font-style: italic; }
+  .prin-card:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 500px) {
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+  .hero-headline { font-size: 29px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
+}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to main content</a>
 
-<a class="skip-link" href="#main-content">Skip to content</a>
-
-<!-- ============================================================
-     HEADER LOCKUP
-     Copy this block verbatim into every MCAS generator output.
-     Only change H1 and subhead per the specific tool.
-     ============================================================ -->
-<header class="mcas-header" role="banner">
-  <div class="mcas-header__inner">
-    <p class="mcas-eyebrow">MCAS &middot; MedMasters Course Architecture System</p>
-    <h1 class="mcas-h1">Component Index</h1>
-    <p class="mcas-subhead">Source of truth for generators and the Architect app</p>
-    <p class="mcas-usage">Every internal MCAS tool inherits the tokens, header, and components on this page. Copy patterns directly; do not redefine colors, type scale, or component behavior in downstream files. Faculty-facing course materials use their own branding and are out of scope here.</p>
-  </div>
+<!-- ===== SITE HEADER ===== -->
+<header class="site-header">
+  <a href="index.html" class="site-logo" target="_top" aria-label="MCAS Component Index, MedMasters Collaborative">
+    <svg viewBox="40 10 125 148" role="img" aria-hidden="true" focusable="false">
+      <g transform="translate(0, 18)">
+        <g transform="translate(60, 0) rotate(8 0 130)">
+          <circle cx="0" cy="20" r="10" fill="#0B1530"/>
+          <path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#0B1530"/>
+        </g>
+        <g transform="translate(100, 0)">
+          <circle cx="0" cy="10" r="11" fill="#8B3A2E"/>
+          <path d="M 0,22 C -11,22 -17,26 -17,34 C -17,52 -14,70 -12,86 C -11,108 -13,122 -15,132 L 15,132 C 13,122 11,108 12,86 C 14,70 17,52 17,34 C 17,26 11,22 0,22 Z" fill="#8B3A2E"/>
+        </g>
+        <g transform="translate(140, 0) rotate(-8 0 130)">
+          <circle cx="0" cy="20" r="10" fill="#C9A14A"/>
+          <path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#C9A14A"/>
+        </g>
+      </g>
+    </svg>
+    <span class="logo-text">
+      <span class="logo-title">MCAS Component <span class="logo-accent">Index</span></span>
+      <span class="logo-sub">MedMasters &middot; Course Architecture System</span>
+    </span>
+  </a>
 </header>
 
-<main id="main-content">
+<main id="main">
 
-  <nav class="toc" aria-label="Section navigation">
-    <h2>On this page</h2>
+<!-- ===== HERO (light) ===== -->
+<div class="hero-card">
+  <div class="hero-content">
+    <div class="hero-eyebrow">MCAS &middot; Internal Brand Reference</div>
+    <h1 class="hero-headline">One source of truth for every generator, every Architect screen, <span class="accent">every internal MedMasters file</span>.</h1>
+    <p class="hero-subhead">This page is the brand DNA for MCAS. Tokens, type, components, and behavior all live here. Every generator and Architect screen inherits from this file. Faculty-facing course materials carry their own branding and are out of scope.</p>
+    <div class="hero-ctas">
+      <a href="#logo" class="cta-primary">See the logo lockup</a>
+      <a href="#tokens" class="cta-secondary">Jump to color tokens</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOGO &amp; LOCKUP (light) ===== -->
+<section id="logo" class="light-section logo-section" aria-labelledby="logo-h">
+  <div class="section-eyebrow">Logo &amp; lockup</div>
+  <h2 id="logo-h" class="section-headline">Three variants, <span class="accent">one rule of thumb</span>.</h2>
+  <p class="section-intro">Horizontal light is the default for every MCAS deliverable. Reach for horizontal dark only on dark surfaces. Stacked is reserved for square spaces (favicons, app tiles, social cards). Always inline the SVG so the file stays portable.</p>
+
+  <div class="logo-grid">
+
+    <article class="logo-card is-default">
+      <div class="logo-card-label">Horizontal light &middot; default</div>
+      <div class="logo-card-display">
+        <svg viewBox="0 0 720 200" role="img" aria-label="MedMasters Collaborative horizontal light">
+          <g transform="translate(0, 18)">
+            <g transform="translate(60, 0) rotate(8 0 130)"><circle cx="0" cy="20" r="10" fill="#0B1530"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#0B1530"/></g>
+            <g transform="translate(100, 0)"><circle cx="0" cy="10" r="11" fill="#8B3A2E"/><path d="M 0,22 C -11,22 -17,26 -17,34 C -17,52 -14,70 -12,86 C -11,108 -13,122 -15,132 L 15,132 C 13,122 11,108 12,86 C 14,70 17,52 17,34 C 17,26 11,22 0,22 Z" fill="#8B3A2E"/></g>
+            <g transform="translate(140, 0) rotate(-8 0 130)"><circle cx="0" cy="20" r="10" fill="#C9A14A"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#C9A14A"/></g>
+          </g>
+          <g transform="translate(240, 0)">
+            <text x="0" y="118" font-family="'Plus Jakarta Sans Variable','Plus Jakarta Sans',sans-serif" font-size="80" font-weight="800" letter-spacing="-2"><tspan fill="#0B1530">Med</tspan><tspan fill="#8B3A2E">Masters</tspan></text>
+            <text x="0" y="158" font-family="'Plus Jakarta Sans Variable','Plus Jakarta Sans',sans-serif" font-size="15" font-weight="700" letter-spacing="5" fill="#0B1530" opacity="0.75">COLLABORATIVE</text>
+          </g>
+        </svg>
+      </div>
+      <p class="logo-card-meta">Inline this in the header of every MCAS generator and Architect screen. Width 220 to 320px works in most headers.</p>
+      <div class="logo-card-file">File &middot; medmasters-logo-horizontal-light.svg</div>
+    </article>
+
+    <article class="logo-card is-dark">
+      <div class="logo-card-label">Horizontal dark</div>
+      <div class="logo-card-display">
+        <svg viewBox="0 0 720 200" role="img" aria-label="MedMasters Collaborative horizontal dark">
+          <rect width="100%" height="100%" fill="#060A18"/>
+          <g transform="translate(0, 18)">
+            <g transform="translate(60, 0) rotate(8 0 130)"><circle cx="0" cy="20" r="10" fill="#F5F1E8"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#F5F1E8"/></g>
+            <g transform="translate(100, 0)"><circle cx="0" cy="10" r="11" fill="#8B3A2E"/><path d="M 0,22 C -11,22 -17,26 -17,34 C -17,52 -14,70 -12,86 C -11,108 -13,122 -15,132 L 15,132 C 13,122 11,108 12,86 C 14,70 17,52 17,34 C 17,26 11,22 0,22 Z" fill="#8B3A2E"/></g>
+            <g transform="translate(140, 0) rotate(-8 0 130)"><circle cx="0" cy="20" r="10" fill="#C9A14A"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#C9A14A"/></g>
+          </g>
+          <g transform="translate(240, 0)">
+            <text x="0" y="118" font-family="'Plus Jakarta Sans Variable','Plus Jakarta Sans',sans-serif" font-size="80" font-weight="800" letter-spacing="-2"><tspan fill="#F5F1E8">Med</tspan><tspan fill="#8B3A2E">Masters</tspan></text>
+            <text x="0" y="158" font-family="'Plus Jakarta Sans Variable','Plus Jakarta Sans',sans-serif" font-size="15" font-weight="700" letter-spacing="5" fill="#F5F1E8" opacity="0.75">COLLABORATIVE</text>
+          </g>
+        </svg>
+      </div>
+      <p class="logo-card-meta">Self-contained dark panel. Use on dark report covers, scoreboards, or pages without a dark section background.</p>
+      <div class="logo-card-file">File &middot; medmasters-logo-horizontal-dark.svg</div>
+    </article>
+
+    <article class="logo-card is-tight">
+      <div class="logo-card-label">Stacked light &middot; tight spaces</div>
+      <div class="logo-card-display">
+        <svg viewBox="0 0 500 380" role="img" aria-label="MedMasters Collaborative stacked light">
+          <g transform="translate(140, 25)">
+            <g transform="translate(60, 0) rotate(8 0 130)"><circle cx="0" cy="20" r="10" fill="#0B1530"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#0B1530"/></g>
+            <g transform="translate(100, 0)"><circle cx="0" cy="10" r="11" fill="#8B3A2E"/><path d="M 0,22 C -11,22 -17,26 -17,34 C -17,52 -14,70 -12,86 C -11,108 -13,122 -15,132 L 15,132 C 13,122 11,108 12,86 C 14,70 17,52 17,34 C 17,26 11,22 0,22 Z" fill="#8B3A2E"/></g>
+            <g transform="translate(140, 0) rotate(-8 0 130)"><circle cx="0" cy="20" r="10" fill="#C9A14A"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#C9A14A"/></g>
+          </g>
+          <text x="250" y="270" font-family="'Plus Jakarta Sans Variable','Plus Jakarta Sans',sans-serif" font-size="62" font-weight="800" letter-spacing="-1.5" text-anchor="middle"><tspan fill="#0B1530">Med</tspan><tspan fill="#8B3A2E">Masters</tspan></text>
+          <text x="250" y="305" font-family="'Plus Jakarta Sans Variable','Plus Jakarta Sans',sans-serif" font-size="13" font-weight="700" letter-spacing="4.5" fill="#0B1530" opacity="0.75" text-anchor="middle">COLLABORATIVE</text>
+        </svg>
+      </div>
+      <p class="logo-card-meta">Favicons, app icons, social share cards, square thumbnails.</p>
+      <div class="logo-card-file">File &middot; medmasters-logo-stacked-light.svg</div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ===== PRINCIPLES (dark, numbered cards) ===== -->
+<section class="dark-section principles-section" aria-labelledby="prin-h">
+  <div class="section-eyebrow">Three operating principles</div>
+  <h2 id="prin-h" class="section-headline">The rules every generator <span class="accent">inherits without question</span>.</h2>
+  <div class="prin-grid">
+    <div class="prin-card">
+      <div class="prin-num">01</div>
+      <h3 class="prin-title">Inherit, never redefine</h3>
+      <p class="prin-body">Tokens, type, logo, components live here. Generators reference them. No one redefines a color, font size, or hover behavior in a downstream file.</p>
+    </div>
+    <div class="prin-card">
+      <div class="prin-num">02</div>
+      <h3 class="prin-title">Iframe-ready by default</h3>
+      <p class="prin-body">Every generator output ships with the postMessage height-sender and target=_top on internal links. Kajabi, Canvas, anywhere, no layout breakage.</p>
+    </div>
+    <div class="prin-card">
+      <div class="prin-num">03</div>
+      <h3 class="prin-title">WCAG 2.2 AA is the floor</h3>
+      <p class="prin-body">Semantic HTML, real labels, visible focus, color is never the only signal, prefers-reduced-motion honored. Pass the bar before you ship.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COLOR TOKENS (light) ===== -->
+<section id="tokens" class="light-section tokens-section" aria-labelledby="tokens-h">
+  <div class="section-eyebrow">Color tokens</div>
+  <h2 id="tokens-h" class="section-headline">The MCAS palette, <span class="accent">tight and intentional</span>.</h2>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-chip" style="background:#0B1530"></div><div class="swatch-body"><p class="swatch-name">Deep navy</p><p class="swatch-hex">#0B1530</p><p class="swatch-use">Primary text, light-section logo, dark surface for filled panels.</p></div></div>
+    <div class="swatch"><div class="swatch-chip" style="background:#060A18"></div><div class="swatch-body"><p class="swatch-name">Darker navy</p><p class="swatch-hex">#060A18</p><p class="swatch-use">Dark section backgrounds, full-bleed bands.</p></div></div>
+    <div class="swatch"><div class="swatch-chip" style="background:#F5F1E8;border-bottom:1px solid #8C90A0"></div><div class="swatch-body"><p class="swatch-name">Cream</p><p class="swatch-hex">#F5F1E8</p><p class="swatch-use">Text on dark sections only. Never as page background.</p></div></div>
+    <div class="swatch"><div class="swatch-chip" style="background:#8B3A2E"></div><div class="swatch-body"><p class="swatch-name">Oxblood / rust</p><p class="swatch-hex">#8B3A2E</p><p class="swatch-use">Accent on LIGHT sections: CTAs, eyebrows, hover borders.</p></div></div>
+    <div class="swatch"><div class="swatch-chip" style="background:#A0452F"></div><div class="swatch-body"><p class="swatch-name">Rust hover</p><p class="swatch-hex">#A0452F</p><p class="swatch-use">Hover state for primary rust CTAs.</p></div></div>
+    <div class="swatch"><div class="swatch-chip" style="background:#C9A14A"></div><div class="swatch-body"><p class="swatch-name">Gold</p><p class="swatch-hex">#C9A14A</p><p class="swatch-use">Accent on DARK sections: eyebrows, CTAs, gold figure in logo.</p></div></div>
+    <div class="swatch"><div class="swatch-chip" style="background:#C2734D"></div><div class="swatch-body"><p class="swatch-name">Terra</p><p class="swatch-hex">#C2734D</p><p class="swatch-use">Secondary accent, headline accent on dark sections.</p></div></div>
+    <div class="swatch"><div class="swatch-chip" style="background:#FFFFFF;border-bottom:1px solid #8C90A0"></div><div class="swatch-body"><p class="swatch-name">White</p><p class="swatch-hex">#FFFFFF</p><p class="swatch-use">Light section background, card surface.</p></div></div>
+    <div class="swatch"><div class="swatch-chip" style="background:#8C90A0"></div><div class="swatch-body"><p class="swatch-name">Subtle border</p><p class="swatch-hex">#8C90A0</p><p class="swatch-use">Card borders, divider lines on light surfaces.</p></div></div>
+  </div>
+</section>
+
+<!-- ===== TYPOGRAPHY (dark) ===== -->
+<section class="dark-section type-section" aria-labelledby="type-h">
+  <div class="section-eyebrow">Typography</div>
+  <h2 id="type-h" class="section-headline">Plus Jakarta Sans, <span class="accent">weight and spacing do the work</span>.</h2>
+  <p class="section-intro">One font family. No italics, no Lora, no DM Sans. Hierarchy comes from weight, letter-spacing, and uppercase treatment, not from a second typeface.</p>
+  <div class="list-card">
+    <div class="type-rows" style="border-color: rgba(245, 241, 232, 0.18);">
+      <div class="type-row" style="border-color: rgba(245, 241, 232, 0.18); grid-template-columns: 230px 1fr;">
+        <div class="type-label" style="color:#C9A14A">Eyebrow / 11px / 700 / 0.28em</div>
+        <div class="type-sample" style="color:#C9A14A; font-size:11px; font-weight:700; letter-spacing:0.28em; text-transform:uppercase">MCAS &middot; Module Name &middot; Tool</div>
+      </div>
+      <div class="type-row" style="border-color: rgba(245, 241, 232, 0.18); grid-template-columns: 230px 1fr;">
+        <div class="type-label" style="color:#C9A14A">Headline / 31&ndash;46px / 800 / -0.02em</div>
+        <div class="type-sample" style="color:#F5F1E8; font-size:31px; font-weight:800; letter-spacing:-0.02em; line-height:1.12">Generator title <span style="color:#C2734D">with accent</span></div>
+      </div>
+      <div class="type-row" style="border-color: rgba(245, 241, 232, 0.18); grid-template-columns: 230px 1fr;">
+        <div class="type-label" style="color:#C9A14A">Subhead / 18&ndash;19px / 800</div>
+        <div class="type-sample" style="color:#F5F1E8; font-size:18px; font-weight:800; letter-spacing:-0.015em">Subsection or card title style</div>
+      </div>
+      <div class="type-row" style="border-color: rgba(245, 241, 232, 0.18); grid-template-columns: 230px 1fr;">
+        <div class="type-label" style="color:#C9A14A">Body / 14&ndash;16px / 400 / opacity 0.80</div>
+        <div class="type-sample" style="color:#F5F1E8; opacity:0.82; font-size:15px; font-weight:400; line-height:1.6">Default running text. Comfortable line height, reduced opacity on dark surfaces, no italic emphasis. Bold the word that needs to land, do not switch typefaces.</div>
+      </div>
+      <div class="type-row" style="border: none; grid-template-columns: 230px 1fr; padding-bottom: 0;">
+        <div class="type-label" style="color:#C9A14A">CTA / 11px / 700 / 0.18em</div>
+        <div class="type-sample"><span style="background:#C9A14A; color:#0B1530; padding:12px 22px; border-radius:4px; font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase">Generate</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CARDS (light) ===== -->
+<section class="light-section cards-section" aria-labelledby="cards-h">
+  <div class="section-eyebrow">Cards &amp; states</div>
+  <h2 id="cards-h" class="section-headline">Hub-and-spoke cards, <span class="accent">four states</span>.</h2>
+  <p class="section-intro">Default cards lift on hover. Locked, unlocked, and completed states use border treatment, never color alone.</p>
+
+  <ul class="comp-card-grid">
+    <li class="comp-card">
+      <div class="comp-eyebrow">Default</div>
+      <h3 class="comp-title">Hover me</h3>
+      <p class="comp-body">Rests at a soft shadow, lifts three pixels and shifts to a rust border on hover.</p>
+      <a class="cta-secondary" href="#" target="_top">Open tool</a>
+    </li>
+    <li class="comp-card is-locked" aria-disabled="true">
+      <div class="comp-eyebrow">Locked</div>
+      <h3 class="comp-title">Prerequisite unmet</h3>
+      <p class="comp-body">Dashed gray border. Communicates that something else must happen first.</p>
+    </li>
+    <li class="comp-card is-unlocked">
+      <div class="comp-eyebrow">Unlocked</div>
+      <h3 class="comp-title">Ready to start</h3>
+      <p class="comp-body">Solid gold border. A new tool or module is now accessible.</p>
+      <a class="cta-primary" href="#" target="_top" style="align-self:flex-start">Begin</a>
+    </li>
+    <li class="comp-card is-completed">
+      <div class="comp-eyebrow">Completed</div>
+      <h3 class="comp-title">Done</h3>
+      <p class="comp-body">Navy border on navy-tint fill. Never green, never a green checkmark.</p>
+    </li>
+  </ul>
+</section>
+
+<!-- ===== BUTTONS (dark) ===== -->
+<section class="dark-section buttons-section" aria-labelledby="btn-h">
+  <div class="section-eyebrow">Buttons</div>
+  <h2 id="btn-h" class="section-headline">Four button styles, <span class="accent">picked for the surface</span>.</h2>
+  <p class="section-intro">Primary on light is rust. Primary on dark is gold. Secondary is outlined. Ghost has no chrome at rest.</p>
+  <div class="btn-row">
+    <button class="btn btn-primary" type="button">Primary rust</button>
+    <button class="btn btn-accent" type="button">Accent gold</button>
+    <button class="btn btn-secondary" type="button">Secondary outline</button>
+    <button class="btn btn-ghost" type="button">Ghost</button>
+    <button class="btn btn-accent" type="button" disabled>Disabled</button>
+  </div>
+</section>
+
+<!-- ===== FORMS (light) ===== -->
+<section class="light-section forms-section" aria-labelledby="form-h">
+  <div class="section-eyebrow">Forms &amp; dropdowns</div>
+  <h2 id="form-h" class="section-headline">Dropdowns first wherever <span class="accent">the answer is bounded</span>.</h2>
+  <p class="section-intro">Every field has a real label tied by for/id. Focus ring is rust with a soft halo. Hover deepens the border to navy.</p>
+
+  <form class="form-grid" onsubmit="event.preventDefault();">
+    <div class="field">
+      <label for="course-select">Course</label>
+      <select id="course-select" class="select" name="course">
+        <option value="">Select a course</option>
+        <option value="bio004">BIO 004 Human Anatomy (Solano)</option>
+        <option value="bio431">BIO 431 A&amp;P (ARC, in-person, TBL)</option>
+        <option value="bio304">BIO 304 A&amp;P (ARC, online)</option>
+        <option value="tbl-lab">TBL Project Lab</option>
+        <option value="critcare">Critical Care Grade Repair</option>
+      </select>
+      <span class="field-hint">Pulldown for any bounded choice.</span>
+    </div>
+
+    <div class="field">
+      <label for="module-select">Module</label>
+      <select id="module-select" class="select" name="module">
+        <option value="">Pick a module</option>
+        <option>Week 1 &middot; Orientation</option>
+        <option>Week 2 &middot; Histology</option>
+        <option>Week 3 &middot; Skeletal</option>
+        <option>Week 4 &middot; Midterm review</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="tool-type">Tool type</label>
+      <select id="tool-type" class="select" name="tool_type">
+        <option value="">Choose generator</option>
+        <option>Atlas page</option>
+        <option>TBL session</option>
+        <option>Spaced-recall builder</option>
+        <option>Lab exam DOCX</option>
+        <option>Concept page</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="title-input">Title</label>
+      <input id="title-input" class="input" type="text" name="title" placeholder="e.g., Skeletal System Atlas">
+    </div>
+
+    <div class="field" style="grid-column: 1 / -1;">
+      <label for="notes-input">Notes</label>
+      <textarea id="notes-input" class="textarea" name="notes" placeholder="Anything the generator should know."></textarea>
+    </div>
+
+    <div class="field" style="grid-column: 1 / -1;">
+      <label as="legend">Options</label>
+      <label class="check-row"><input type="checkbox" name="iframe_ready" checked> Bake in iframe height-sender</label>
+      <label class="check-row"><input type="checkbox" name="compliance" checked> Generate compliance-notes.md</label>
+      <label class="check-row"><input type="checkbox" name="byline" checked> Apply Dr. Sharilyn Rennie byline (no credential suffix)</label>
+    </div>
+
+    <div class="field" style="grid-column: 1 / -1;">
+      <label as="legend">Audience</label>
+      <label class="check-row"><input type="radio" name="audience" value="students" checked> Student-facing</label>
+      <label class="check-row"><input type="radio" name="audience" value="faculty"> Faculty-facing (faculty branding applies)</label>
+      <label class="check-row"><input type="radio" name="audience" value="internal"> MCAS internal</label>
+    </div>
+
+    <div style="grid-column: 1 / -1; display:flex; gap:14px; flex-wrap:wrap;">
+      <button class="btn btn-primary" type="submit">Generate</button>
+      <button class="btn btn-secondary" type="reset">Reset</button>
+    </div>
+  </form>
+</section>
+
+<!-- ===== TABLES (dark) ===== -->
+<section class="dark-section tables-section" aria-labelledby="tbl-h">
+  <div class="section-eyebrow">Tables</div>
+  <h2 id="tbl-h" class="section-headline">Manifests, inventories, <span class="accent">readiness reports</span>.</h2>
+  <p class="section-intro">Tables get captions and proper headers. Hover row tint, no zebra stripes, tight uppercase column heads.</p>
+  <div class="table-wrap">
+    <table>
+      <caption>Example &middot; generator output manifest</caption>
+      <thead>
+        <tr><th scope="col">File</th><th scope="col">Type</th><th scope="col">Course</th><th scope="col">Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>intro.html</td><td>Atlas page</td><td>BIO 004</td><td>Ready</td></tr>
+        <tr><td>histology.html</td><td>Atlas page</td><td>BIO 004</td><td>Ready</td></tr>
+        <tr><td>compliance-notes.md</td><td>Compliance</td><td>BIO 004</td><td>Pending review</td></tr>
+        <tr><td>tbl-week3.html</td><td>TBL session</td><td>BIO 431</td><td>Draft</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== LISTS (light) ===== -->
+<section class="light-section lists-section" aria-labelledby="list-h">
+  <div class="section-eyebrow">Lists</div>
+  <h2 id="list-h" class="section-headline">Real list elements, <span class="accent">always</span>.</h2>
+  <p class="section-intro">Lists are built with ul, ol, and dl so screen readers announce them as lists. No manually punched bullets.</p>
+
+  <div class="list-card">
+    <h3>Unordered</h3>
     <ul>
-      <li><a href="#tokens">Color tokens</a></li>
-      <li><a href="#typography">Typography</a></li>
-      <li><a href="#cards">Cards &amp; states</a></li>
-      <li><a href="#buttons">Buttons</a></li>
-      <li><a href="#forms">Forms &amp; dropdowns</a></li>
-      <li><a href="#tables">Tables</a></li>
-      <li><a href="#lists">Lists</a></li>
-      <li><a href="#code">Code blocks</a></li>
-      <li><a href="#callouts">Callouts</a></li>
-      <li><a href="#usage">Usage rules</a></li>
+      <li>Tokens, type, components live here</li>
+      <li>Generators inherit, never redefine</li>
+      <li>Faculty branding is out of scope</li>
     </ul>
-  </nav>
+    <h3>Ordered</h3>
+    <ol>
+      <li>Pick a generator from the dropdown</li>
+      <li>Fill in course, module, title</li>
+      <li>Generate, review, ship</li>
+    </ol>
+    <h3>Definition</h3>
+    <dl>
+      <dt>MCAS</dt><dd>MedMasters Course Architecture System</dd>
+      <dt>Architect app</dt><dd>The orchestration layer that defines the data model generators consume</dd>
+      <dt>Generator</dt><dd>A focused tool that produces one type of deliverable (atlas page, TBL session, spaced-recall deck, lab exam)</dd>
+    </dl>
+  </div>
+</section>
 
-  <!-- COLOR TOKENS -->
-  <section id="tokens" aria-labelledby="tokens-h">
-    <h2 id="tokens-h">Color tokens</h2>
-    <p class="section-note">PRIMARY palette. Sage and cream are not in this system.</p>
-    <div class="swatch-grid">
-      <div class="swatch"><div class="swatch__color" style="background:#1E3D4C"></div><div class="swatch__body"><p class="swatch__name">Navy</p><p class="swatch__hex">#1E3D4C</p><p class="swatch__use">Primary text, headers, borders</p></div></div>
-      <div class="swatch"><div class="swatch__color" style="background:#142a36"></div><div class="swatch__body"><p class="swatch__name">Navy-deep</p><p class="swatch__hex">#142a36</p><p class="swatch__use">Navy hover state</p></div></div>
-      <div class="swatch"><div class="swatch__color" style="background:#EDF1F3;border-bottom:1px solid #D1D5DB"></div><div class="swatch__body"><p class="swatch__name">Navy-tint</p><p class="swatch__hex">#EDF1F3</p><p class="swatch__use">Completed-state fill only</p></div></div>
-      <div class="swatch"><div class="swatch__color" style="background:#B8924A"></div><div class="swatch__body"><p class="swatch__name">Brushed gold</p><p class="swatch__hex">#B8924A</p><p class="swatch__use">Accents, unlocked borders, key CTAs</p></div></div>
-      <div class="swatch"><div class="swatch__color" style="background:#C2734D"></div><div class="swatch__body"><p class="swatch__name">Terra cotta</p><p class="swatch__hex">#C2734D</p><p class="swatch__use">Secondary accents</p></div></div>
-      <div class="swatch"><div class="swatch__color" style="background:#A0522D"></div><div class="swatch__body"><p class="swatch__name">Terra-dark</p><p class="swatch__hex">#A0522D</p><p class="swatch__use">Eyebrow text, emphasis</p></div></div>
-      <div class="swatch"><div class="swatch__color" style="background:#FAFAF9;border-bottom:1px solid #D1D5DB"></div><div class="swatch__body"><p class="swatch__name">Off-white</p><p class="swatch__hex">#FAFAF9</p><p class="swatch__use">Page background only</p></div></div>
-      <div class="swatch"><div class="swatch__color" style="background:#FFFFFF;border-bottom:1px solid #D1D5DB"></div><div class="swatch__body"><p class="swatch__name">White</p><p class="swatch__hex">#FFFFFF</p><p class="swatch__use">Cards only</p></div></div>
-    </div>
-  </section>
-
-  <!-- TYPOGRAPHY -->
-  <section id="typography" aria-labelledby="typography-h">
-    <h2 id="typography-h">Typography</h2>
-    <p class="section-note">DM Sans for eyebrows, Plus Jakarta Sans for everything else, Lora italic for instructions and emphasis.</p>
-    <div class="type-demo">
-      <div class="type-row">
-        <p class="type-label">Eyebrow / DM Sans 12px uppercase / terra-dark</p>
-        <p class="mcas-eyebrow">MCAS &middot; Module Name &middot; Tool Type</p>
-      </div>
-      <div class="type-row">
-        <p class="type-label">H1 / Plus Jakarta 800 / navy</p>
-        <h1 class="mcas-h1" style="margin:0">Generator Title Goes Here</h1>
-      </div>
-      <div class="type-row">
-        <p class="type-label">H2 / Plus Jakarta 600 / terra-dark</p>
-        <h2 style="margin:0">Section heading style</h2>
-      </div>
-      <div class="type-row">
-        <p class="type-label">H3 / Plus Jakarta 600 / terra-dark</p>
-        <h3 style="margin:0">Subsection heading style</h3>
-      </div>
-      <div class="type-row">
-        <p class="type-label">Body / Plus Jakarta 400 / navy</p>
-        <p style="margin:0">Default running text. Comfortable reading size, generous line height, plenty of contrast against off-white and white backgrounds.</p>
-      </div>
-      <div class="type-row">
-        <p class="type-label">Lora italic / instructional voice</p>
-        <p style="font-family:var(--font-italic);font-style:italic;color:var(--gray-700);margin:0">Use Lora italic for usage instructions, captions, and quoted student-facing voice.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CARDS -->
-  <section id="cards" aria-labelledby="cards-h">
-    <h2 id="cards-h">Cards &amp; states</h2>
-    <p class="section-note">White cards on off-white. Lift on hover. Locked / unlocked / completed states use border treatment, never green.</p>
-    <div class="card-grid">
-      <article class="card">
-        <p class="card__eyebrow">Default card</p>
-        <h3 class="card__title">Hover me</h3>
-        <p class="card__body">Rests at a soft shadow, lifts 2 pixels with a deeper shadow on hover. Smooth 200ms ease.</p>
-        <a class="btn btn--secondary" href="#" target="_top">Open tool</a>
-      </article>
-      <article class="card card--locked" aria-disabled="true">
-        <p class="card__eyebrow">Locked state</p>
-        <h3 class="card__title">Not yet available</h3>
-        <p class="card__body">Dashed gray border. Communicates a prerequisite is unmet.</p>
-      </article>
-      <article class="card card--unlocked">
-        <p class="card__eyebrow">Unlocked state</p>
-        <h3 class="card__title">Ready to start</h3>
-        <p class="card__body">Solid brushed gold border. Signals a new tool or module is now accessible.</p>
-        <a class="btn btn--accent" href="#" target="_top">Begin</a>
-      </article>
-      <article class="card card--completed">
-        <p class="card__eyebrow">Completed state</p>
-        <h3 class="card__title">Done</h3>
-        <p class="card__body">Navy border on navy-tint fill. Never green. Never a checkmark in green.</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- BUTTONS -->
-  <section id="buttons" aria-labelledby="buttons-h">
-    <h2 id="buttons-h">Buttons</h2>
-    <p class="section-note">Primary for the most important action on a page. Accent (gold) for the key CTA in a flow. Secondary for safe alternatives. Ghost for tertiary.</p>
-    <div class="btn-row">
-      <button class="btn btn--primary" type="button">Primary action</button>
-      <button class="btn btn--accent" type="button">Accent CTA</button>
-      <button class="btn btn--secondary" type="button">Secondary</button>
-      <button class="btn btn--ghost" type="button">Ghost</button>
-      <button class="btn btn--primary" type="button" disabled>Disabled</button>
-    </div>
-  </section>
-
-  <!-- FORMS -->
-  <section id="forms" aria-labelledby="forms-h">
-    <h2 id="forms-h">Forms &amp; dropdowns</h2>
-    <p class="section-note">Dropdowns preferred over free text where the answer is bounded. Every input has a real <code>&lt;label for&gt;</code>. Focus ring is gold, 3px, with 2px offset.</p>
-    <form class="form-grid" onsubmit="event.preventDefault(); alert('Demo form submitted.');">
-
-      <div class="field">
-        <label for="course-select">Course</label>
-        <select id="course-select" class="select" name="course">
-          <option value="">Select a course</option>
-          <option value="bio004">BIO 004 Human Anatomy (Solano)</option>
-          <option value="bio431">BIO 431 A&amp;P (ARC, in-person, TBL)</option>
-          <option value="bio304">BIO 304 A&amp;P (ARC, online)</option>
-          <option value="tbl-lab">TBL Project Lab</option>
-          <option value="critcare">Critical Care Grade Repair</option>
-        </select>
-        <span class="field__hint">Pulldown for any bounded choice.</span>
-      </div>
-
-      <div class="field">
-        <label for="module-select">Module</label>
-        <select id="module-select" class="select" name="module">
-          <option value="">Pick a module</option>
-          <option>Week 1: Orientation</option>
-          <option>Week 2: Histology</option>
-          <option>Week 3: Skeletal</option>
-          <option>Week 4: Midterm review</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="tool-type">Tool type</label>
-        <select id="tool-type" class="select" name="tool_type">
-          <option value="">Choose generator</option>
-          <option>Atlas page</option>
-          <option>TBL session</option>
-          <option>Spaced-recall builder</option>
-          <option>Lab exam DOCX</option>
-          <option>Concept page</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="title-input">Title</label>
-        <input id="title-input" class="input" type="text" name="title" placeholder="e.g., Skeletal System Atlas">
-      </div>
-
-      <div class="field" style="grid-column: 1 / -1;">
-        <label for="notes-input">Notes</label>
-        <textarea id="notes-input" class="textarea" name="notes" placeholder="Anything the generator should know."></textarea>
-      </div>
-
-      <div class="field" style="grid-column: 1 / -1;">
-        <span style="font-family:var(--font-display);font-weight:600;font-size:13px;color:var(--navy)">Options</span>
-        <label class="check-row"><input type="checkbox" name="iframe_ready" checked> Bake in iframe height-sender</label>
-        <label class="check-row"><input type="checkbox" name="compliance" checked> Generate compliance-notes.md</label>
-        <label class="check-row"><input type="checkbox" name="byline" checked> Apply Dr. Sharilyn Rennie byline (no credentials)</label>
-      </div>
-
-      <div class="field" style="grid-column: 1 / -1;">
-        <span style="font-family:var(--font-display);font-weight:600;font-size:13px;color:var(--navy)">Audience</span>
-        <label class="check-row"><input type="radio" name="audience" value="students" checked> Student-facing</label>
-        <label class="check-row"><input type="radio" name="audience" value="faculty"> Faculty-facing (faculty branding applies)</label>
-        <label class="check-row"><input type="radio" name="audience" value="internal"> MCAS internal</label>
-      </div>
-
-      <div style="grid-column: 1 / -1; display:flex; gap:12px; flex-wrap:wrap;">
-        <button class="btn btn--accent" type="submit">Generate</button>
-        <button class="btn btn--ghost" type="reset">Reset</button>
-      </div>
-    </form>
-  </section>
-
-  <!-- TABLES -->
-  <section id="tables" aria-labelledby="tables-h">
-    <h2 id="tables-h">Tables</h2>
-    <p class="section-note">Use for course inventories, module lists, generator output manifests.</p>
-    <div class="table-wrap">
-      <table>
-        <caption>Example: generator output manifest</caption>
-        <thead>
-          <tr><th scope="col">File</th><th scope="col">Type</th><th scope="col">Course</th><th scope="col">Status</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>intro.html</td><td>Atlas page</td><td>BIO 004</td><td>Ready</td></tr>
-          <tr><td>histology.html</td><td>Atlas page</td><td>BIO 004</td><td>Ready</td></tr>
-          <tr><td>compliance-notes.md</td><td>Compliance</td><td>BIO 004</td><td>Pending review</td></tr>
-          <tr><td>tbl-week3.html</td><td>TBL session</td><td>BIO 431</td><td>Draft</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- LISTS -->
-  <section id="lists" aria-labelledby="lists-h">
-    <h2 id="lists-h">Lists</h2>
-    <div class="list-demo">
-      <h3>Unordered</h3>
-      <ul>
-        <li>Tokens, type scale, components live here</li>
-        <li>Generators inherit, never redefine</li>
-        <li>Faculty branding is out of scope</li>
-      </ul>
-      <h3>Ordered</h3>
-      <ol>
-        <li>Pick a generator from the dropdown</li>
-        <li>Fill in course, module, title</li>
-        <li>Generate, review, ship</li>
-      </ol>
-      <h3>Definition</h3>
-      <dl>
-        <dt>MCAS</dt><dd>MedMasters Course Architecture System</dd>
-        <dt>Architect app</dt><dd>The orchestration layer that defines the data model generators consume</dd>
-        <dt>Generator</dt><dd>A focused tool that produces one type of deliverable (atlas page, TBL session, spaced-recall deck, etc.)</dd>
-      </dl>
-    </div>
-  </section>
-
-  <!-- CODE -->
-  <section id="code" aria-labelledby="code-h">
-    <h2 id="code-h">Code blocks</h2>
-    <p class="section-note">For generated-output previews inside the Architect app. Inline <code>code</code> uses navy-tint background.</p>
-<pre><code>&lt;header class="mcas-header"&gt;
-  &lt;div class="mcas-header__inner"&gt;
-    &lt;p class="mcas-eyebrow"&gt;MCAS &middot; Module Name&lt;/p&gt;
-    &lt;h1 class="mcas-h1"&gt;Generator Title&lt;/h1&gt;
-  &lt;/div&gt;
+<!-- ===== CODE (dark) ===== -->
+<section class="dark-section code-section" aria-labelledby="code-h">
+  <div class="section-eyebrow">Code blocks</div>
+  <h2 id="code-h" class="section-headline">For generated-output previews <span class="accent">inside the Architect app</span>.</h2>
+  <p class="section-intro">Block code on dark navy. Inline <code>code</code> uses a tinted background.</p>
+<pre><code>&lt;header class="site-header"&gt;
+  &lt;a href="index.html" class="site-logo" target="_top"&gt;
+    [logo svg]
+    &lt;span class="logo-text"&gt;
+      &lt;span class="logo-title"&gt;MCAS &lt;span class="logo-accent"&gt;Generator&lt;/span&gt;&lt;/span&gt;
+      &lt;span class="logo-sub"&gt;MedMasters &middot; Course Architecture System&lt;/span&gt;
+    &lt;/span&gt;
+  &lt;/a&gt;
 &lt;/header&gt;</code></pre>
-  </section>
+</section>
 
-  <!-- CALLOUTS -->
-  <section id="callouts" aria-labelledby="callouts-h">
-    <h2 id="callouts-h">Callouts</h2>
-    <div class="callout callout--info">
-      <p class="callout__title">Info</p>
-      <p class="callout__body">Use for orientation, instructions, context.</p>
-    </div>
-    <div class="callout">
-      <p class="callout__title">Action</p>
-      <p class="callout__body">Use for prompts that ask the user to do something.</p>
-    </div>
-    <div class="callout callout--warn">
-      <p class="callout__title">Caution</p>
-      <p class="callout__body">Use sparingly. Compliance, privacy, or data-loss risk.</p>
-    </div>
-  </section>
+<!-- ===== CALLOUTS (light) ===== -->
+<section class="light-section callouts-section" aria-labelledby="cal-h">
+  <div class="section-eyebrow">Callouts</div>
+  <h2 id="cal-h" class="section-headline">Three flavors, <span class="accent">used sparingly</span>.</h2>
+  <div class="callout is-info">
+    <p class="callout-title">Info</p>
+    <p class="callout-body">Use for orientation, instructions, and context. Navy left border.</p>
+  </div>
+  <div class="callout">
+    <p class="callout-title">Action</p>
+    <p class="callout-body">Use when you need the reader to do something. Rust left border.</p>
+  </div>
+  <div class="callout is-warn">
+    <p class="callout-title">Caution</p>
+    <p class="callout-body">Reserve for compliance, privacy, or data-loss risk. Terra left border.</p>
+  </div>
+</section>
 
-  <!-- USAGE RULES -->
-  <section id="usage" aria-labelledby="usage-h">
-    <h2 id="usage-h">Usage rules for generators</h2>
-    <div class="list-demo">
-      <ul>
-        <li>Copy the MCAS header block verbatim. Change only H1 and subhead.</li>
-        <li>Inherit the <code>:root</code> token block. Do not redefine colors.</li>
-        <li>Every internal link uses <code>target="_top"</code>. External links use <code>target="_blank" rel="noopener"</code>.</li>
-        <li>Bake the iframe height-sender script before the closing body tag.</li>
-        <li>WCAG 2.2 AA floor. Visible focus, semantic HTML, real labels.</li>
-        <li>Never em dashes. Use commas, periods, or rewrite.</li>
-        <li>Student-facing byline: "Dr. Sharilyn Rennie" with no credential suffix.</li>
-        <li>Never store student PII in generator output that persists across sessions.</li>
-        <li>Ship a <code>compliance-notes.md</code> alongside every project.</li>
-      </ul>
-    </div>
-  </section>
+<!-- ===== USAGE RULES (dark, numbered list) ===== -->
+<section class="dark-section rules-section" aria-labelledby="rules-h">
+  <div class="section-eyebrow">Usage rules</div>
+  <h2 id="rules-h" class="section-headline">What every generator must do <span class="accent">to inherit cleanly</span>.</h2>
+  <ol class="rules-list">
+    <li>
+      <div>
+        <h3 class="rule-title">Copy this header lockup verbatim</h3>
+        <p class="rule-desc">Change only the logo-title second word, the logo-sub line, and the hero headline. Leave the structure and class names intact.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 class="rule-title">Inherit the token block</h3>
+        <p class="rule-desc">Use the swatch palette and Plus Jakarta type stack. Do not introduce a new color, a second typeface, or any italic treatment.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 class="rule-title">target=_top on internal links</h3>
+        <p class="rule-desc">External links use target=_blank rel=noopener. Internal navigation breaks out of any embedding iframe.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 class="rule-title">Bake in the iframe height-sender</h3>
+        <p class="rule-desc">PostMessage with a per-file id, ResizeObserver on body, load and resize listeners. Sits before the closing body tag.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 class="rule-title">WCAG 2.2 AA floor</h3>
+        <p class="rule-desc">Semantic landmarks, single h1, descending hierarchy, real labels, visible focus, prefers-reduced-motion honored, no color-only signals.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 class="rule-title">No em dashes, no italics</h3>
+        <p class="rule-desc">Em dashes get replaced by commas, periods, parentheses, or rewrites. Italics are never used.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 class="rule-title">Byline rule</h3>
+        <p class="rule-desc">Student-facing materials sign off as "Dr. Sharilyn Rennie" with no credential suffix. Never ", ND" or ", MD".</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 class="rule-title">No student PII in persistent files</h3>
+        <p class="rule-desc">Names, IDs, emails, and grades are session-only. Nothing student-identifying enters memory, scheduled task logs, or shared cloud folders.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <h3 class="rule-title">Ship compliance-notes.md per project</h3>
+        <p class="rule-desc">A project is not complete until its compliance-notes file exists. Contrast pairs, keyboard flow, screen reader notes, known limits.</p>
+      </div>
+    </li>
+  </ol>
+</section>
 
 </main>
 
-<footer role="contentinfo">
-  <div class="footer-inner">
-    <span class="footer-byline">Dr. Sharilyn Rennie</span>
-    <span>MCAS Component Index &middot; v1.0</span>
-    <span class="footer-meta">MedMasters Course Architecture System</span>
+<!-- ===== FOOTER ===== -->
+<footer class="footer-section">
+  <div class="footer-top">
+    <div>
+      <a href="index.html" class="footer-logo" target="_top" aria-label="MCAS Component Index home">
+        <svg viewBox="40 10 125 148" role="img" aria-hidden="true" focusable="false">
+          <g transform="translate(0, 18)">
+            <g transform="translate(60, 0) rotate(8 0 130)">
+              <circle cx="0" cy="20" r="10" fill="#F5F1E8"/>
+              <path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#F5F1E8"/>
+            </g>
+            <g transform="translate(100, 0)">
+              <circle cx="0" cy="10" r="11" fill="#8B3A2E"/>
+              <path d="M 0,22 C -11,22 -17,26 -17,34 C -17,52 -14,70 -12,86 C -11,108 -13,122 -15,132 L 15,132 C 13,122 11,108 12,86 C 14,70 17,52 17,34 C 17,26 11,22 0,22 Z" fill="#8B3A2E"/>
+            </g>
+            <g transform="translate(140, 0) rotate(-8 0 130)">
+              <circle cx="0" cy="20" r="10" fill="#C9A14A"/>
+              <path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#C9A14A"/>
+            </g>
+          </g>
+        </svg>
+        <span class="logo-text">
+          <span class="logo-title">MCAS <span class="logo-accent">Index</span></span>
+          <span class="logo-sub">MedMasters &middot; Architecture System</span>
+        </span>
+      </a>
+      <p class="footer-tagline">The single source of truth for every generator, every Architect screen, every internal MedMasters deliverable.</p>
+    </div>
+    <div>
+      <div class="footer-col-header">Jump to</div>
+      <a class="footer-link" href="#logo">Logo &amp; lockup</a>
+      <a class="footer-link" href="#tokens">Color tokens</a>
+      <a class="footer-link" href="cvc-oei-rubric-audit.html" target="_top">CVC-OEI rubric audit</a>
+      <a class="footer-link" href="compliance-notes.md" target="_top">Compliance notes</a>
+    </div>
+    <div>
+      <div class="footer-col-header">Build status</div>
+      <a class="footer-link" href="#">v1 foundational framework</a>
+      <a class="footer-link" href="#">v2 in planning</a>
+      <a class="footer-link" href="#">RSI Engine in scope</a>
+      <a class="footer-link" href="#">Accessibility Engine in scope</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copyright">MCAS Component Index &middot; MedMasters Collaborative LLC &middot; v1.0</div>
+    <div class="footer-byline">Dr. Sharilyn Rennie</div>
   </div>
 </footer>
 
 <script>
-  /* ============================================================
-     IFRAME HEIGHT-SENDER
-     Bake this exact block (with the appropriate id) into every
-     HTML deliverable that may be embedded in Kajabi or another
-     host page.
-     ============================================================ */
+  /* iframe height-sender: keeps the embed sized to its content */
   (function () {
     var FRAME_ID = 'mcas-component-index';
-
     function sendHeight() {
-      try {
-        var h = Math.max(
-          document.documentElement.scrollHeight,
-          document.body.scrollHeight
-        );
-        window.parent.postMessage({ id: FRAME_ID, height: h }, '*');
-      } catch (e) { /* noop */ }
-    }
-
-    if ('ResizeObserver' in window) {
-      var ro = new ResizeObserver(sendHeight);
-      ro.observe(document.body);
+      var h = Math.max(
+        document.documentElement.scrollHeight,
+        document.body ? document.body.scrollHeight : 0
+      );
+      parent.postMessage({ type: 'resize', id: FRAME_ID, height: h }, '*');
     }
     window.addEventListener('load', sendHeight);
     window.addEventListener('resize', sendHeight);
-    // Send once on script load too.
-    sendHeight();
+    if (window.ResizeObserver) {
+      new ResizeObserver(sendHeight).observe(document.body);
+    }
   })();
 </script>
 

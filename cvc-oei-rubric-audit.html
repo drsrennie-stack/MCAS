@@ -1,485 +1,733 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MCAS v1 &times; CVC-OEI Course Design Rubric Audit</title>
-<meta name="description" content="Compliance audit of MCAS v1 foundational framework against the California Virtual Campus Online Education Initiative Course Design Rubric (April 2020, rev. May 2021).">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCAS &times; CVC-OEI Rubric Audit &middot; MedMasters Collaborative</title>
+<meta name="description" content="Compliance audit of the MCAS v1 foundational framework against the California Virtual Campus Online Education Initiative Course Design Rubric (April 2020, rev. May 2021).">
 <style>
-  :root {
-    --navy: #1E3D4C;
-    --navy-deep: #142a36;
-    --navy-tint: #EDF1F3;
-    --gold: #B8924A;
-    --gold-deep: #9a7a3e;
-    --terra: #C2734D;
-    --terra-dark: #A0522D;
-    --white: #FFFFFF;
-    --off-white: #FAFAF9;
-    --gray-300: #D1D5DB;
-    --gray-500: #6B7280;
-    --gray-700: #374151;
+@import url('https://cdn.jsdelivr.net/npm/@fontsource-variable/plus-jakarta-sans/index.css');
+/*
+  ============================================================
+  MCAS  ×  CVC-OEI COURSE DESIGN RUBRIC AUDIT
+  Inherits MCAS Component Index brand DNA.
+  Plus Jakarta only. No italics. Light/dark alternation.
+  ============================================================
+*/
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: #FFFFFF;
+  color: #0B1530;
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { max-width: 100%; display: block; }
+a { color: inherit; }
 
-    --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
-    --font-eyebrow: 'DM Sans', system-ui, sans-serif;
-    --font-italic: 'Lora', Georgia, serif;
-    --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+/* ===== KEYBOARD FOCUS ===== */
+a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid #8B3A2E; outline-offset: 3px; border-radius: 4px;
+}
+.dark-section a:focus-visible { outline-color: #C9A14A; }
 
-    --shadow-rest: 0 1px 3px rgba(0,0,0,0.08);
-    --shadow-hover: 0 8px 16px rgba(0,0,0,0.10);
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --max-w: 1100px;
+.skip-link {
+  position: absolute; top: -100px; left: 8px;
+  background: #0B1530; color: #F5F1E8;
+  padding: 12px 20px; text-decoration: none;
+  font-size: 13px; font-weight: 700; border-radius: 4px;
+  z-index: 9999; letter-spacing: 0.04em;
+}
+.skip-link:focus { top: 8px; }
+
+/* ===== SECTION PADDING ===== */
+.site-header, .hero-card, .summary-section, .meth-section,
+.section-a, .section-b, .rsi-section, .section-c, .section-d,
+.gap-section, .signoff-section, .footer-section {
+  padding-left: max(40px, 5vw);
+  padding-right: max(40px, 5vw);
+}
+
+/* ===== SITE HEADER ===== */
+.site-header { background: #FFFFFF; padding-top: 28px; padding-bottom: 28px; border-bottom: 0.5px solid rgba(11, 21, 48, 0.10); }
+.site-logo { display: inline-flex; align-items: center; gap: 16px; text-decoration: none; }
+.site-logo svg { height: 58px; width: auto; display: block; }
+.logo-text { display: flex; flex-direction: column; gap: 3px; }
+.logo-title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #0B1530; line-height: 1; }
+.logo-title .logo-accent { color: #8B3A2E; }
+.logo-sub { font-size: 10.5px; font-weight: 700; letter-spacing: 0.20em; text-transform: uppercase; color: #0B1530; opacity: 0.72; }
+
+/* ===== HERO ===== */
+.hero-card { background: #FFFFFF; padding-top: 60px; padding-bottom: 60px; }
+.hero-content { max-width: 820px; }
+.hero-eyebrow { font-size: 11px; font-weight: 700; color: #8B3A2E; letter-spacing: 0.28em; text-transform: uppercase; margin-bottom: 22px; }
+.hero-headline { font-size: 46px; font-weight: 800; color: #0B1530; letter-spacing: -0.025em; line-height: 1.06; margin: 0 0 20px; }
+.hero-headline .accent { color: #8B3A2E; }
+.hero-subhead { font-size: 16px; font-weight: 400; color: #0B1530; line-height: 1.6; opacity: 0.80; margin-bottom: 32px; max-width: 700px; }
+
+/* META STRIP */
+.meta-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 22px 32px;
+  padding: 24px 0 0;
+  border-top: 1px solid rgba(11, 21, 48, 0.12);
+}
+.meta-item dt {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: #8B3A2E;
+  margin: 0 0 4px;
+}
+.meta-item dd {
+  margin: 0;
+  font-size: 14px; font-weight: 700;
+  color: #0B1530;
+  letter-spacing: -0.005em;
+}
+
+/* ===== SHARED SECTION HEADINGS ===== */
+.section-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; margin-bottom: 18px; }
+.section-headline { font-size: 31px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.12; margin: 0 0 22px; max-width: 740px; }
+.section-intro { font-size: 15px; font-weight: 400; line-height: 1.6; max-width: 680px; margin: 0 0 36px; }
+
+.light-section { background: #FFFFFF; padding-top: 64px; padding-bottom: 64px; }
+.dark-section { background: #060A18; padding-top: 64px; padding-bottom: 64px; }
+.light-section .section-eyebrow { color: #8B3A2E; }
+.light-section .section-headline { color: #0B1530; }
+.light-section .section-headline .accent { color: #8B3A2E; }
+.light-section .section-intro { color: #0B1530; opacity: 0.80; }
+.dark-section .section-eyebrow { color: #C9A14A; }
+.dark-section .section-headline { color: #F5F1E8; }
+.dark-section .section-headline .accent { color: #C2734D; }
+.dark-section .section-intro { color: #F5F1E8; opacity: 0.82; }
+
+/* ===== EXECUTIVE SUMMARY / SCOREBOARD (dark) ===== */
+.headline-block { display: grid; grid-template-columns: 280px 1fr; gap: 48px; align-items: center; margin-bottom: 36px; }
+.headline-score {
+  font-size: 120px; font-weight: 800;
+  color: #C9A14A;
+  letter-spacing: -0.04em; line-height: 0.9;
+  margin: 0;
+}
+.headline-score .denom { color: #F5F1E8; opacity: 0.55; font-size: 60px; }
+.headline-statement {
+  font-size: 22px; font-weight: 700;
+  color: #F5F1E8;
+  letter-spacing: -0.01em; line-height: 1.35;
+  margin: 0;
+}
+.headline-statement .accent { color: #C2734D; }
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+.score-card {
+  background: rgba(245, 241, 232, 0.04);
+  border-left: 4px solid #C9A14A;
+  padding: 22px 22px 24px;
+  border-radius: 4px;
+}
+.score-num { font-size: 44px; font-weight: 800; color: #F5F1E8; letter-spacing: -0.02em; line-height: 1; margin: 0; }
+.score-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #C9A14A; margin: 8px 0 4px; }
+.score-detail { font-size: 12.5px; font-weight: 400; color: #F5F1E8; opacity: 0.78; margin: 0; line-height: 1.5; }
+
+@media (max-width: 720px) {
+  .headline-block { grid-template-columns: 1fr; gap: 18px; }
+  .headline-score { font-size: 88px; }
+  .headline-score .denom { font-size: 42px; }
+}
+
+/* ===== METHODOLOGY (light) ===== */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 14px 24px;
+  margin: 0 0 28px;
+  padding: 18px 22px;
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 6px;
+}
+.legend-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #0B1530; }
+
+.pill {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  padding: 4px 11px; border-radius: 999px;
+  white-space: nowrap;
+  border: 1.5px solid transparent;
+}
+.pill-met { background: #0B1530; color: #FFFFFF; border-color: #0B1530; }
+.pill-enforced { background: #C9A14A; color: #0B1530; border-color: #C9A14A; }
+.pill-v2 { background: #FFFFFF; color: #8B3A2E; border-color: #8B3A2E; }
+.pill-na { background: #FFFFFF; color: #8C90A0; border-color: #8C90A0; }
+
+.callout {
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-left: 4px solid #8B3A2E;
+  border-radius: 4px;
+  padding: 18px 22px;
+  margin: 14px 0;
+}
+.callout.is-info { border-left-color: #0B1530; }
+.callout.is-gold { border-left-color: #C9A14A; }
+.callout-title { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #0B1530; margin: 0 0 6px; }
+.callout-body { font-size: 14px; color: #0B1530; opacity: 0.85; margin: 0; line-height: 1.6; }
+
+/* ===== SECTION SCORE STRIP ===== */
+.score-strip {
+  display: flex; flex-wrap: wrap; gap: 16px 28px;
+  padding: 14px 20px;
+  border-radius: 6px;
+  margin-bottom: 22px;
+  font-size: 13px;
+  align-items: baseline;
+}
+.light-section .score-strip { background: rgba(139, 58, 46, 0.06); border-left: 4px solid #8B3A2E; color: #0B1530; }
+.dark-section .score-strip { background: rgba(201, 161, 74, 0.10); border-left: 4px solid #C9A14A; color: #F5F1E8; }
+.score-strip strong { font-size: 15px; }
+
+/* ===== AUDIT TABLES ===== */
+.table-wrap {
+  background: #FFFFFF;
+  border: 1px solid #8C90A0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.dark-section .table-wrap { background: rgba(245, 241, 232, 0.04); border-color: rgba(245, 241, 232, 0.18); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+caption {
+  text-align: left; padding: 16px 20px 6px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.20em; text-transform: uppercase;
+  color: #8B3A2E; caption-side: top;
+}
+.dark-section caption { color: #C9A14A; }
+th, td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid rgba(11, 21, 48, 0.12);
+  vertical-align: top;
+}
+.dark-section th, .dark-section td { border-bottom-color: rgba(245, 241, 232, 0.14); color: #F5F1E8; }
+th {
+  background: rgba(11, 21, 48, 0.06);
+  color: #0B1530;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.dark-section th { background: rgba(245, 241, 232, 0.06); color: #C9A14A; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(11, 21, 48, 0.03); }
+.dark-section tbody tr:hover { background: rgba(245, 241, 232, 0.04); }
+td.id-col { font-weight: 800; color: #8B3A2E; white-space: nowrap; width: 52px; letter-spacing: 0.04em; }
+.dark-section td.id-col { color: #C9A14A; }
+td.req-col { font-weight: 700; color: #0B1530; width: 28%; }
+.dark-section td.req-col { color: #F5F1E8; }
+td.status-col { width: 110px; white-space: nowrap; }
+td.evidence-col { font-size: 13px; color: #0B1530; opacity: 0.86; line-height: 1.55; }
+.dark-section td.evidence-col { color: #F5F1E8; opacity: 0.82; }
+
+/* ===== RSI DEEP DIVE (light) ===== */
+.rsi-panel { background: #FFFFFF; border: 1px solid #8C90A0; border-left: 4px solid #C9A14A; border-radius: 8px; padding: 28px 32px; }
+.rsi-pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin: 18px 0 30px; }
+.rsi-pillar {
+  border: 1px solid #8C90A0;
+  border-radius: 6px;
+  padding: 18px 20px;
+  background: #FFFFFF;
+}
+.rsi-pillar-num {
+  font-size: 32px; font-weight: 800;
+  color: #8B3A2E;
+  letter-spacing: -0.02em; line-height: 1;
+  margin: 0 0 10px;
+}
+.rsi-pillar-title {
+  font-size: 15px; font-weight: 800;
+  color: #0B1530;
+  letter-spacing: -0.01em;
+  margin: 0 0 6px;
+}
+.rsi-pillar-body { font-size: 13px; color: #0B1530; opacity: 0.80; margin: 0; line-height: 1.55; }
+.rsi-h3 {
+  font-size: 14px; font-weight: 700;
+  color: #8B3A2E;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  margin: 28px 0 12px;
+}
+.rsi-h3:first-of-type { margin-top: 0; }
+.rsi-list { padding-left: 22px; margin: 6px 0 0; }
+.rsi-list li { margin: 8px 0; line-height: 1.6; color: #0B1530; opacity: 0.88; }
+.rsi-list li strong { color: #0B1530; opacity: 1; font-weight: 800; }
+
+/* ===== GAP ANALYSIS (light) ===== */
+.gap-list { margin: 0; padding: 0; list-style: none; }
+.gap-list li {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 24px;
+  padding: 20px 0;
+  border-top: 0.5px solid rgba(11, 21, 48, 0.12);
+  align-items: start;
+}
+.gap-list li:first-child { border-top: none; padding-top: 4px; }
+.gap-list li:last-child { padding-bottom: 4px; }
+.gap-id {
+  font-size: 22px; font-weight: 800;
+  color: #8B3A2E;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.gap-title { font-size: 16px; font-weight: 800; color: #0B1530; margin: 0 0 6px; letter-spacing: -0.01em; }
+.gap-desc { font-size: 14px; color: #0B1530; opacity: 0.85; margin: 0; line-height: 1.6; max-width: 720px; }
+
+/* ===== SIGN-OFF (dark) ===== */
+.signoff-block {
+  background: rgba(245, 241, 232, 0.04);
+  border: 1px solid rgba(245, 241, 232, 0.18);
+  border-left: 4px solid #C9A14A;
+  border-radius: 6px;
+  padding: 26px 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-end;
+}
+.signoff-name { font-size: 17px; font-weight: 800; color: #F5F1E8; margin: 0 0 4px; letter-spacing: -0.01em; }
+.signoff-role { font-size: 13px; color: #F5F1E8; opacity: 0.78; margin: 0; }
+.signoff-date {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: #C9A14A;
+}
+.signoff-note { color: #F5F1E8; opacity: 0.78; font-size: 13.5px; line-height: 1.6; margin: 18px 0 0; }
+
+/* ===== FOOTER ===== */
+.footer-section { background: #060A18; padding-top: 56px; padding-bottom: 32px; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; padding-bottom: 36px; border-bottom: 1px solid rgba(245, 241, 232, 0.16); margin-bottom: 22px; }
+.footer-logo { display: inline-flex; align-items: center; gap: 14px; text-decoration: none; margin-bottom: 16px; }
+.footer-logo svg { height: 50px; width: auto; }
+.footer-logo .logo-title { color: #F5F1E8; font-size: 22px; }
+.footer-logo .logo-accent { color: #C9A14A; }
+.footer-logo .logo-sub { color: #F5F1E8; opacity: 0.62; }
+.footer-tagline { font-size: 13px; color: #F5F1E8; opacity: 0.72; line-height: 1.6; max-width: 320px; margin: 0; }
+.footer-col-header { font-size: 10px; font-weight: 700; color: #C9A14A; letter-spacing: 0.24em; text-transform: uppercase; margin-bottom: 16px; }
+.footer-link { font-size: 13px; font-weight: 500; color: #F5F1E8; opacity: 0.78; display: block; margin-bottom: 10px; text-decoration: none; }
+.footer-link:hover { opacity: 1; text-decoration: underline; }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.footer-copyright { font-size: 11px; color: #F5F1E8; opacity: 0.6; letter-spacing: 0.03em; }
+.footer-byline { font-size: 11px; font-weight: 700; color: #C9A14A; letter-spacing: 0.16em; text-transform: uppercase; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 860px) {
+  .hero-headline { font-size: 34px; }
+  .section-headline { font-size: 26px; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 500px) {
+  .footer-top { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+  .hero-headline { font-size: 29px; }
+  .gap-list li { grid-template-columns: 1fr; gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ===== PRINT ===== */
+@media print {
+  body { background: #FFFFFF; font-size: 11pt; color: #0B1530; }
+  .skip-link, .footer-section { display: none; }
+  .dark-section { background: #FFFFFF !important; color: #0B1530 !important; border-top: 2px solid #0B1530; border-bottom: 2px solid #0B1530; padding: 18pt 0; }
+  .dark-section .section-eyebrow, .dark-section .section-headline, .dark-section .section-intro,
+  .dark-section td, .dark-section .signoff-name, .dark-section .signoff-role { color: #0B1530 !important; opacity: 1 !important; }
+  .dark-section .section-headline .accent, .dark-section caption, .dark-section td.id-col,
+  .dark-section .score-label, .dark-section .signoff-date, .dark-section th { color: #8B3A2E !important; }
+  .headline-score { color: #8B3A2E !important; font-size: 80pt; }
+  .headline-score .denom { color: #0B1530 !important; opacity: 0.5; }
+  .score-card { background: #FFFFFF !important; border: 1pt solid #8C90A0; border-left: 3pt solid #8B3A2E; }
+  .score-num { color: #0B1530 !important; }
+  .pill-met { background: #FFFFFF !important; color: #0B1530 !important; border: 1.5pt solid #0B1530 !important; }
+  .pill-enforced { background: #FFFFFF !important; color: #0B1530 !important; border: 1.5pt solid #C9A14A !important; }
+  .pill-v2 { background: #FFFFFF !important; color: #8B3A2E !important; border: 1.5pt solid #8B3A2E !important; }
+  .pill-na { background: #FFFFFF !important; color: #8C90A0 !important; border: 1.5pt solid #8C90A0 !important; }
+  section { page-break-inside: avoid; }
+  tr { page-break-inside: avoid; }
+  h2 { page-break-after: avoid; }
+  .site-header, .hero-card, .summary-section, .meth-section, .section-a, .section-b,
+  .rsi-section, .section-c, .section-d, .gap-section, .signoff-section {
+    padding: 14pt 0 !important;
   }
-
-  *, *::before, *::after { box-sizing: border-box; }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-  }
-
-  body {
-    margin: 0;
-    font-family: var(--font-display);
-    background: var(--off-white);
-    color: var(--navy);
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
-
-  .skip-link { position: absolute; left: -9999px; top: 0; background: var(--navy); color: var(--white); padding: 12px 18px; z-index: 1000; text-decoration: none; font-weight: 600; }
-  .skip-link:focus { left: 16px; top: 16px; }
-
-  /* HEADER LOCKUP */
-  .mcas-header { background: var(--white); border-bottom: 1px solid var(--navy-tint); padding: 36px 28px 30px; }
-  .mcas-header__inner { max-width: var(--max-w); margin: 0 auto; }
-  .mcas-eyebrow { font-family: var(--font-eyebrow); font-size: 12px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--terra-dark); margin: 0 0 12px; }
-  .mcas-h1 { font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: clamp(28px, 4vw, 42px); line-height: 1.15; margin: 0 0 8px; letter-spacing: -0.01em; }
-  .mcas-subhead { font-family: var(--font-display); font-weight: 600; color: var(--terra-dark); font-size: clamp(17px, 2vw, 22px); margin: 0 0 14px; }
-  .mcas-usage { font-family: var(--font-italic); font-style: italic; color: var(--gray-700); font-size: 15px; margin: 0; max-width: 75ch; }
-
-  /* META BAR */
-  .meta-bar { max-width: var(--max-w); margin: 0 auto; padding: 18px 28px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px 24px; font-size: 13px; }
-  .meta-bar dt { font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--terra-dark); margin: 0 0 2px; font-weight: 500; }
-  .meta-bar dd { margin: 0; color: var(--navy); font-weight: 600; }
-
-  main { max-width: var(--max-w); margin: 0 auto; padding: 28px 28px 56px; }
-  section { margin-bottom: 48px; scroll-margin-top: 24px; }
-
-  h2 { font-family: var(--font-display); font-weight: 700; color: var(--navy); font-size: 24px; margin: 0 0 8px; letter-spacing: -0.005em; border-bottom: 2px solid var(--gold); padding-bottom: 8px; }
-  h3 { font-family: var(--font-display); font-weight: 600; color: var(--terra-dark); font-size: 18px; margin: 22px 0 10px; }
-  .section-note { font-family: var(--font-italic); font-style: italic; color: var(--gray-700); margin: 0 0 18px; font-size: 14px; }
-  p { margin: 0 0 12px; }
-
-  /* EXEC SUMMARY SCOREBOARD */
-  .scoreboard { background: var(--navy); color: var(--white); border-radius: var(--radius-md); padding: 28px 32px; margin-bottom: 28px; box-shadow: var(--shadow-rest); }
-  .scoreboard h2 { color: var(--white); border-bottom-color: var(--gold); }
-  .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 18px; margin-top: 16px; }
-  .score-card { background: var(--navy-deep); border-radius: var(--radius-sm); padding: 16px 18px; border-left: 4px solid var(--gold); }
-  .score-num { font-family: var(--font-display); font-size: 36px; font-weight: 800; line-height: 1; margin: 0; }
-  .score-label { font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin: 6px 0 0; opacity: 0.85; }
-  .score-detail { font-size: 12px; margin: 4px 0 0; opacity: 0.75; font-family: var(--font-italic); font-style: italic; }
-  .headline-num { font-size: 56px; font-weight: 800; margin: 0; line-height: 1; }
-  .headline-text { font-size: 15px; margin: 6px 0 0; opacity: 0.9; max-width: 60ch; }
-
-  /* TOC */
-  .toc { background: var(--white); border: 1px solid var(--navy-tint); border-radius: var(--radius-md); padding: 16px 22px; margin-bottom: 32px; box-shadow: var(--shadow-rest); }
-  .toc h2 { font-size: 13px; color: var(--navy); margin: 0 0 10px; font-family: var(--font-eyebrow); text-transform: uppercase; letter-spacing: 0.1em; border: none; padding: 0; font-weight: 600; }
-  .toc ol { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px 18px; counter-reset: toc; }
-  .toc li { counter-increment: toc; }
-  .toc a { color: var(--navy); text-decoration: none; font-size: 13.5px; border-bottom: 1px solid transparent; }
-  .toc a::before { content: counter(toc) ". "; color: var(--terra-dark); font-weight: 600; font-family: var(--font-eyebrow); }
-  .toc a:hover { border-bottom-color: var(--gold); }
-
-  /* STATUS PILLS */
-  .pill { display: inline-block; font-family: var(--font-eyebrow); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
-  .pill--met { background: var(--navy); color: var(--white); border-color: var(--navy); }
-  .pill--enforced { background: var(--gold); color: var(--navy-deep); border-color: var(--gold); }
-  .pill--v2 { background: var(--white); color: var(--terra-dark); border-color: var(--terra-dark); }
-  .pill--na { background: var(--white); color: var(--gray-500); border-color: var(--gray-300); }
-
-  .legend { display: flex; flex-wrap: wrap; gap: 14px 22px; margin: 12px 0 20px; padding: 14px 18px; background: var(--white); border: 1px solid var(--navy-tint); border-radius: var(--radius-md); font-size: 13px; }
-  .legend-item { display: flex; align-items: center; gap: 8px; }
-  .legend-item span:last-child { color: var(--gray-700); }
-
-  /* AUDIT TABLES */
-  .table-wrap { background: var(--white); border: 1px solid var(--navy-tint); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-rest); margin-bottom: 16px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  caption { text-align: left; padding: 14px 18px 6px; font-family: var(--font-eyebrow); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--terra-dark); caption-side: top; font-weight: 500; }
-  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--navy-tint); vertical-align: top; }
-  th { background: var(--navy-tint); color: var(--navy); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: var(--off-white); }
-  td.id-col { font-family: var(--font-mono); font-weight: 600; color: var(--navy); white-space: nowrap; width: 50px; }
-  td.req-col { color: var(--navy); font-weight: 600; width: 26%; }
-  td.evidence { color: var(--gray-700); font-size: 13px; }
-
-  /* SECTION SCORE BANNER */
-  .section-banner { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: baseline; padding: 12px 16px; background: var(--navy-tint); border-left: 4px solid var(--navy); border-radius: var(--radius-sm); margin-bottom: 14px; font-size: 13px; }
-  .section-banner strong { color: var(--navy); font-size: 15px; }
-
-  /* RSI DEEP DIVE */
-  .rsi-panel { background: var(--white); border: 1px solid var(--navy-tint); border-left: 4px solid var(--gold); border-radius: var(--radius-md); padding: 22px 26px; box-shadow: var(--shadow-rest); margin-top: 16px; }
-  .rsi-panel h3 { margin-top: 0; }
-  .rsi-pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
-  .rsi-pillar { background: var(--off-white); border: 1px solid var(--navy-tint); border-radius: var(--radius-sm); padding: 14px 16px; }
-  .rsi-pillar h4 { margin: 0 0 6px; font-family: var(--font-display); font-size: 14px; color: var(--navy); font-weight: 700; }
-  .rsi-pillar p { margin: 0; font-size: 13px; color: var(--gray-700); }
-
-  /* CALLOUT */
-  .callout { border-left: 4px solid var(--gold); background: var(--white); border-radius: var(--radius-sm); padding: 14px 18px; box-shadow: var(--shadow-rest); margin: 12px 0; }
-  .callout--note { border-left-color: var(--navy); }
-  .callout--warn { border-left-color: var(--terra); }
-  .callout__title { font-family: var(--font-display); font-weight: 700; color: var(--navy); font-size: 14px; margin: 0 0 4px; }
-  .callout__body { font-size: 13.5px; color: var(--gray-700); margin: 0; }
-
-  /* GAP LIST */
-  .gap-list { background: var(--white); border: 1px solid var(--navy-tint); border-radius: var(--radius-md); padding: 4px 0; box-shadow: var(--shadow-rest); }
-  .gap-list li { list-style: none; padding: 14px 22px; border-bottom: 1px solid var(--navy-tint); display: flex; gap: 14px; align-items: flex-start; }
-  .gap-list li:last-child { border-bottom: none; }
-  .gap-list ul { padding: 0; margin: 0; }
-  .gap-id { font-family: var(--font-mono); font-weight: 700; color: var(--terra-dark); font-size: 13px; min-width: 60px; }
-  .gap-body { flex: 1; }
-  .gap-body strong { display: block; color: var(--navy); font-size: 14px; margin-bottom: 3px; }
-  .gap-body span { color: var(--gray-700); font-size: 13px; }
-
-  /* SIGN-OFF */
-  .signoff { background: var(--white); border: 1px solid var(--navy-tint); border-radius: var(--radius-md); padding: 22px 26px; box-shadow: var(--shadow-rest); display: flex; flex-wrap: wrap; gap: 22px; justify-content: space-between; align-items: flex-end; }
-  .signoff__name { font-family: var(--font-display); font-weight: 700; color: var(--navy); font-size: 16px; margin: 0 0 2px; }
-  .signoff__role { font-family: var(--font-italic); font-style: italic; color: var(--gray-700); font-size: 13px; margin: 0; }
-  .signoff__date { font-family: var(--font-mono); color: var(--navy); font-size: 13px; }
-
-  footer { border-top: 1px solid var(--navy-tint); background: var(--white); padding: 22px 28px; margin-top: 32px; }
-  .footer-inner { max-width: var(--max-w); margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--gray-700); }
-  .footer-byline { font-weight: 600; color: var(--navy); }
-  .footer-meta { font-family: var(--font-italic); font-style: italic; }
-
-  /* PRINT STYLES */
-  @media print {
-    body { background: white; font-size: 11pt; }
-    .skip-link, .toc { display: none; }
-    .mcas-header { border-bottom: 2px solid var(--navy); padding: 18pt 0; }
-    main { padding: 18pt 0; max-width: none; }
-    section { page-break-inside: avoid; margin-bottom: 18pt; }
-    .scoreboard { background: white; color: var(--navy); border: 2px solid var(--navy); }
-    .scoreboard h2 { color: var(--navy); }
-    .score-card { background: white; color: var(--navy); border: 1px solid var(--gray-300); border-left: 4px solid var(--gold); }
-    .pill--met { background: white !important; color: var(--navy) !important; border: 1.5px solid var(--navy) !important; }
-    .pill--enforced { background: white !important; color: var(--navy-deep) !important; border: 1.5px solid var(--gold) !important; }
-    .pill--v2 { background: white !important; color: var(--terra-dark) !important; border: 1.5px solid var(--terra-dark) !important; }
-    .pill--na { background: white !important; color: var(--gray-500) !important; border: 1.5px solid var(--gray-300) !important; }
-    table { font-size: 9pt; }
-    th, td { padding: 6pt 8pt; }
-    footer { border-top: 1px solid var(--gray-300); }
-    a { color: var(--navy); text-decoration: none; }
-    h2 { page-break-after: avoid; }
-    tr { page-break-inside: avoid; }
-  }
+}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to main content</a>
 
-<a class="skip-link" href="#main">Skip to content</a>
-
-<header class="mcas-header" role="banner">
-  <div class="mcas-header__inner">
-    <p class="mcas-eyebrow">MCAS &middot; MedMasters Course Architecture System &middot; Compliance Audit</p>
-    <h1 class="mcas-h1">CVC-OEI Course Design Rubric Audit</h1>
-    <p class="mcas-subhead">MCAS v1 foundational framework, scored against the 44-element California Virtual Campus rubric</p>
-    <p class="mcas-usage">This audit answers two questions. First, how much of the CVC-OEI rubric does the MCAS v1 framework already address? Second, what must be built in v2 to deliver a course-ready, RSI-compliant, accessibility-aligned authoring system that an online community college course can be reviewed against and aligned to without remediation.</p>
-  </div>
+<!-- ===== SITE HEADER ===== -->
+<header class="site-header">
+  <a href="index.html" class="site-logo" target="_top" aria-label="MCAS Component Index home">
+    <svg viewBox="40 10 125 148" role="img" aria-hidden="true" focusable="false">
+      <g transform="translate(0, 18)">
+        <g transform="translate(60, 0) rotate(8 0 130)"><circle cx="0" cy="20" r="10" fill="#0B1530"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#0B1530"/></g>
+        <g transform="translate(100, 0)"><circle cx="0" cy="10" r="11" fill="#8B3A2E"/><path d="M 0,22 C -11,22 -17,26 -17,34 C -17,52 -14,70 -12,86 C -11,108 -13,122 -15,132 L 15,132 C 13,122 11,108 12,86 C 14,70 17,52 17,34 C 17,26 11,22 0,22 Z" fill="#8B3A2E"/></g>
+        <g transform="translate(140, 0) rotate(-8 0 130)"><circle cx="0" cy="20" r="10" fill="#C9A14A"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#C9A14A"/></g>
+      </g>
+    </svg>
+    <span class="logo-text">
+      <span class="logo-title">MCAS Rubric <span class="logo-accent">Audit</span></span>
+      <span class="logo-sub">MedMasters &middot; CVC-OEI Course Design Compliance</span>
+    </span>
+  </a>
 </header>
-
-<dl class="meta-bar">
-  <div><dt>Audited artifact</dt><dd>MCAS v1 framework (index.html + planning docs)</dd></div>
-  <div><dt>Rubric</dt><dd>CVC-OEI, April 2020 (rev. May 2021)</dd></div>
-  <div><dt>Total elements</dt><dd>44 (A:14 &middot; B:6 &middot; C:8 &middot; D:16)</dd></div>
-  <div><dt>Audit date</dt><dd>2026-05-29</dd></div>
-  <div><dt>Reviewer</dt><dd>Dr. Sharilyn Rennie</dd></div>
-  <div><dt>Review type</dt><dd>Self-review, framework-level</dd></div>
-</dl>
 
 <main id="main">
 
-  <!-- EXECUTIVE SUMMARY / SCOREBOARD -->
-  <section class="scoreboard" aria-labelledby="summary-h">
-    <h2 id="summary-h">Executive summary</h2>
-    <p class="headline-num">31 / 44</p>
-    <p class="headline-text"><strong>70% of the rubric is already addressable</strong> by MCAS v1, either directly satisfied by the framework or enforceable through templates the framework provides. Closing the remaining 30% is the v2 build.</p>
+<!-- ===== HERO (light) ===== -->
+<div class="hero-card">
+  <div class="hero-content">
+    <div class="hero-eyebrow">MCAS &times; CVC-OEI Compliance Audit</div>
+    <h1 class="hero-headline">MCAS v1, scored against the <span class="accent">44-element California Virtual Campus rubric</span>.</h1>
+    <p class="hero-subhead">Two questions answered. First, how much of the CVC-OEI rubric does MCAS v1 already address? Second, what must be built in v2 to deliver a course-ready, RSI-compliant, accessibility-aligned authoring system that any online community college course can be reviewed against and aligned to without remediation.</p>
 
-    <div class="score-grid">
-      <div class="score-card">
-        <p class="score-num">13</p>
-        <p class="score-label">Met directly</p>
-        <p class="score-detail">Framework delivers</p>
-      </div>
-      <div class="score-card">
-        <p class="score-num">18</p>
-        <p class="score-label">Enforced via template</p>
-        <p class="score-detail">Blueprint or generator requires it</p>
-      </div>
-      <div class="score-card">
-        <p class="score-num">7</p>
-        <p class="score-label">v2 build required</p>
-        <p class="score-detail">RSI engine, feedback widget, automated checker</p>
-      </div>
-      <div class="score-card">
-        <p class="score-num">6</p>
-        <p class="score-label">N/A at framework level</p>
-        <p class="score-detail">Applies when course produces media</p>
-      </div>
+    <dl class="meta-strip">
+      <div class="meta-item"><dt>Audited artifact</dt><dd>MCAS v1 framework</dd></div>
+      <div class="meta-item"><dt>Rubric</dt><dd>CVC-OEI, Apr 2020 (rev. May 2021)</dd></div>
+      <div class="meta-item"><dt>Elements</dt><dd>44 across A, B, C, D</dd></div>
+      <div class="meta-item"><dt>Audit date</dt><dd>2026-05-29</dd></div>
+      <div class="meta-item"><dt>Reviewer</dt><dd>Dr. Sharilyn Rennie</dd></div>
+      <div class="meta-item"><dt>Review type</dt><dd>Self-review, framework-level</dd></div>
+    </dl>
+  </div>
+</div>
+
+<!-- ===== EXECUTIVE SUMMARY (dark) ===== -->
+<section class="dark-section summary-section" aria-labelledby="exec-h">
+  <div class="section-eyebrow">Executive summary</div>
+  <h2 id="exec-h" class="section-headline">The headline number, <span class="accent">at a glance</span>.</h2>
+
+  <div class="headline-block">
+    <p class="headline-score">31<span class="denom"> / 44</span></p>
+    <p class="headline-statement"><span class="accent">70% of the rubric</span> is already addressable by MCAS v1, either delivered by the framework directly or enforced through templates the framework provides. Closing the remaining 30% is the v2 build.</p>
+  </div>
+
+  <div class="score-grid">
+    <div class="score-card">
+      <p class="score-num">13</p>
+      <p class="score-label">Met directly</p>
+      <p class="score-detail">The framework itself delivers this element.</p>
     </div>
-  </section>
-
-  <!-- TOC -->
-  <nav class="toc" aria-label="Audit sections">
-    <h2>Contents</h2>
-    <ol>
-      <li><a href="#methodology">Methodology &amp; scoring key</a></li>
-      <li><a href="#section-a">Section A: Content Presentation</a></li>
-      <li><a href="#section-b">Section B: Interaction (RSI)</a></li>
-      <li><a href="#rsi-deep-dive">RSI deep dive</a></li>
-      <li><a href="#section-c">Section C: Assessment</a></li>
-      <li><a href="#section-d">Section D: Accessibility</a></li>
-      <li><a href="#gap-analysis">v2 gap analysis</a></li>
-      <li><a href="#sign-off">Sign-off</a></li>
-    </ol>
-  </nav>
-
-  <!-- METHODOLOGY -->
-  <section id="methodology" aria-labelledby="methodology-h">
-    <h2 id="methodology-h">Methodology &amp; scoring key</h2>
-    <p>The CVC-OEI rubric is written to evaluate finished online courses. MCAS is a course-authoring framework, not a course. To audit fairly, each rubric element is scored along two axes: whether the framework directly satisfies it (structural elements like navigation, chunking, heading hierarchy), or whether the framework enforces it via the templates and generators faculty use to build the course. Course-content-only elements (e.g., the clarity of one specific learning objective) are scored as enforceable when the framework prevents shipping without the required field.</p>
-
-    <div class="legend" aria-label="Status legend">
-      <div class="legend-item"><span class="pill pill--met">Met</span><span>Framework delivers directly</span></div>
-      <div class="legend-item"><span class="pill pill--enforced">Enforced</span><span>Template or generator requires it</span></div>
-      <div class="legend-item"><span class="pill pill--v2">v2 build</span><span>Requires future module</span></div>
-      <div class="legend-item"><span class="pill pill--na">N/A</span><span>Not applicable at framework level</span></div>
+    <div class="score-card">
+      <p class="score-num">18</p>
+      <p class="score-label">Enforced via template</p>
+      <p class="score-detail">Blueprint or generator requires the field, blocks publish without it.</p>
     </div>
-
-    <div class="callout callout--note">
-      <p class="callout__title">A note on Section D (Accessibility)</p>
-      <p class="callout__body">Section D is evaluated against the only actual rendered artifact the framework currently ships: <code>index.html</code>. As generators come online in v2, the same Section D checks must run against every generated page. The Accessibility Engine (planning doc <code>05_Accessibility_Engine_Framework.docx</code>) will automate this.</p>
+    <div class="score-card">
+      <p class="score-num">7</p>
+      <p class="score-label">v2 build required</p>
+      <p class="score-detail">RSI Engine, Accessibility Engine, feedback widget.</p>
     </div>
-  </section>
-
-  <!-- SECTION A -->
-  <section id="section-a" aria-labelledby="section-a-h">
-    <h2 id="section-a-h">Section A: Content Presentation</h2>
-    <div class="section-banner">
-      <strong>Score: 14 / 14 addressable</strong>
-      <span>&middot; Met: 3</span><span>&middot; Enforced: 9</span><span>&middot; v2: 2</span><span>&middot; N/A: 0</span>
+    <div class="score-card">
+      <p class="score-num">6</p>
+      <p class="score-label">N/A at framework level</p>
+      <p class="score-detail">Applicable per-course as media (image, audio, video, slides) is added.</p>
     </div>
+  </div>
+</section>
 
-    <div class="table-wrap">
-      <table>
-        <caption>Section A elements vs. MCAS v1 framework</caption>
-        <thead>
-          <tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Status</th><th scope="col">Evidence in MCAS v1</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="id-col">A1</td><td class="req-col">Unit objectives placed in each learning unit</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Master Course Blueprint template requires objectives field per unit. Architect app (v2 form) will block save without objectives populated.</td></tr>
-          <tr><td class="id-col">A2</td><td class="req-col">Objectives are demonstrable learning outcomes</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Blueprint prompts for verb-led, measurable outcomes. v2 RSI/clarity engine flags non-actionable verbs.</td></tr>
-          <tr><td class="id-col">A3</td><td class="req-col">Content aligned with objectives</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Blueprint forces objective-to-content mapping table; generators output content tagged to objective IDs.</td></tr>
-          <tr><td class="id-col">A4</td><td class="req-col">Course navigation easy to determine</td><td><span class="pill pill--met">Met</span></td><td class="evidence">Design system provides skip link, semantic landmarks (<code>header</code>/<code>nav</code>/<code>main</code>/<code>footer</code>), TOC pattern, breadcrumb pattern.</td></tr>
-          <tr><td class="id-col">A5</td><td class="req-col">Unit-level chunking into modules</td><td><span class="pill pill--met">Met</span></td><td class="evidence">Module structure is the core architectural unit. Generators produce one HTML per module by default.</td></tr>
-          <tr><td class="id-col">A6</td><td class="req-col">Page-level chunking with heading styles</td><td><span class="pill pill--met">Met</span></td><td class="evidence">Design system enforces single h1, descending h2/h3, with type scale tied to heading levels (not font size).</td></tr>
-          <tr><td class="id-col">A7</td><td class="req-col">Effective use of CMS tools</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">iframe-ready output (postMessage height-sender, <code>target="_top"</code>) integrates with Kajabi and Canvas without breaking host page layout.</td></tr>
-          <tr><td class="id-col">A8</td><td class="req-col">Effective use of multimedia</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Generator suite covers text (Concept page), image (Atlas page), interactive (Spaced-recall), and assessment media types.</td></tr>
-          <tr><td class="id-col">A9</td><td class="req-col">Instructions embedded with content</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Lora-italic "usage instructions" pattern is a first-class design system component, sits immediately after H1.</td></tr>
-          <tr><td class="id-col">A10</td><td class="req-col">Individualized learning support</td><td><span class="pill pill--v2">v2 build</span></td><td class="evidence">Adaptive remediation paths require Course Readiness Score and a branching engine. Slated for v2.</td></tr>
-          <tr><td class="id-col">A11</td><td class="req-col">Anonymous learner feedback</td><td><span class="pill pill--v2">v2 build</span></td><td class="evidence">Anonymous feedback widget with submission to instructor and an end-of-course version. Slated for v2.</td></tr>
-          <tr><td class="id-col">A12</td><td class="req-col">Course policies findable</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Blueprint includes Policies section; design system has a Policies card pattern.</td></tr>
-          <tr><td class="id-col">A13</td><td class="req-col">Student services links</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Footer template includes institutional services link slots (DSPS, counseling, tutoring, library).</td></tr>
-          <tr><td class="id-col">A14</td><td class="req-col">Technology support links</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Footer template includes tech support link slot and IT contact pattern.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+<!-- ===== METHODOLOGY (light) ===== -->
+<section class="light-section meth-section" aria-labelledby="meth-h">
+  <div class="section-eyebrow">Methodology &amp; scoring key</div>
+  <h2 id="meth-h" class="section-headline">How the framework is graded against a <span class="accent">course-level rubric</span>.</h2>
+  <p class="section-intro">The CVC-OEI rubric evaluates finished online courses. MCAS is a course-authoring framework. Each element is scored on two axes: whether the framework directly satisfies it (structural elements like navigation, chunking, heading hierarchy), or whether the framework enforces it via the templates and generators faculty use to build the course. Course-content-only elements are scored as enforceable when the framework prevents shipping without the required field.</p>
 
-  <!-- SECTION B -->
-  <section id="section-b" aria-labelledby="section-b-h">
-    <h2 id="section-b-h">Section B: Interaction (Regular &amp; Substantive Interaction)</h2>
-    <p class="section-note">Section B is where RSI (Regular and Substantive Interaction) compliance is established. RSI is the federal Department of Education requirement that distinguishes online instruction from correspondence courses. MCAS v2 will include a dedicated RSI Engine.</p>
-    <div class="section-banner">
-      <strong>Score: 6 / 6 addressable</strong>
-      <span>&middot; Met: 0</span><span>&middot; Enforced: 3</span><span>&middot; v2: 3</span><span>&middot; N/A: 0</span>
-    </div>
+  <div class="legend" aria-label="Status legend">
+    <div class="legend-item"><span class="pill pill-met">Met</span><span>Framework delivers directly</span></div>
+    <div class="legend-item"><span class="pill pill-enforced">Enforced</span><span>Template or generator requires it</span></div>
+    <div class="legend-item"><span class="pill pill-v2">v2 build</span><span>Requires future module</span></div>
+    <div class="legend-item"><span class="pill pill-na">N/A</span><span>Not applicable at framework level</span></div>
+  </div>
 
-    <div class="table-wrap">
-      <table>
-        <caption>Section B elements vs. MCAS v1 framework</caption>
-        <thead>
-          <tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Status</th><th scope="col">Evidence in MCAS v1 / v2 plan</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="id-col">B1</td><td class="req-col">Pre-course instructor contact</td><td><span class="pill pill--v2">v2 build</span></td><td class="evidence">RSI Engine generates a welcome announcement scheduled for one week before term start. See planning doc <code>06_RSI_Engine_Framework.docx</code>.</td></tr>
-          <tr><td class="id-col">B2</td><td class="req-col">Regular effective contact, instructor to student (RSI core)</td><td><span class="pill pill--v2">v2 build</span></td><td class="evidence">RSI Engine schedules a documented contact cadence (weekly announcement, midweek check-in, feedback turnaround), logs interaction artifacts, and produces an audit-ready RSI report per term.</td></tr>
-          <tr><td class="id-col">B3</td><td class="req-col">Student-initiated contact (instructor reachable, expected response times)</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Contact card template prompts faculty for email, office hours (sync and async), and response-time policy. Required field in v2 form.</td></tr>
-          <tr><td class="id-col">B4</td><td class="req-col">Student-to-student unstructured interaction</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Open forum / Q&amp;A board template included in module scaffold. Generator outputs Canvas-ready discussion shells.</td></tr>
-          <tr><td class="id-col">B5</td><td class="req-col">Regular effective contact among students (structured)</td><td><span class="pill pill--v2">v2 build</span></td><td class="evidence">Peer interaction tracker: discussion participation rubric, peer review scheduling, peer feedback artifacts. Part of RSI Engine.</td></tr>
-          <tr><td class="id-col">B6</td><td class="req-col">Participation level guidelines with rubric</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Rubric table pattern in design system; blueprint requires participation rubric per discussion-based assignment.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+  <div class="callout is-info">
+    <p class="callout-title">A note on Section D</p>
+    <p class="callout-body">Section D is evaluated against the only rendered artifact MCAS v1 ships, <code>index.html</code>. As generators come online in v2, the same Section D checks will run automatically on every generated page via the Accessibility Engine (planning doc <code>05_Accessibility_Engine_Framework.docx</code>).</p>
+  </div>
+</section>
 
-  <!-- RSI DEEP DIVE -->
-  <section id="rsi-deep-dive" aria-labelledby="rsi-h">
-    <h2 id="rsi-h">RSI deep dive</h2>
-    <p>RSI (Regular and Substantive Interaction) is the federal compliance gate for online instruction (34 CFR §600.2). A course can pass every other rubric criterion and still fail RSI if instructor-initiated interaction is not regular and not substantive. The MCAS v2 RSI Engine is designed to make compliance a byproduct of using the system rather than a manual audit at the end of the term.</p>
+<!-- ===== SECTION A (light) ===== -->
+<section class="light-section section-a" id="section-a" aria-labelledby="a-h">
+  <div class="section-eyebrow">Section A</div>
+  <h2 id="a-h" class="section-headline">Content presentation, <span class="accent">14 elements</span>.</h2>
+  <div class="score-strip"><strong>Score: 14 / 14 addressable</strong> <span>Met: 3</span> <span>Enforced: 9</span> <span>v2: 2</span> <span>N/A: 0</span></div>
 
-    <div class="rsi-panel">
-      <h3>The four RSI pillars (federal definition)</h3>
-      <p>An online course meets RSI when the instructor, on a predictable schedule, engages in at least two of the following four substantive activities with each student:</p>
-      <div class="rsi-pillars">
-        <div class="rsi-pillar"><h4>1. Direct instruction</h4><p>Live or recorded teaching, synchronous sessions, instructor-led walkthroughs.</p></div>
-        <div class="rsi-pillar"><h4>2. Assessment and feedback</h4><p>Grading with personalized written or audio feedback. Not just a score.</p></div>
-        <div class="rsi-pillar"><h4>3. Information / discussion</h4><p>Instructor-facilitated discussion on academic content. Not a passive grade.</p></div>
-        <div class="rsi-pillar"><h4>4. Other instructional activities</h4><p>Approved by accreditation, e.g., one-on-one office hours, content-specific announcements.</p></div>
-      </div>
+  <div class="table-wrap">
+    <table>
+      <caption>Section A elements vs. MCAS v1 framework</caption>
+      <thead>
+        <tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Status</th><th scope="col">Evidence in MCAS v1</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="id-col">A1</td><td class="req-col">Unit objectives placed in each learning unit</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Master Course Blueprint template requires objectives per unit. Architect app blocks save without objectives populated.</td></tr>
+        <tr><td class="id-col">A2</td><td class="req-col">Objectives are demonstrable learning outcomes</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Blueprint prompts for verb-led, measurable outcomes. v2 clarity check flags non-actionable verbs.</td></tr>
+        <tr><td class="id-col">A3</td><td class="req-col">Content aligned with objectives</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Blueprint forces objective-to-content mapping; generators output content tagged to objective IDs.</td></tr>
+        <tr><td class="id-col">A4</td><td class="req-col">Course navigation easy to determine</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">Design system provides skip link, semantic landmarks, breadcrumb pattern, hub-and-spoke navigation.</td></tr>
+        <tr><td class="id-col">A5</td><td class="req-col">Unit-level chunking into modules</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">Module structure is the core architectural unit. Generators produce one HTML per module by default.</td></tr>
+        <tr><td class="id-col">A6</td><td class="req-col">Page-level chunking with heading styles</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">Design system enforces single h1, descending h2/h3, with type scale tied to heading levels.</td></tr>
+        <tr><td class="id-col">A7</td><td class="req-col">Effective use of CMS tools</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">iframe-ready output (postMessage height-sender, target=_top) integrates with Kajabi and Canvas.</td></tr>
+        <tr><td class="id-col">A8</td><td class="req-col">Effective use of multimedia</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Generator suite covers text (Concept page), image (Atlas page), interactive (Spaced-recall), assessment media types.</td></tr>
+        <tr><td class="id-col">A9</td><td class="req-col">Instructions embedded with content</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Hero subhead and section-intro patterns are first-class. Instructions sit immediately after the headline.</td></tr>
+        <tr><td class="id-col">A10</td><td class="req-col">Individualized learning support</td><td class="status-col"><span class="pill pill-v2">v2 build</span></td><td class="evidence-col">Adaptive remediation paths require Course Readiness Score and a branching engine. Slated for v2.</td></tr>
+        <tr><td class="id-col">A11</td><td class="req-col">Anonymous learner feedback</td><td class="status-col"><span class="pill pill-v2">v2 build</span></td><td class="evidence-col">Anonymous feedback widget (mid-term + end-of-term). Slated for v2.</td></tr>
+        <tr><td class="id-col">A12</td><td class="req-col">Course policies findable</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Blueprint includes Policies section; design system has a Policies card pattern.</td></tr>
+        <tr><td class="id-col">A13</td><td class="req-col">Student services links</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Footer template includes institutional services link slots (DSPS, counseling, tutoring, library).</td></tr>
+        <tr><td class="id-col">A14</td><td class="req-col">Technology support links</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Footer template includes tech support link slot and IT contact pattern.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-      <h3>How the v2 RSI Engine satisfies B1, B2, B5</h3>
-      <ul>
-        <li><strong>Cadence calendar:</strong> generates weekly announcement slots, midweek pulses, end-of-module wrap-ups, all timestamped to the term calendar.</li>
-        <li><strong>Substantive contact log:</strong> every announcement, feedback artifact, and discussion post is tagged to one of the four RSI pillars and logged.</li>
-        <li><strong>RSI score:</strong> per student, per week, returns a 0-100 score on substantive contact. Surfaces gaps before the term ends.</li>
-        <li><strong>Audit-ready RSI report:</strong> exportable PDF that documents pillar coverage by week, student, and module. Hand this to accreditation or your dean.</li>
-        <li><strong>Peer interaction tracker (B5):</strong> tracks structured discussion participation, peer review completion, and group activity engagement against the participation rubric.</li>
-      </ul>
-    </div>
-  </section>
+<!-- ===== SECTION B (dark) ===== -->
+<section class="dark-section section-b" id="section-b" aria-labelledby="b-h">
+  <div class="section-eyebrow">Section B</div>
+  <h2 id="b-h" class="section-headline">Interaction, <span class="accent">where RSI lives</span>.</h2>
+  <p class="section-intro">Section B is where RSI (Regular and Substantive Interaction) compliance is established. RSI is the federal Department of Education requirement that distinguishes online instruction from a correspondence course. MCAS v2 will include a dedicated RSI Engine.</p>
+  <div class="score-strip"><strong>Score: 6 / 6 addressable</strong> <span>Met: 0</span> <span>Enforced: 3</span> <span>v2: 3</span> <span>N/A: 0</span></div>
 
-  <!-- SECTION C -->
-  <section id="section-c" aria-labelledby="section-c-h">
-    <h2 id="section-c-h">Section C: Assessment</h2>
-    <div class="section-banner">
-      <strong>Score: 8 / 8 addressable</strong>
-      <span>&middot; Met: 1</span><span>&middot; Enforced: 6</span><span>&middot; v2: 1</span><span>&middot; N/A: 0</span>
+  <div class="table-wrap">
+    <table>
+      <caption>Section B elements vs. MCAS v1 framework</caption>
+      <thead>
+        <tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Status</th><th scope="col">Evidence in MCAS v1 / v2 plan</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="id-col">B1</td><td class="req-col">Pre-course instructor contact</td><td class="status-col"><span class="pill pill-v2">v2 build</span></td><td class="evidence-col">RSI Engine generates a welcome announcement scheduled for one week before term start. See <code>06_RSI_Engine_Framework.docx</code>.</td></tr>
+        <tr><td class="id-col">B2</td><td class="req-col">Regular effective contact, instructor to student (RSI core)</td><td class="status-col"><span class="pill pill-v2">v2 build</span></td><td class="evidence-col">RSI Engine schedules a documented contact cadence, logs interaction artifacts, produces an audit-ready RSI report per term.</td></tr>
+        <tr><td class="id-col">B3</td><td class="req-col">Student-initiated contact (instructor reachable, expected response times)</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Contact card template prompts faculty for email, office hours (sync and async), response-time policy. Required field in v2 form.</td></tr>
+        <tr><td class="id-col">B4</td><td class="req-col">Student-to-student unstructured interaction</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Open forum / Q&amp;A board template included in module scaffold. Generator outputs Canvas-ready discussion shells.</td></tr>
+        <tr><td class="id-col">B5</td><td class="req-col">Regular effective contact among students (structured)</td><td class="status-col"><span class="pill pill-v2">v2 build</span></td><td class="evidence-col">Peer interaction tracker: discussion participation rubric, peer review scheduling, peer feedback artifacts. Part of RSI Engine.</td></tr>
+        <tr><td class="id-col">B6</td><td class="req-col">Participation level guidelines with rubric</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Rubric table pattern in design system; blueprint requires participation rubric per discussion-based assignment.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== RSI DEEP DIVE (light) ===== -->
+<section class="light-section rsi-section" id="rsi" aria-labelledby="rsi-h">
+  <div class="section-eyebrow">RSI deep dive</div>
+  <h2 id="rsi-h" class="section-headline">Regular and Substantive Interaction, <span class="accent">made automatic</span>.</h2>
+  <p class="section-intro">RSI is the federal compliance gate for online instruction (34 CFR &sect;600.2). A course can pass every other rubric criterion and still fail RSI if instructor-initiated interaction is not regular and not substantive. The MCAS v2 RSI Engine is designed to make compliance a byproduct of using the system, not a manual audit at the end of the term.</p>
+
+  <div class="rsi-panel">
+
+    <div class="rsi-h3">The four RSI pillars (federal definition)</div>
+    <p style="margin:0 0 16px; font-size:14px; color:#0B1530; opacity:0.86; line-height:1.6;">An online course meets RSI when the instructor, on a predictable schedule, engages in at least two of the following four substantive activities with each student.</p>
+    <div class="rsi-pillars">
+      <div class="rsi-pillar"><div class="rsi-pillar-num">01</div><h4 class="rsi-pillar-title">Direct instruction</h4><p class="rsi-pillar-body">Live or recorded teaching, synchronous sessions, instructor-led walkthroughs.</p></div>
+      <div class="rsi-pillar"><div class="rsi-pillar-num">02</div><h4 class="rsi-pillar-title">Assessment and feedback</h4><p class="rsi-pillar-body">Grading with personalized written or audio feedback. Not just a score.</p></div>
+      <div class="rsi-pillar"><div class="rsi-pillar-num">03</div><h4 class="rsi-pillar-title">Information &amp; discussion</h4><p class="rsi-pillar-body">Instructor-facilitated discussion on academic content. Not a passive grade.</p></div>
+      <div class="rsi-pillar"><div class="rsi-pillar-num">04</div><h4 class="rsi-pillar-title">Other instructional activities</h4><p class="rsi-pillar-body">Approved by accreditation, e.g., one-on-one office hours, content-specific announcements.</p></div>
     </div>
 
-    <div class="table-wrap">
-      <table>
-        <caption>Section C elements vs. MCAS v1 framework</caption>
-        <thead>
-          <tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Status</th><th scope="col">Evidence in MCAS v1</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="id-col">C1</td><td class="req-col">Authentic assessments</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Case-based assessment generators (clinical simulation, lab exam, applied problem set) align with the "given not Googled" pedagogy.</td></tr>
-          <tr><td class="id-col">C2</td><td class="req-col">Assessments aligned with course objectives</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Blueprint maps every assessment to one or more objective IDs; generator output includes the mapping in the student-facing instructions.</td></tr>
-          <tr><td class="id-col">C3</td><td class="req-col">Variety (formative + summative)</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Generator suite: spaced-recall (formative, daily), lab exam DOCX (summative), TBL session (mixed), concept page checks (formative). Blueprint requires both types per module.</td></tr>
-          <tr><td class="id-col">C4</td><td class="req-col">Frequent assessment</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Blueprint requires per-week assessment plan; Course Readiness Score (v2) flags any week without a formative checkpoint.</td></tr>
-          <tr><td class="id-col">C5</td><td class="req-col">Rubrics for desired outcomes</td><td><span class="pill pill--met">Met</span></td><td class="evidence">Rubric table pattern is a first-class design system component. Includes performance-level columns and criterion-row structure.</td></tr>
-          <tr><td class="id-col">C6</td><td class="req-col">Clear assessment instructions</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Generator templates include instruction-block scaffolding with student-facing voice and worked example slot.</td></tr>
-          <tr><td class="id-col">C7</td><td class="req-col">Meaningful, timely feedback</td><td><span class="pill pill--v2">v2 build</span></td><td class="evidence">Feedback scheduling and tracking integrated with the RSI Engine. Generates feedback templates, tracks turnaround time per assessment, surfaces missed windows.</td></tr>
-          <tr><td class="id-col">C8</td><td class="req-col">Self-assessment opportunities</td><td><span class="pill pill--enforced">Enforced</span></td><td class="evidence">Spaced-recall builder is structurally a self-assessment tool with feedback. Concept page check-yourself pattern included.</td></tr>
-        </tbody>
-      </table>
+    <div class="rsi-h3">How the v2 RSI Engine satisfies B1, B2, B5</div>
+    <ul class="rsi-list">
+      <li><strong>Cadence calendar:</strong> generates weekly announcement slots, midweek pulses, end-of-module wrap-ups, all timestamped to the term calendar.</li>
+      <li><strong>Substantive contact log:</strong> every announcement, feedback artifact, and discussion post is tagged to one of the four RSI pillars and logged.</li>
+      <li><strong>RSI score:</strong> per student, per week, returns a 0 to 100 score on substantive contact. Surfaces gaps before the term ends.</li>
+      <li><strong>Audit-ready RSI report:</strong> exportable PDF documenting pillar coverage by week, student, and module. Hand to accreditation or the dean.</li>
+      <li><strong>Peer interaction tracker (B5):</strong> tracks structured discussion participation, peer review completion, group activity engagement against the participation rubric.</li>
+    </ul>
+
+  </div>
+</section>
+
+<!-- ===== SECTION C (dark) ===== -->
+<section class="dark-section section-c" id="section-c" aria-labelledby="c-h">
+  <div class="section-eyebrow">Section C</div>
+  <h2 id="c-h" class="section-headline">Assessment, <span class="accent">eight elements</span>.</h2>
+  <div class="score-strip"><strong>Score: 8 / 8 addressable</strong> <span>Met: 1</span> <span>Enforced: 6</span> <span>v2: 1</span> <span>N/A: 0</span></div>
+
+  <div class="table-wrap">
+    <table>
+      <caption>Section C elements vs. MCAS v1 framework</caption>
+      <thead>
+        <tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Status</th><th scope="col">Evidence in MCAS v1</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="id-col">C1</td><td class="req-col">Authentic assessments</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Case-based generators (clinical simulation, lab exam, applied problem set) align with the "given not Googled" pedagogy.</td></tr>
+        <tr><td class="id-col">C2</td><td class="req-col">Assessments aligned with course objectives</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Blueprint maps every assessment to one or more objective IDs; generator output includes the mapping.</td></tr>
+        <tr><td class="id-col">C3</td><td class="req-col">Variety (formative + summative)</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Generator suite covers spaced-recall (formative daily), lab exam DOCX (summative), TBL session (mixed), concept-page checks (formative).</td></tr>
+        <tr><td class="id-col">C4</td><td class="req-col">Frequent assessment</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Blueprint requires per-week assessment plan; Course Readiness Score (v2) flags any week without a formative checkpoint.</td></tr>
+        <tr><td class="id-col">C5</td><td class="req-col">Rubrics for desired outcomes</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">Rubric table pattern is a first-class design system component. Includes performance-level columns and criterion-row structure.</td></tr>
+        <tr><td class="id-col">C6</td><td class="req-col">Clear assessment instructions</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Generator templates include instruction-block scaffolding with student-facing voice and worked-example slot.</td></tr>
+        <tr><td class="id-col">C7</td><td class="req-col">Meaningful, timely feedback</td><td class="status-col"><span class="pill pill-v2">v2 build</span></td><td class="evidence-col">Feedback scheduling and tracking integrated with the RSI Engine. Surfaces missed feedback windows before the term ends.</td></tr>
+        <tr><td class="id-col">C8</td><td class="req-col">Self-assessment opportunities</td><td class="status-col"><span class="pill pill-enforced">Enforced</span></td><td class="evidence-col">Spaced-recall builder is structurally a self-assessment tool with feedback. Concept-page check-yourself pattern included.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== SECTION D (light) ===== -->
+<section class="light-section section-d" id="section-d" aria-labelledby="d-h">
+  <div class="section-eyebrow">Section D</div>
+  <h2 id="d-h" class="section-headline">Accessibility, <span class="accent">audited against the rendered artifact</span>.</h2>
+  <p class="section-intro">Audited against MCAS v1 <code>index.html</code>, the only rendered artifact the framework currently ships. As generators come online, the Accessibility Engine (v2) will run these same checks on every generated page.</p>
+  <div class="score-strip"><strong>Score: 9 met, 1 v2, 6 N/A at framework level</strong> <span>Every applicable element is aligned</span></div>
+
+  <div class="table-wrap">
+    <table>
+      <caption>Section D elements vs. MCAS v1 index.html</caption>
+      <thead>
+        <tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Status</th><th scope="col">Evidence</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="id-col">D1</td><td class="req-col">Heading styles, correct order</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">Single <code>h1</code>, descending <code>h2</code>/<code>h3</code>. All headings semantic. No font-styling-as-heading.</td></tr>
+        <tr><td class="id-col">D2</td><td class="req-col">Lists built with list elements</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">Real <code>ul</code>, <code>ol</code>, <code>dl</code> throughout. No manually formatted bullet lists.</td></tr>
+        <tr><td class="id-col">D3</td><td class="req-col">Meaningful link text</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">All links use descriptive text. No "click here" or raw URLs.</td></tr>
+        <tr><td class="id-col">D4</td><td class="req-col">Table headers and captions</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">Every table uses <code>caption</code>, <code>thead</code>, and <code>th scope="col"</code>.</td></tr>
+        <tr><td class="id-col">D5</td><td class="req-col">Sufficient color contrast</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">All text/background pairs audited. AA floor met or exceeded on every pair used in the file.</td></tr>
+        <tr><td class="id-col">D6</td><td class="req-col">Color not sole carrier of meaning</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">State variants (locked/unlocked/completed) combine border style, border color, and fill. Distinguishable without color.</td></tr>
+        <tr><td class="id-col">D7</td><td class="req-col">Image alt text</td><td class="status-col"><span class="pill pill-na">N/A</span></td><td class="evidence-col">No content images in v1 index (logo is decorative SVG). Becomes applicable when Atlas generator produces image-rich content; alt-text field will be required.</td></tr>
+        <tr><td class="id-col">D8</td><td class="req-col">Correct reading order</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">Source order matches visual order. No absolute-positioned content that breaks tab flow.</td></tr>
+        <tr><td class="id-col">D9</td><td class="req-col">Accessible slide layouts</td><td class="status-col"><span class="pill pill-na">N/A</span></td><td class="evidence-col">No slides in v1. Applies when slide generator is built.</td></tr>
+        <tr><td class="id-col">D10</td><td class="req-col">Spreadsheet labels and descriptions</td><td class="status-col"><span class="pill pill-na">N/A</span></td><td class="evidence-col">No spreadsheets in v1.</td></tr>
+        <tr><td class="id-col">D11</td><td class="req-col">Passes accessibility checker</td><td class="status-col"><span class="pill pill-v2">v2 build</span></td><td class="evidence-col">Manual audit completed (see <code>compliance-notes.md</code>). v2 Accessibility Engine automates axe-core-equivalent checks on every generator output.</td></tr>
+        <tr><td class="id-col">D12</td><td class="req-col">Video captions</td><td class="status-col"><span class="pill pill-na">N/A</span></td><td class="evidence-col">No video in v1. Embed generators will require caption-source field.</td></tr>
+        <tr><td class="id-col">D13</td><td class="req-col">Audio transcripts</td><td class="status-col"><span class="pill pill-na">N/A</span></td><td class="evidence-col">No audio in v1.</td></tr>
+        <tr><td class="id-col">D14</td><td class="req-col">No problematic flashing content</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">No flashing or blinking content. <code>prefers-reduced-motion</code> media query honored.</td></tr>
+        <tr><td class="id-col">D15</td><td class="req-col">Live captions on synchronous events</td><td class="status-col"><span class="pill pill-na">N/A</span></td><td class="evidence-col">No live events. Synchronous course components will require captioning plan in blueprint.</td></tr>
+        <tr><td class="id-col">D16</td><td class="req-col">No auto-play</td><td class="status-col"><span class="pill pill-met">Met</span></td><td class="evidence-col">No autoplay anywhere. Animation only on user-initiated hover, respects prefers-reduced-motion.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== GAP ANALYSIS (light) ===== -->
+<section class="light-section gap-section" id="gaps" aria-labelledby="gap-h">
+  <div class="section-eyebrow">v2 gap analysis</div>
+  <h2 id="gap-h" class="section-headline">Seven elements stand between MCAS v1 and <span class="accent">a course-ready commercial product</span>.</h2>
+  <p class="section-intro">Each maps to a planned v2 module. Completing v2 brings the framework to 38 of 38 addressable elements. Six remain N/A at the framework level and become applicable per-course as media is added.</p>
+
+  <ol class="gap-list">
+    <li>
+      <div class="gap-id">A10</div>
+      <div><h3 class="gap-title">Individualized learning support</h3><p class="gap-desc">Adaptive remediation paths and advanced-learner branches, gated by Course Readiness Score per student.</p></div>
+    </li>
+    <li>
+      <div class="gap-id">A11</div>
+      <div><h3 class="gap-title">Anonymous learner feedback</h3><p class="gap-desc">Embeddable feedback widget (mid-term + end-of-term), reports back to instructor without student identifiers.</p></div>
+    </li>
+    <li>
+      <div class="gap-id">B1</div>
+      <div><h3 class="gap-title">Pre-course contact</h3><p class="gap-desc">RSI Engine welcome-announcement generator, scheduled to fire one week before term.</p></div>
+    </li>
+    <li>
+      <div class="gap-id">B2</div>
+      <div><h3 class="gap-title">Regular effective instructor contact (RSI core)</h3><p class="gap-desc">RSI Engine cadence calendar, substantive contact log, weekly RSI score, audit-ready term report.</p></div>
+    </li>
+    <li>
+      <div class="gap-id">B5</div>
+      <div><h3 class="gap-title">Structured student-to-student contact</h3><p class="gap-desc">Peer interaction tracker covering discussion participation, peer review, group activity engagement.</p></div>
+    </li>
+    <li>
+      <div class="gap-id">C7</div>
+      <div><h3 class="gap-title">Meaningful, timely feedback</h3><p class="gap-desc">Feedback turnaround tracking integrated with RSI Engine. Surfaces missed feedback windows before the term ends.</p></div>
+    </li>
+    <li>
+      <div class="gap-id">D11</div>
+      <div><h3 class="gap-title">Automated accessibility checker</h3><p class="gap-desc">Accessibility Engine runs axe-core-equivalent checks on every generator output, blocks publish until pass.</p></div>
+    </li>
+  </ol>
+
+  <div class="callout is-gold">
+    <p class="callout-title">Recommendation</p>
+    <p class="callout-body">v2 build priority order: RSI Engine first (closes B1, B2, B5, C7, four elements). Accessibility Engine second (closes D11, also delivers the WCAG Score on the v2 roadmap). Feedback widget and adaptive support third (A10, A11). This sequence delivers the highest compliance return per build sprint and produces the institutional-quality reports flagged in the v2 vision.</p>
+  </div>
+</section>
+
+<!-- ===== SIGN-OFF (dark) ===== -->
+<section class="dark-section signoff-section" aria-labelledby="signoff-h">
+  <div class="section-eyebrow">Sign-off</div>
+  <h2 id="signoff-h" class="section-headline">Framework-level self-review, <span class="accent">complete</span>.</h2>
+
+  <div class="signoff-block">
+    <div>
+      <p class="signoff-name">Dr. Sharilyn Rennie</p>
+      <p class="signoff-role">Learning Architect, MedMasters Collaborative LLC</p>
     </div>
-  </section>
+    <div class="signoff-date">2026-05-29</div>
+  </div>
 
-  <!-- SECTION D -->
-  <section id="section-d" aria-labelledby="section-d-h">
-    <h2 id="section-d-h">Section D: Accessibility</h2>
-    <p class="section-note">Audited against MCAS v1 <code>index.html</code>, the only rendered artifact the framework currently ships. As generators come online, the Accessibility Engine (v2) will run these same checks on every generated page.</p>
-    <div class="section-banner">
-      <strong>Score: 9 met / 1 v2 / 6 N/A at framework level</strong>
-      <span>&middot; All applicable elements are aligned</span>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <caption>Section D elements vs. MCAS v1 index.html</caption>
-        <thead>
-          <tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Status</th><th scope="col">Evidence</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="id-col">D1</td><td class="req-col">Heading styles, correct order</td><td><span class="pill pill--met">Met</span></td><td class="evidence">Single <code>h1</code>, descending <code>h2</code>/<code>h3</code>, all section headings use semantic elements. No font-styling-as-heading.</td></tr>
-          <tr><td class="id-col">D2</td><td class="req-col">Lists built with list elements</td><td><span class="pill pill--met">Met</span></td><td class="evidence">Real <code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>, <code>&lt;dl&gt;</code> throughout. No manually formatted bullet lists.</td></tr>
-          <tr><td class="id-col">D3</td><td class="req-col">Meaningful link text</td><td><span class="pill pill--met">Met</span></td><td class="evidence">All TOC and inline links use descriptive text. No "click here" or raw URLs.</td></tr>
-          <tr><td class="id-col">D4</td><td class="req-col">Table headers and captions</td><td><span class="pill pill--met">Met</span></td><td class="evidence">Every table uses <code>&lt;caption&gt;</code>, <code>&lt;thead&gt;</code>, and <code>&lt;th scope="col"&gt;</code>.</td></tr>
-          <tr><td class="id-col">D5</td><td class="req-col">Sufficient color contrast</td><td><span class="pill pill--met">Met</span></td><td class="evidence">All text/background pairs audited. AA floor met or exceeded on every pair. One issue found and fixed: white-on-gold accent button (2.90:1, fail) swapped to navy-deep-on-gold (5.13:1, pass).</td></tr>
-          <tr><td class="id-col">D6</td><td class="req-col">Color not sole carrier of meaning</td><td><span class="pill pill--met">Met</span></td><td class="evidence">State variants (locked/unlocked/completed) combine border style (dashed/solid), border color, and fill. Distinguishable without color.</td></tr>
-          <tr><td class="id-col">D7</td><td class="req-col">Image alt text</td><td><span class="pill pill--na">N/A</span></td><td class="evidence">No images in v1 index. Becomes applicable when Atlas page generator produces image-rich content. Generator will require alt-text field.</td></tr>
-          <tr><td class="id-col">D8</td><td class="req-col">Correct reading order</td><td><span class="pill pill--met">Met</span></td><td class="evidence">Source order matches visual order. No absolute-positioned content that breaks tab flow.</td></tr>
-          <tr><td class="id-col">D9</td><td class="req-col">Accessible slide layouts</td><td><span class="pill pill--na">N/A</span></td><td class="evidence">No slides in v1. Applies when slide generator is built.</td></tr>
-          <tr><td class="id-col">D10</td><td class="req-col">Spreadsheet labels and descriptions</td><td><span class="pill pill--na">N/A</span></td><td class="evidence">No spreadsheets in v1.</td></tr>
-          <tr><td class="id-col">D11</td><td class="req-col">Passes accessibility checker</td><td><span class="pill pill--v2">v2 build</span></td><td class="evidence">Manual audit completed (see <code>compliance-notes.md</code>). v2 Accessibility Engine automates axe-core / WAVE-equivalent checks on every generator output.</td></tr>
-          <tr><td class="id-col">D12</td><td class="req-col">Video captions</td><td><span class="pill pill--na">N/A</span></td><td class="evidence">No video in v1. Generator that embeds video will require caption-source field.</td></tr>
-          <tr><td class="id-col">D13</td><td class="req-col">Audio transcripts</td><td><span class="pill pill--na">N/A</span></td><td class="evidence">No audio in v1.</td></tr>
-          <tr><td class="id-col">D14</td><td class="req-col">No problematic flashing content</td><td><span class="pill pill--met">Met</span></td><td class="evidence">No flashing or blinking content. <code>prefers-reduced-motion</code> media query honored.</td></tr>
-          <tr><td class="id-col">D15</td><td class="req-col">Live captions on synchronous events</td><td><span class="pill pill--na">N/A</span></td><td class="evidence">No live events. Synchronous course components will require captioning plan in blueprint.</td></tr>
-          <tr><td class="id-col">D16</td><td class="req-col">No auto-play</td><td><span class="pill pill--met">Met</span></td><td class="evidence">No autoplay anywhere in the stylesheet or scripts. Animation only on user-initiated hover.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- GAP ANALYSIS -->
-  <section id="gap-analysis" aria-labelledby="gap-h">
-    <h2 id="gap-h">v2 gap analysis: seven elements to close</h2>
-    <p>These seven elements are not yet addressed by MCAS v1. Each maps to a planned v2 module. Completing v2 brings the framework to <strong>38 / 38 addressable elements</strong> (six remain N/A at the framework level and become applicable per-course as media is added).</p>
-
-    <ol class="gap-list" aria-label="Seven v2 gaps">
-      <li><span class="gap-id">A10</span><div class="gap-body"><strong>Individualized learning support</strong><span>Adaptive remediation paths and advanced-learner branches, gated by Course Readiness Score per student.</span></div></li>
-      <li><span class="gap-id">A11</span><div class="gap-body"><strong>Anonymous learner feedback</strong><span>Embeddable feedback widget (mid-term + end-of-term), reports back to instructor without student identifiers.</span></div></li>
-      <li><span class="gap-id">B1</span><div class="gap-body"><strong>Pre-course contact</strong><span>RSI Engine welcome-announcement generator, scheduled to fire one week before term.</span></div></li>
-      <li><span class="gap-id">B2</span><div class="gap-body"><strong>Regular effective instructor contact (RSI core)</strong><span>RSI Engine cadence calendar, substantive contact log, weekly RSI score, audit-ready term report.</span></div></li>
-      <li><span class="gap-id">B5</span><div class="gap-body"><strong>Structured student-to-student contact</strong><span>Peer interaction tracker: discussion participation, peer review, group activity engagement.</span></div></li>
-      <li><span class="gap-id">C7</span><div class="gap-body"><strong>Meaningful, timely feedback</strong><span>Feedback turnaround tracking integrated with RSI Engine. Surfaces missed feedback windows before the term ends.</span></div></li>
-      <li><span class="gap-id">D11</span><div class="gap-body"><strong>Automated accessibility checker</strong><span>Accessibility Engine runs axe-core-equivalent checks on every generator output, blocks publish until pass.</span></div></li>
-    </ol>
-
-    <div class="callout">
-      <p class="callout__title">Recommendation</p>
-      <p class="callout__body">v2 build priority order: RSI Engine first (closes B1, B2, B5, C7, four elements). Accessibility Engine second (closes D11, also delivers the WCAG Score deliverable on the v2 roadmap). Feedback widget and adaptive support third (A10, A11). This order delivers the highest compliance return per build sprint and produces the institutional-quality reports flagged in the v2 vision.</p>
-    </div>
-  </section>
-
-  <!-- SIGN-OFF -->
-  <section id="sign-off" aria-labelledby="signoff-h">
-    <h2 id="signoff-h">Sign-off</h2>
-    <div class="signoff">
-      <div>
-        <p class="signoff__name">Dr. Sharilyn Rennie</p>
-        <p class="signoff__role">Learning Architect, MedMasters Collaborative LLC</p>
-      </div>
-      <div class="signoff__date">2026-05-29</div>
-    </div>
-    <p class="section-note" style="margin-top:14px">This is a self-review at the framework level. Before any external CVC-OEI submission of a course built on MCAS, a trained peer reviewer must audit the produced course against the same rubric. The framework is designed to make peer review a formality, not a remediation cycle.</p>
-  </section>
+  <p class="signoff-note">This is a self-review at the framework level. Before any external CVC-OEI submission of a course built on MCAS, a trained peer reviewer must audit the produced course against the same rubric. The framework is designed to make peer review a formality, not a remediation cycle.</p>
+</section>
 
 </main>
 
-<footer role="contentinfo">
-  <div class="footer-inner">
-    <span class="footer-byline">Dr. Sharilyn Rennie</span>
-    <span>MCAS &times; CVC-OEI Rubric Audit &middot; v1.0</span>
-    <span class="footer-meta">MedMasters Course Architecture System</span>
+<!-- ===== FOOTER ===== -->
+<footer class="footer-section">
+  <div class="footer-top">
+    <div>
+      <a href="index.html" class="footer-logo" target="_top" aria-label="MCAS Component Index home">
+        <svg viewBox="40 10 125 148" role="img" aria-hidden="true" focusable="false">
+          <g transform="translate(0, 18)">
+            <g transform="translate(60, 0) rotate(8 0 130)"><circle cx="0" cy="20" r="10" fill="#F5F1E8"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#F5F1E8"/></g>
+            <g transform="translate(100, 0)"><circle cx="0" cy="10" r="11" fill="#8B3A2E"/><path d="M 0,22 C -11,22 -17,26 -17,34 C -17,52 -14,70 -12,86 C -11,108 -13,122 -15,132 L 15,132 C 13,122 11,108 12,86 C 14,70 17,52 17,34 C 17,26 11,22 0,22 Z" fill="#8B3A2E"/></g>
+            <g transform="translate(140, 0) rotate(-8 0 130)"><circle cx="0" cy="20" r="10" fill="#C9A14A"/><path d="M 0,32 C -10,32 -16,36 -16,42 C -16,55 -13,68 -11,82 C -10,100 -12,118 -14,130 L 14,130 C 12,118 10,100 11,82 C 13,68 16,55 16,42 C 16,36 10,32 0,32 Z" fill="#C9A14A"/></g>
+          </g>
+        </svg>
+        <span class="logo-text">
+          <span class="logo-title">MCAS <span class="logo-accent">Audit</span></span>
+          <span class="logo-sub">MedMasters &middot; CVC-OEI Compliance</span>
+        </span>
+      </a>
+      <p class="footer-tagline">Framework-level scoring of MCAS v1 against the 44-element California Virtual Campus Course Design Rubric.</p>
+    </div>
+    <div>
+      <div class="footer-col-header">Jump to</div>
+      <a class="footer-link" href="#section-a">Section A &middot; Content</a>
+      <a class="footer-link" href="#section-b">Section B &middot; Interaction</a>
+      <a class="footer-link" href="#rsi">RSI deep dive</a>
+      <a class="footer-link" href="#section-c">Section C &middot; Assessment</a>
+      <a class="footer-link" href="#section-d">Section D &middot; Accessibility</a>
+    </div>
+    <div>
+      <div class="footer-col-header">Related</div>
+      <a class="footer-link" href="index.html" target="_top">MCAS Component Index</a>
+      <a class="footer-link" href="compliance-notes.md" target="_top">Compliance notes</a>
+      <a class="footer-link" href="#gaps">v2 gap analysis</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copyright">MCAS &times; CVC-OEI Rubric Audit &middot; MedMasters Collaborative LLC &middot; v1.0</div>
+    <div class="footer-byline">Dr. Sharilyn Rennie</div>
   </div>
 </footer>
 
 <script>
+  /* iframe height-sender */
   (function () {
     var FRAME_ID = 'mcas-cvc-oei-audit';
     function sendHeight() {
-      try {
-        var h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
-        window.parent.postMessage({ id: FRAME_ID, height: h }, '*');
-      } catch (e) {}
+      var h = Math.max(
+        document.documentElement.scrollHeight,
+        document.body ? document.body.scrollHeight : 0
+      );
+      parent.postMessage({ type: 'resize', id: FRAME_ID, height: h }, '*');
     }
-    if ('ResizeObserver' in window) { new ResizeObserver(sendHeight).observe(document.body); }
     window.addEventListener('load', sendHeight);
     window.addEventListener('resize', sendHeight);
-    sendHeight();
+    if (window.ResizeObserver) {
+      new ResizeObserver(sendHeight).observe(document.body);
+    }
   })();
 </script>
 

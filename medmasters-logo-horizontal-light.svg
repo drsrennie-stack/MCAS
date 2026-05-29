@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 720 200">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
+  <defs>
+    <style>
+      .st0, .st1, .st2 {
+        fill: #0b1530;
+      }
+
+      .st1 {
+        font-size: 30px;
+        letter-spacing: .33em;
+        opacity: .75;
+      }
+
+      .st1, .st2, .st3, .st4 {
+        isolation: isolate;
+      }
+
+      .st1, .st2, .st4 {
+        font-family: Helvetica-Bold, Helvetica;
+        font-weight: 700;
+      }
+
+      .st2, .st4 {
+        font-size: 80px;
+      }
+
+      .st5 {
+        fill: #c9a14a;
+      }
+
+      .st6, .st4 {
+        fill: #8b3a2e;
+      }
+    </style>
+  </defs>
+  <g>
+    <g>
+      <circle class="st0" cx="75.31" cy="39.07" r="10"/>
+      <path class="st0" d="M73.64,50.95c-9.9-1.39-16.4,1.73-17.24,7.68-1.81,12.87-.65,26.16-.62,40.31-1.51,17.96-6,35.51-9.65,47.12l27.73,3.9c-.31-12.16.21-30.26,3.71-47.95,3.93-13.59,8.71-26.04,10.52-38.91.84-5.94-4.55-10.74-14.45-12.13Z"/>
+    </g>
+    <g>
+      <circle class="st6" cx="100" cy="28" r="11"/>
+      <path class="st6" d="M100,40c-11,0-17,4-17,12,0,18,3,36,5,52,1,22-1,36-3,46h30c-2-10-4-24-3-46,2-16,5-34,5-52,0-8-6-12-17-12Z"/>
+    </g>
+    <g>
+      <circle class="st5" cx="124.69" cy="39.07" r="10"/>
+      <path class="st5" d="M126.36,50.95c-9.9,1.39-15.29,6.19-14.45,12.13,1.81,12.87,6.59,25.33,10.52,38.91,3.5,17.69,4.02,35.79,3.71,47.95l27.73-3.9c-3.65-11.6-8.14-29.15-9.65-47.12.03-14.14,1.19-27.43-.62-40.31-.84-5.94-7.33-9.07-17.24-7.68Z"/>
+    </g>
+  </g>
+  <g>
+    <g class="st3">
+      <text class="st2" transform="translate(240 118)"><tspan x="0" y="0">Med</tspan></text>
+      <text class="st4" transform="translate(400 118)"><tspan x="0" y="0">Masters</tspan></text>
+    </g>
+    <text class="st1" transform="translate(240 158)"><tspan x="0" y="0">COLLABORATIVE</tspan></text>
+  </g>
+  <text/>
+</svg>
