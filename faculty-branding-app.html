@@ -118,11 +118,12 @@ main { max-width: var(--max-w); margin: 0 auto; padding: 28px 24px 64px; display
 .section-card__note { font-family: var(--font-italic); color: var(--gray-700); font-size: 13px; margin: 0 0 18px; }
 
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-.form-grid--wide { grid-template-columns: 1fr; }
-.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.form-grid--wide { grid-template-columns: 1fr !important; }
+.form-grid--wide > .field, .form-grid--wide > .field.field--span2 { grid-column: 1 / -1 !important; width: 100%; max-width: 100%; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; width: 100%; }
 .field--span2 { grid-column: span 2; }
 @media (max-width: 640px) { .field--span2 { grid-column: 1; } }
-.field label { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--navy); }
+.field label { font-family: var(--font-display); font-weight: 600; font-size: 13px; color: var(--navy); overflow-wrap: anywhere; word-break: normal; }
 .field__hint { font-family: var(--font-italic); font-size: 12px; color: var(--gray-500); margin: 0; }
 .input, .select, .textarea {
   font-family: var(--font-body); font-size: 14px; color: var(--navy); background: var(--white);
@@ -164,9 +165,9 @@ main { max-width: var(--max-w); margin: 0 auto; padding: 28px 24px 64px; display
 .btn--primary:hover { background: var(--navy-deep); border-color: var(--navy-deep); }
 .btn--secondary { background: var(--white); color: var(--navy); border-color: var(--navy); }
 .btn--secondary:hover { background: var(--navy-tint); }
-.btn--accent { background: var(--gold); color: var(--navy-deep); border-color: var(--gold); }
-.btn--accent:hover { background: var(--gold); color: var(--navy-deep); border-color: var(--navy-deep); box-shadow: var(--shadow-hover); }
-/* Terra primary CTA. White on terra-dark = 5.52:1 (AA normal). */
+/* Accent = terra-cotta + white. White on terra-dark = 5.52:1 (AA normal). */
+.btn--accent { background: var(--terra-dark); color: var(--white); border-color: var(--terra-dark); }
+.btn--accent:hover { background: #8a4525; color: var(--white); border-color: #8a4525; box-shadow: var(--shadow-hover); }
 .btn--terra { background: var(--terra-dark); color: var(--white); border-color: var(--terra-dark); }
 .btn--terra:hover { background: #8a4525; border-color: #8a4525; box-shadow: var(--shadow-hover); }
 .btn--ghost { background: transparent; color: var(--navy); border-color: transparent; }
@@ -204,7 +205,7 @@ main { max-width: var(--max-w); margin: 0 auto; padding: 28px 24px 64px; display
 .bp-btn { display: inline-flex; align-items: center; gap: 6px; font-family: var(--bp-font-display, var(--font-display)); font-weight: 600; font-size: 13px; padding: 8px 14px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; }
 .bp-btn--primary { background: var(--bp-navy, var(--navy)); color: var(--bp-white, var(--white)); border-color: var(--bp-navy, var(--navy)); }
 .bp-btn--secondary { background: var(--bp-white, var(--white)); color: var(--bp-navy, var(--navy)); border-color: var(--bp-navy, var(--navy)); }
-.bp-btn--accent { background: var(--bp-gold, var(--gold)); color: var(--bp-navy-deep, var(--navy-deep)); border-color: var(--bp-gold, var(--gold)); }
+.bp-btn--accent { background: var(--bp-terra, var(--terra-dark)); color: var(--bp-white, var(--white)); border-color: var(--bp-terra, var(--terra-dark)); }
 .bp-swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
 .bp-swatch { border: 1px solid var(--bp-tint, var(--navy-tint)); border-radius: 6px; overflow: hidden; background: var(--bp-white, var(--white)); }
 .bp-swatch__color { height: 44px; }
@@ -329,12 +330,32 @@ footer { border-top: 1px solid var(--navy-tint); background: var(--white); paddi
 
   <form class="builder" id="brandForm" autocomplete="off" novalidate>
     <!-- ============================================================
+         DEFAULTS & HINTS CALLOUT
+         ============================================================ -->
+    <aside role="note" aria-label="About defaults and hints" style="background:var(--white);border:1px solid var(--navy-tint);border-left:4px solid var(--terra-dark);border-radius:8px;padding:14px 18px;box-shadow:var(--shadow-rest);">
+      <p style="font-family:var(--font-eyebrow);font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--terra-dark);margin:0 0 4px;font-weight:600;">About defaults &amp; hints</p>
+      <p style="margin:0 0 6px;font-size:13px;color:var(--navy);"><strong>Gray italic text inside a field is just a hint.</strong> If you leave the field blank, it stays blank when you save and export. The hint does NOT become a value.</p>
+      <p style="margin:0;font-size:13px;color:var(--gray-700);">Some fields (accessibility expectations, captions, alternative formats, RSI, "never use" rules) come <strong>pre-filled with sensible defaults</strong>. Edit, replace, or delete them as needed; what you see is what gets saved.</p>
+    </aside>
+
+    <!-- ============================================================
          SECTION 1 - FACULTY IDENTITY (MEDMASTERS FACULTY BRAND SHEET)
          ============================================================ -->
     <section class="section-card" id="s1" aria-labelledby="s1h">
       <p class="section-card__eyebrow">Section 01</p>
-      <h2 class="section-card__title" id="s1h">Faculty Identity</h2>
-      <p class="section-card__note">Who you are as the instructor. Credentials are private metadata. Student-facing exports honor your byline rule.</p>
+      <h2 class="section-card__title" id="s1h">Faculty &amp; Course Identity</h2>
+      <p class="section-card__note">Who you are as the instructor and which course this preview shows. Credentials are private metadata. Student-facing exports honor your byline rule.</p>
+
+      <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:6px 0 8px;">Course (for the live preview)</h3>
+      <p class="field__hint" style="margin:0 0 12px;">Type the course this brand sheet should preview. Use real text for your institution name (not a category). The MCAS Engine reads course details from your Master Course Workbook; these fields just make the preview match a real class.</p>
+      <div class="form-grid">
+        <div class="field"><label for="courseCode">Course code</label><input class="input" type="text" id="courseCode" name="courseCode" placeholder="BIO 431"></div>
+        <div class="field"><label for="courseTitle">Course title</label><input class="input" type="text" id="courseTitle" name="courseTitle" placeholder="Human Anatomy and Physiology"></div>
+        <div class="field"><label for="institutionName">Institution name</label><input class="input" type="text" id="institutionName" name="institutionName" placeholder="American River College"><p class="field__hint">Free text. Type your actual college or program name.</p></div>
+        <div class="field"><label for="department">Department / program (optional)</label><input class="input" type="text" id="department" name="department" placeholder="Biology, Anatomy &amp; Physiology"></div>
+      </div>
+
+      <h3 style="font-family:var(--font-display);font-weight:600;color:var(--terra-dark);font-size:15px;margin:18px 0 8px;">Faculty identity</h3>
       <div class="form-grid">
         <div class="field"><label for="facultyName">Name</label><input class="input" type="text" id="facultyName" name="facultyName" placeholder="Dr. Jane Doe"></div>
         <div class="field"><label for="credentials">Credentials</label><input class="input" type="text" id="credentials" name="credentials" placeholder="ND, MD, PhD, RN"><p class="field__hint">Stored only. Stripped from student-facing exports per byline rule.</p></div>
@@ -751,7 +772,8 @@ footer { border-top: 1px solid var(--navy-tint); background: var(--white); paddi
     identity: {
       facultyName: '', credentials: '', bylineRule: 'name-only', customByline: '',
       discipline: '', yearsTeaching: '',
-      clinicalBackground: '', researchBackground: '', expertise: []
+      clinicalBackground: '', researchBackground: '', expertise: [],
+      courseCode: '', courseTitle: '', institutionName: '', department: ''
     },
     philosophy: { beliefs: '', studentExperience: '', frustrations: '', success: '' },
     studentPopulation: { categories: [], commonChallenges: '', careerGoals: '' },
@@ -772,7 +794,13 @@ footer { border-top: 1px solid var(--navy-tint); background: var(--white); paddi
       avatar: { kind: 'initials', value: '', ring: 'gold' },
       logo: { kind: 'none', value: '', alt: '' }
     },
-    accessibility: { expectations: '', wcagTarget: 'AA+', captioning: 'Captions on every video. Edited transcripts.', altFormats: '', rsi: '' },
+    accessibility: {
+      expectations: 'Every deliverable accessible by default. No retrofits. Test with keyboard only and screen reader.',
+      wcagTarget: 'AA+',
+      captioning: 'Captions on every video. Edited transcripts.',
+      altFormats: 'Tagged PDFs. Plain-text equivalents for image-heavy content. EPUB exports on request.',
+      rsi: 'Weekly direct contact, individualized feedback within 48 hours, scheduled office hours.'
+    },
     collaboration: {
       alwaysDo: ['Cite evidence when possible', 'Align to outcomes', 'Build RSI opportunities', 'Check accessibility'],
       neverDo: ['Generate busywork', 'Create unnecessary content', 'Sacrifice rigor for convenience'],
@@ -784,6 +812,10 @@ footer { border-top: 1px solid var(--navy-tint); background: var(--white); paddi
   // ----- field mapping -----
   // input id -> data path. used for both load and save.
   const FIELD_MAP = [
+    ['courseCode', 'identity.courseCode'],
+    ['courseTitle', 'identity.courseTitle'],
+    ['institutionName', 'identity.institutionName'],
+    ['department', 'identity.department'],
     ['facultyName', 'identity.facultyName'],
     ['credentials', 'identity.credentials'],
     ['bylineRule', 'identity.bylineRule'],
@@ -1077,12 +1109,20 @@ footer { border-top: 1px solid var(--navy-tint); background: var(--white); paddi
     // header content
     const byline = computeByline();
     $('#bpByline').textContent = byline || 'Dr. Faculty Name';
-    const audience = (state.studentPopulation.categories || []).slice(0, 3).join(' · ');
-    const role = [state.identity.discipline, audience].filter(Boolean).join(' · ') || 'Discipline · Audience';
+    const idn = state.identity || {};
+    const institution = idn.institutionName || '';
+    const courseCode = idn.courseCode || '';
+    const courseTitle = idn.courseTitle || '';
+    // Role line: discipline · institution name · modality (modality from studentPopulation.categories)
+    const modalityList = ['Online', 'Hybrid', 'Face-to-Face', 'HyFlex', 'Async', 'Sync'];
+    const modality = (state.studentPopulation.categories || []).filter(c => modalityList.includes(c)).slice(0,1).join('');
+    const roleBits = [idn.discipline, institution, modality].filter(Boolean);
+    const role = roleBits.length ? roleBits.join(' · ') : 'Discipline · Institution · Modality';
     $('#bpRole').textContent = role;
-    $('#bpEyebrow').textContent = (state.identity.discipline ? state.identity.discipline.toUpperCase() : 'YOUR COURSE')
-      + ' · ' + (audience ? audience.toUpperCase() : 'YOUR AUDIENCE');
-    $('#bpH1').textContent = 'Sample Lesson Header';
+    // Eyebrow line: course code · institution · modality (uppercase)
+    const eyeBits = [courseCode || idn.discipline, institution, modality].filter(Boolean).map(s => s.toUpperCase());
+    $('#bpEyebrow').textContent = eyeBits.length ? eyeBits.join(' · ') : 'YOUR COURSE · YOUR INSTITUTION';
+    $('#bpH1').textContent = courseTitle || 'Sample Lesson Header';
     const commStyles = (state.communication.styles || []).join(', ');
     $('#bpSubhead').textContent = commStyles ? ('Voice: ' + commStyles) : 'Subhead in your secondary accent';
     $('#bpUsage').textContent = state.philosophy.studentExperience || 'Usage instructions, in your italic font, telling students how to engage with this material.';
